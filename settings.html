@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){var t=new URLSearchParams(location.search).get('theme')==='dark'?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
+<title>Settings — PennyLedger</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <a href="index.html" class="logo">
+      <img class="logo-img logo-light" src="assets/logo-black.svg" alt="PennyLedger">
+      <img class="logo-img logo-dark" src="assets/logo-white.svg" alt="PennyLedger">
+    </a>
+    <nav class="side-nav">
+      <a href="dashboard.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</a>
+      <a href="transactions.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="14" y2="18"/></svg>Transactions</a>
+      <a href="budget.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/><circle cx="17" cy="15" r="1"/></svg>Budget</a>
+      <a href="goals.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h13l-3 4 3 4H5"/></svg>Financial Goals</a>
+      <a href="reports.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="20" x2="5" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="19" y1="20" x2="19" y2="14"/></svg>Reports</a>
+      <a href="settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>Settings</a>
+    </nav>
+    <div class="sidebar-spacer"></div>
+    <div class="side-profile">
+      <div class="avatar">AR</div>
+      <div class="who"><strong>Alex Rivera</strong><span>alex@email.com</span></div>
+    </div>
+    <button class="logout-btn">Log out</button>
+  </aside>
+  <div class="sidebar-overlay"></div>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="hamburger" aria-label="Open menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div style="flex:1"></div>
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search transactions">
+      </div>
+      <div class="theme-switch">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <label class="switch">
+          <input type="checkbox" class="theme-checkbox" aria-label="Toggle dark mode">
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+        </label>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="page-title" style="margin-bottom:20px;">
+        <div>
+          <h1>Settings</h1>
+          <p>Manage your profile, preferences, and account security</p>
+        </div>
+      </div>
+
+      <div class="settings-grid">
+
+        <div class="card settings-card">
+          <div class="card-head"><h2>Profile</h2><p>This is how you appear across PennyLedger.</p></div>
+          <div class="profile-row">
+            <div class="avatar-lg">AR</div>
+            <div>
+              <div class="pr-actions">
+                <button class="btn btn-outline btn-sm">Change Photo</button>
+                <button class="btn btn-outline btn-sm" style="color:var(--danger); border-color:var(--danger-50);">Remove</button>
+              </div>
+            </div>
+          </div>
+          <form id="profile-form">
+            <div class="settings-fields">
+              <div class="field"><label for="full-name">Full Name</label><div class="input-wrap"><input type="text" id="full-name" value="Alex Rivera"></div></div>
+              <div class="field"><label for="s-email">Email</label><div class="input-wrap"><input type="email" id="s-email" value="alex@email.com"></div></div>
+              <div class="field"><label for="s-phone">Phone</label><div class="input-wrap"><input type="tel" id="s-phone" placeholder="+63 900 000 0000"></div></div>
+              <div class="field"><label for="s-currency">Currency</label>
+                <select id="s-currency">
+                  <option>₱ Philippine Peso (PHP)</option>
+                  <option selected>$ US Dollar (USD)</option>
+                  <option>€ Euro (EUR)</option>
+                </select>
+              </div>
+            </div>
+            <div style="margin-top:18px;"><button type="submit" class="btn btn-primary btn-sm">Save Changes</button></div>
+          </form>
+        </div>
+
+        <div class="card settings-card">
+          <div class="card-head"><h2>Appearance</h2><p>Choose how PennyLedger looks on your screen.</p></div>
+          <div class="settings-row">
+            <div class="sr-text"><strong>Dark mode</strong><span>Switch between light and dark themes</span></div>
+            <div class="sr-control">
+              <label class="switch">
+                <input type="checkbox" class="theme-checkbox" aria-label="Toggle dark mode">
+                <span class="switch-track"><span class="switch-thumb"></span></span>
+              </label>
+            </div>
+          </div>
+          <div class="settings-row">
+            <div class="sr-text"><strong>Date format</strong><span>How dates are displayed throughout the app</span></div>
+            <div class="sr-control">
+              <select id="s-dateformat" style="width:auto; padding:8px 12px;">
+                <option>Mar 14, 2026</option>
+                <option>14/03/2026</option>
+                <option>03/14/2026</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card settings-card">
+          <div class="card-head"><h2>Notifications</h2><p>Choose what PennyLedger keeps you posted about.</p></div>
+          <div class="settings-row">
+            <div class="sr-text"><strong>Email notifications</strong><span>Receive account activity by email</span></div>
+            <div class="sr-control"><label class="switch"><input type="checkbox" checked><span class="switch-track"><span class="switch-thumb"></span></span></label></div>
+          </div>
+          <div class="settings-row">
+            <div class="sr-text"><strong>Budget alerts</strong><span>Get notified when a category is close to its limit</span></div>
+            <div class="sr-control"><label class="switch"><input type="checkbox" checked><span class="switch-track"><span class="switch-thumb"></span></span></label></div>
+          </div>
+          <div class="settings-row">
+            <div class="sr-text"><strong>Weekly summary email</strong><span>A recap of income, spending, and goal progress</span></div>
+            <div class="sr-control"><label class="switch"><input type="checkbox"><span class="switch-track"><span class="switch-thumb"></span></span></label></div>
+          </div>
+          <div class="settings-row">
+            <div class="sr-text"><strong>Goal milestones</strong><span>Celebrate when you hit 25/50/75/100% of a goal</span></div>
+            <div class="sr-control"><label class="switch"><input type="checkbox" checked><span class="switch-track"><span class="switch-thumb"></span></span></label></div>
+          </div>
+        </div>
+
+        <div class="card settings-card">
+          <div class="card-head"><h2>Security</h2><p>Keep your account locked down.</p></div>
+          <form id="password-form">
+            <div class="settings-fields">
+              <div class="field full"><label for="cur-pw">Current Password</label><div class="input-wrap"><input type="password" id="cur-pw"></div></div>
+              <div class="field"><label for="new-pw">New Password</label><div class="input-wrap"><input type="password" id="new-pw"></div></div>
+              <div class="field"><label for="confirm-pw">Confirm New Password</label><div class="input-wrap"><input type="password" id="confirm-pw"></div></div>
+            </div>
+            <small class="hint" id="pw-hint"></small>
+            <div style="margin-top:6px;"><button type="submit" class="btn btn-primary btn-sm">Update Password</button></div>
+          </form>
+          <div class="settings-row" style="margin-top:8px;">
+            <div class="sr-text"><strong>Two-factor authentication</strong><span>Add an extra layer of protection at sign-in</span></div>
+            <div class="sr-control"><label class="switch"><input type="checkbox"><span class="switch-track"><span class="switch-thumb"></span></span></label></div>
+          </div>
+        </div>
+
+        <div class="card settings-card danger-card">
+          <div class="card-head"><h2>Danger Zone</h2><p>These actions are hard to undo — proceed carefully.</p></div>
+          <div class="settings-row">
+            <div class="sr-text"><strong>Export all data</strong><span>Download every transaction, budget, and goal as CSV</span></div>
+            <div class="sr-control"><button class="btn btn-outline btn-sm" id="export-all-btn">Export</button></div>
+          </div>
+          <div class="settings-row">
+            <div class="sr-text danger"><strong>Delete account</strong><span>Permanently remove your account and all its data</span></div>
+            <div class="sr-control"><button class="btn btn-danger btn-sm" data-open-modal="delete-account-modal">Delete Account</button></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete account confirm modal -->
+<div class="modal-overlay" id="delete-account-modal">
+  <div class="modal">
+    <div class="modal-head"><h3>Delete your account?</h3>
+      <button class="modal-close" data-close-modal aria-label="Close">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <p style="font-size:.88rem; color:var(--ink-soft); line-height:1.6; margin-bottom:18px;">
+      This will permanently delete your PennyLedger account, including all transactions, budgets, and goals. This action can't be undone.
+    </p>
+    <div class="field">
+      <label for="delete-confirm-input">Type <strong>DELETE</strong> to confirm</label>
+      <div class="input-wrap"><input type="text" id="delete-confirm-input" placeholder="DELETE"></div>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-outline" data-close-modal>Cancel</button>
+      <button type="button" class="btn btn-danger" id="confirm-delete-btn" style="flex:1;">Delete Account</button>
+    </div>
+  </div>
+</div>
+
+<script src="main.js"></script>
+<script>
+  document.getElementById('profile-form').addEventListener('submit', e => {
+    e.preventDefault();
+    showToast('Profile updated');
+  });
+
+  document.getElementById('password-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const newPw = document.getElementById('new-pw').value;
+    const confirmPw = document.getElementById('confirm-pw').value;
+    const hint = document.getElementById('pw-hint');
+    if (newPw.length < 6){ hint.textContent = 'Password should be at least 6 characters.'; return; }
+    if (newPw !== confirmPw){ hint.textContent = "Passwords don't match."; return; }
+    hint.textContent = '';
+    e.target.reset();
+    showToast('Password updated');
+  });
+
+  document.getElementById('export-all-btn').addEventListener('click', () => {
+    const data = {
+      exportedAt: new Date().toISOString(),
+      account: { name:'Alex Rivera', email:'alex@email.com' },
+      totals: { balance:18420.50, monthlyIncome:6250.00, monthlyExpenses:3840.25 },
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'pennyledger-data-export.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Data export downloaded');
+  });
+
+  document.getElementById('confirm-delete-btn').addEventListener('click', () => {
+    const val = document.getElementById('delete-confirm-input').value.trim();
+    if (val !== 'DELETE'){
+      showToast('Type DELETE to confirm');
+      return;
+    }
+    document.getElementById('delete-account-modal').classList.remove('open');
+    showToast("This is a demo — no account was deleted.");
+  });
+</script>
+</body>
+</html>

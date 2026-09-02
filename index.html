@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){var t=new URLSearchParams(location.search).get('theme')==='dark'?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
+<title>PennyLedger — Take control of your money</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" class="logo">
+    <img class="logo-img logo-light" src="assets/logo-black.svg" alt="PennyLedger">
+    <img class="logo-img logo-dark" src="assets/logo-white.svg" alt="PennyLedger">
+  </a>
+  <nav>
+    <div class="nav-links">
+      <a href="#top">Home</a>
+      <a href="#features">Features</a>
+      <a href="#security">Security</a>
+    </div>
+  </nav>
+  <div class="auth-links">
+    <div class="theme-switch">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      <label class="switch">
+        <input type="checkbox" class="theme-checkbox" aria-label="Toggle dark mode">
+        <span class="switch-track"><span class="switch-thumb"></span></span>
+      </label>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+    </div>
+    <a class="btn btn-outline btn-sm" href="login.html">Log In</a>
+    <a class="btn btn-primary btn-sm" href="signup.html">Sign Up</a>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <span class="hero-eyebrow">Personal budget &amp; expense tracker</span>
+      <h1>Take control of your money, one penny at a time.</h1>
+      <p>PennyLedger is an intuitive personal budget and expense tracker designed to help you gain total control over your daily finances. By seamlessly logging transactions, categorizing spending, and visualizing your cash flow, it turns complex financial data into actionable insights.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="signup.html">Sign Up</a>
+        <a class="btn btn-ghost-light" href="login.html">Log In</a>
+      </div>
+    </div>
+  </div>
+  <div class="stat-callout">
+    <p class="label">Join using PennyLedger.</p>
+    <div class="ring-row">
+      <div class="ring"></div>
+      <div class="ring-text">
+        <strong>65%</strong>
+        <small>of our users are Filipinos!</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="features">
+  <div class="section-head">
+    <span class="eyebrow">Why PennyLedger</span>
+    <h2>Everything you need to stay ahead of your money</h2>
+    <p>Whether you're saving for a major milestone or simply trimming everyday costs, PennyLedger gives you the clarity needed to reach your money goals.</p>
+  </div>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="fc-icon" style="background:var(--blue-50); color:var(--blue);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="14" y2="18"/></svg>
+      </div>
+      <h3>Track every transaction</h3>
+      <p>Log income and expenses in seconds and see exactly where your money goes, categorized automatically.</p>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon" style="background:var(--success-50); color:var(--success);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/><circle cx="17" cy="15" r="1"/></svg>
+      </div>
+      <h3>Set smart budgets</h3>
+      <p>Put a limit on every category and get a clear signal the moment you're at risk of going over.</p>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon" style="background:#FDEEE3; color:#C2703A;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h13l-3 4 3 4H5"/></svg>
+      </div>
+      <h3>Reach your goals faster</h3>
+      <p>From an emergency fund to a dream vacation, watch every peso saved move you closer to the finish line.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="security" style="padding-top:0;">
+  <div class="section-head">
+    <span class="eyebrow">Built on trust</span>
+    <h2>Manage your money securely, with trust</h2>
+    <p>At PennyLedger, your financial privacy and peace of mind are our highest priorities. We protect your account using end-to-end encryption and bank-level security protocols, ensuring your financial logs, budgets, and sensitive credentials remain strictly confidential and shielded from unauthorized access.</p>
+  </div>
+</section>
+
+<div class="cta-band">
+  <div>
+    <h2>Ready to take control of your money?</h2>
+    <p>Create your free PennyLedger account in under a minute.</p>
+  </div>
+  <a class="btn btn-primary" href="signup.html">Get Started — It's Free</a>
+</div>
+
+<footer class="site-footer">
+  <a href="index.html" class="logo">
+    <img class="logo-img logo-light" src="assets/logo-black.svg" alt="PennyLedger">
+    <img class="logo-img logo-dark" src="assets/logo-white.svg" alt="PennyLedger">
+  </a>
+  <span>© 2026 PennyLedger. All rights reserved.</span>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>

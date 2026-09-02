@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){var t=new URLSearchParams(location.search).get('theme')==='dark'?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
+<title>Reports — PennyLedger</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <a href="index.html" class="logo">
+      <img class="logo-img logo-light" src="assets/logo-black.svg" alt="PennyLedger">
+      <img class="logo-img logo-dark" src="assets/logo-white.svg" alt="PennyLedger">
+    </a>
+    <nav class="side-nav">
+      <a href="dashboard.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</a>
+      <a href="transactions.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="14" y2="18"/></svg>Transactions</a>
+      <a href="budget.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/><circle cx="17" cy="15" r="1"/></svg>Budget</a>
+      <a href="goals.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h13l-3 4 3 4H5"/></svg>Financial Goals</a>
+      <a href="reports.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="20" x2="5" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="19" y1="20" x2="19" y2="14"/></svg>Reports</a>
+      <a href="settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>Settings</a>
+    </nav>
+    <div class="sidebar-spacer"></div>
+    <div class="side-profile">
+      <div class="avatar">AR</div>
+      <div class="who"><strong>Alex Rivera</strong><span>alex@email.com</span></div>
+    </div>
+    <button class="logout-btn">Log out</button>
+  </aside>
+  <div class="sidebar-overlay"></div>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="hamburger" aria-label="Open menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div style="flex:1"></div>
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search transactions">
+      </div>
+      <div class="theme-switch">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <label class="switch">
+          <input type="checkbox" class="theme-checkbox" aria-label="Toggle dark mode">
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+        </label>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="page-title" style="margin-bottom:20px;">
+        <div>
+          <h1>Reports</h1>
+          <p>Generate insights from your data and browse past reports</p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:18px;">
+        <div class="card-head"><h2>Generate a Report</h2></div>
+
+        <div class="report-types">
+          <button class="report-type active" data-type="income-expense">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="20" x2="5" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="19" y1="20" x2="19" y2="14"/></svg>
+            <strong>Income vs Expense</strong>
+            <span>Cash flow trend over time</span>
+          </button>
+          <button class="report-type" data-type="category">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+            <strong>Category Breakdown</strong>
+            <span>Where your money goes</span>
+          </button>
+          <button class="report-type" data-type="budget">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/><circle cx="17" cy="15" r="1"/></svg>
+            <strong>Budget Performance</strong>
+            <span>Spent vs. limit by category</span>
+          </button>
+          <button class="report-type" data-type="goals">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h13l-3 4 3 4H5"/></svg>
+            <strong>Goal Progress</strong>
+            <span>How close you are to each goal</span>
+          </button>
+        </div>
+
+        <div class="report-controls">
+          <div class="field">
+            <label for="report-range">Period</label>
+            <select id="report-range">
+              <option value="this-month">This Month</option>
+              <option value="last-month">Last Month</option>
+              <option value="this-year">This Year (Jan – Aug 2026)</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" id="generate-report-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+            Generate Report
+          </button>
+        </div>
+
+        <div class="report-preview" id="report-preview"></div>
+
+        <div class="report-actions">
+          <button class="btn btn-outline btn-sm" id="export-csv-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export CSV
+          </button>
+          <button class="btn btn-outline btn-sm" id="print-report-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Print Report
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Report Archive</h2>
+          <span class="muted-tag" id="archive-count">5 saved reports</span>
+        </div>
+        <div class="table-scroll">
+          <table class="archive-table">
+            <thead><tr><th>Report</th><th>Type</th><th>Period</th><th>Generated</th><th></th></tr></thead>
+            <tbody id="archive-tbody">
+              <tr>
+                <td>August 2026 Summary</td>
+                <td><span class="pill pill-blue">Income vs Expense</span></td>
+                <td>Aug 2026</td>
+                <td>Aug 31, 2026</td>
+                <td><div class="arch-actions">
+                  <button class="icon-btn view" aria-label="View report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  <button class="icon-btn delete" aria-label="Delete report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+                </div></td>
+              </tr>
+              <tr>
+                <td>Category Breakdown — July</td>
+                <td><span class="pill pill-green">Category Breakdown</span></td>
+                <td>Jul 2026</td>
+                <td>Aug 1, 2026</td>
+                <td><div class="arch-actions">
+                  <button class="icon-btn view" aria-label="View report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  <button class="icon-btn delete" aria-label="Delete report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+                </div></td>
+              </tr>
+              <tr>
+                <td>Budget Performance — Q2</td>
+                <td><span class="pill pill-gray">Budget Performance</span></td>
+                <td>Apr – Jun 2026</td>
+                <td>Jul 3, 2026</td>
+                <td><div class="arch-actions">
+                  <button class="icon-btn view" aria-label="View report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  <button class="icon-btn delete" aria-label="Delete report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+                </div></td>
+              </tr>
+              <tr>
+                <td>H1 2026 Overview</td>
+                <td><span class="pill pill-blue">Income vs Expense</span></td>
+                <td>Jan – Jun 2026</td>
+                <td>Jul 1, 2026</td>
+                <td><div class="arch-actions">
+                  <button class="icon-btn view" aria-label="View report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  <button class="icon-btn delete" aria-label="Delete report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+                </div></td>
+              </tr>
+              <tr>
+                <td>June 2026 Summary</td>
+                <td><span class="pill pill-blue">Income vs Expense</span></td>
+                <td>Jun 2026</td>
+                <td>Jun 30, 2026</td>
+                <td><div class="arch-actions">
+                  <button class="icon-btn view" aria-label="View report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  <button class="icon-btn delete" aria-label="Delete report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+                </div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="main.js"></script>
+<script>
+(function(){
+  const RANGE_DATA = {
+    'this-month': { label:'August 2026', income:6250.00, expense:3840.25 },
+    'last-month': { label:'July 2026', income:6250.00, expense:3750.00 },
+    'this-year':  { label:'January – August 2026', income:48200.00, expense:29650.00 },
+  };
+  const MONTHS = ['Mar','Apr','May','Jun','Jul','Aug'];
+  const INCOME_SERIES = [5800,6100,5950,6300,6250,6250];
+  const EXPENSE_SERIES = [3600,4200,3950,4100,3750,3840];
+  const CATEGORY_GRADIENT = 'var(--blue) 0% 63%, var(--success) 63% 85%, #1F63AC 85% 92%, #7EB8EA 92% 97%, #C3CDC7 97% 100%';
+  const CATEGORY_LEGEND = [
+    {name:'Housing', pct:63, color:'var(--blue)'},
+    {name:'Groceries', pct:22, color:'var(--success)'},
+    {name:'Transportation', pct:7, color:'#1F63AC'},
+    {name:'Entertainment', pct:5, color:'#7EB8EA'},
+    {name:'Other', pct:3, color:'#C3CDC7'},
+  ];
+  const BUDGET_DATA = [
+    {name:'Groceries', spent:420, limit:500, pct:84, status:'On track', fill:'fill-green', pill:'pill-green'},
+    {name:'Dining Out', spent:310, limit:250, pct:100, status:'Over budget', fill:'fill-red', pill:'pill-red'},
+    {name:'Transportation', spent:140, limit:300, pct:47, status:'On track', fill:'fill-blue', pill:'pill-green'},
+    {name:'Entertainment', spent:90, limit:150, pct:60, status:'On track', fill:'fill-blue', pill:'pill-green'},
+    {name:'Housing', spent:1200, limit:1200, pct:100, status:'Fully used', fill:'fill-navy', pill:'pill-gray'},
+    {name:'Utilities', spent:98, limit:200, pct:49, status:'On track', fill:'fill-blue', pill:'pill-green'},
+  ];
+  const GOAL_DATA = [
+    {name:'Emergency Fund', saved:4200, target:6000, pct:70},
+    {name:'Vacation to Japan', saved:1850, target:4000, pct:46},
+    {name:'New Laptop', saved:900, target:1500, pct:60},
+    {name:'Home Down Payment', saved:12500, target:40000, pct:31},
+  ];
+
+  const money = n => '$' + n.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+  let currentType = 'income-expense';
+
+  function renderIncomeExpense(range){
+    const r = RANGE_DATA[range];
+    const maxVal = Math.max(...INCOME_SERIES, ...EXPENSE_SERIES);
+    const bars = MONTHS.map((m,i) => `
+      <div class="bc-col">
+        <div class="bc-bars">
+          <div class="bc-bar income" data-h="${Math.round(INCOME_SERIES[i]/maxVal*100)}"></div>
+          <div class="bc-bar expense" data-h="${Math.round(EXPENSE_SERIES[i]/maxVal*100)}"></div>
+        </div>
+        <span class="bc-label">${m}</span>
+      </div>`).join('');
+    return `
+      <div class="report-summary">
+        <div class="summary-cell"><p class="sc-label">Total Income</p><p class="sc-value green">${money(r.income)}</p></div>
+        <div class="summary-cell"><p class="sc-label">Total Expenses</p><p class="sc-value" style="color:var(--danger)">${money(r.expense)}</p></div>
+        <div class="summary-cell"><p class="sc-label">Net Savings</p><p class="sc-value">${money(r.income - r.expense)}</p></div>
+      </div>
+      <p style="font-size:.8rem;color:var(--muted);margin-bottom:6px;">${r.label} · 6-month trend</p>
+      <div class="bar-chart">${bars}</div>
+      <div class="chart-legend"><span><i style="background:#219653"></i>Income</span><span><i style="background:#E1473E"></i>Expenses</span></div>`;
+  }
+
+  function renderCategory(range){
+    const r = RANGE_DATA[range];
+    const legend = CATEGORY_LEGEND.map(c => `<li><span class="dl-left"><i style="background:${c.color};"></i>${c.name}</span><b>${c.pct}%</b></li>`).join('');
+    return `
+      <p style="font-size:.8rem;color:var(--muted);margin-bottom:16px;">${r.label} · spending by category</p>
+      <div class="donut-wrap">
+        <div class="donut" style="background:conic-gradient(${CATEGORY_GRADIENT});"><div class="donut-center"><strong>${money(r.expense)}</strong><span>Total</span></div></div>
+        <ul class="donut-legend">${legend}</ul>
+      </div>`;
+  }
+
+  function renderBudget(range){
+    const r = RANGE_DATA[range];
+    const totalBudget = BUDGET_DATA.reduce((s,b)=>s+b.limit,0);
+    const totalSpent = BUDGET_DATA.reduce((s,b)=>s+b.spent,0);
+    const rows = BUDGET_DATA.map(b => `
+      <div class="prog-row">
+        <div class="prow-top"><span>${b.name}</span><span ${b.status==='Over budget' ? 'style="color:var(--danger);font-weight:700;"' : ''}>$${b.spent} / $${b.limit}</span></div>
+        <div class="prog-track"><div class="prog-fill ${b.fill}" data-w="${Math.min(b.pct,100)}"></div></div>
+      </div>`).join('');
+    return `
+      <div class="report-summary">
+        <div class="summary-cell"><p class="sc-label">Total Budgeted</p><p class="sc-value">$${totalBudget.toLocaleString()}</p></div>
+        <div class="summary-cell"><p class="sc-label">Total Spent</p><p class="sc-value">$${totalSpent.toLocaleString()}</p></div>
+        <div class="summary-cell"><p class="sc-label">Remaining</p><p class="sc-value green">$${(totalBudget-totalSpent).toLocaleString()}</p></div>
+      </div>
+      <p style="font-size:.8rem;color:var(--muted);margin-bottom:6px;">${r.label} · budget performance</p>
+      ${rows}`;
+  }
+
+  function renderGoals(range){
+    const r = RANGE_DATA[range];
+    const totalSaved = GOAL_DATA.reduce((s,g)=>s+g.saved,0);
+    const totalTarget = GOAL_DATA.reduce((s,g)=>s+g.target,0);
+    const rows = GOAL_DATA.map(g => `
+      <div class="prog-row">
+        <div class="prow-top"><span>${g.name}</span><span style="color:var(--success);font-weight:700;">${g.pct}%</span></div>
+        <div class="prog-track"><div class="prog-fill fill-green" data-w="${g.pct}"></div></div>
+      </div>`).join('');
+    return `
+      <div class="report-summary">
+        <div class="summary-cell"><p class="sc-label">Total Saved</p><p class="sc-value green">$${totalSaved.toLocaleString()}</p></div>
+        <div class="summary-cell"><p class="sc-label">Combined Target</p><p class="sc-value">$${totalTarget.toLocaleString()}</p></div>
+        <div class="summary-cell"><p class="sc-label">Overall Progress</p><p class="sc-value">${Math.round(totalSaved/totalTarget*100)}%</p></div>
+      </div>
+      <p style="font-size:.8rem;color:var(--muted);margin-bottom:6px;">${r.label} · goal progress snapshot</p>
+      ${rows}`;
+  }
+
+  function render(){
+    const range = document.getElementById('report-range').value;
+    const body = document.getElementById('report-preview');
+    const renderers = { 'income-expense':renderIncomeExpense, 'category':renderCategory, 'budget':renderBudget, 'goals':renderGoals };
+    body.innerHTML = renderers[currentType](range);
+
+    requestAnimationFrame(() => {
+      body.querySelectorAll('.bc-bar[data-h]').forEach(b => { b.style.height = b.dataset.h + '%'; });
+      body.querySelectorAll('.prog-fill[data-w]').forEach(b => { b.style.width = b.dataset.w + '%'; });
+    });
+  }
+
+  document.querySelectorAll('.report-type').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.report-type').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentType = btn.dataset.type;
+      render();
+    });
+  });
+  document.getElementById('generate-report-btn').addEventListener('click', render);
+  document.getElementById('report-range').addEventListener('change', render);
+
+  document.getElementById('export-csv-btn').addEventListener('click', () => {
+    const rows = [
+      ['Description','Category','Date','Amount'],
+      ['Whole Foods Market','Groceries','2026-03-14','-84.32'],
+      ['Paycheck Deposit','Income','2026-03-13','3125.00'],
+      ['Netflix Subscription','Entertainment','2026-03-13','-15.99'],
+      ['Shell Gas Station','Transportation','2026-03-12','-42.10'],
+      ['Rent Payment','Housing','2026-03-10','-1200.00'],
+      ['Spotify Premium','Entertainment','2026-03-09','-11.99'],
+      ["Trader Joe's",'Groceries','2026-03-08','-56.20'],
+      ['Freelance Payment','Income','2026-03-07','450.00'],
+      ['Electric Bill','Utilities','2026-03-06','-98.40'],
+      ['Coffee Shop','Dining Out','2026-03-05','-6.75'],
+    ];
+    const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'pennyledger-transactions.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('CSV downloaded');
+  });
+
+  document.getElementById('print-report-btn').addEventListener('click', () => window.print());
+
+  function wireArchiveRow(row){
+    row.querySelector('.icon-btn.delete').addEventListener('click', () => {
+      row.style.opacity = '0';
+      setTimeout(() => {
+        row.remove();
+        const tbody = document.getElementById('archive-tbody');
+        document.getElementById('archive-count').textContent = tbody.children.length + ' saved reports';
+      }, 250);
+      showToast('Report removed from archive');
+    });
+    row.querySelector('.icon-btn.view').addEventListener('click', () => {
+      const name = row.querySelector('td').textContent.trim();
+      document.getElementById('report-preview').scrollIntoView({behavior:'smooth', block:'center'});
+      showToast('Loaded: ' + name);
+    });
+  }
+  document.querySelectorAll('#archive-tbody tr').forEach(wireArchiveRow);
+
+  render();
+})();
+</script>
+</body>
+</html>
