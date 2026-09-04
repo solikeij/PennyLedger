@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){var t=new URLSearchParams(location.search).get('theme')==='dark'?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
+<title>Dashboard — PennyLedger</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <a href="index.html" class="logo">
+      <img class="logo-img logo-light" src="assets/logo-black.svg" alt="PennyLedger">
+      <img class="logo-img logo-dark" src="assets/logo-white.svg" alt="PennyLedger">
+    </a>
+    <nav class="side-nav">
+      <a href="dashboard.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</a>
+      <a href="transactions.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="14" y2="18"/></svg>Transactions</a>
+      <a href="budget.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/><circle cx="17" cy="15" r="1"/></svg>Budget</a>
+      <a href="goals.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h13l-3 4 3 4H5"/></svg>Financial Goals</a>
+      <a href="reports.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="20" x2="5" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="19" y1="20" x2="19" y2="14"/></svg>Reports</a>
+      <a href="settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>Settings</a>
+    </nav>
+    <div class="sidebar-spacer"></div>
+    <div class="side-profile">
+      <div class="avatar">AR</div>
+      <div class="who"><strong>Alex Rivera</strong><span>alex@email.com</span></div>
+    </div>
+    <button class="logout-btn">Log out</button>
+  </aside>
+  <div class="sidebar-overlay"></div>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="hamburger" aria-label="Open menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div style="flex:1"></div>
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search transactions">
+      </div>
+      <div class="theme-switch">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <label class="switch">
+          <input type="checkbox" class="theme-checkbox" aria-label="Toggle dark mode">
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+        </label>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="greeting" style="display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+        <div>
+          <h1>Good afternoon, Alex</h1>
+          <p>Here's what's happening with your money</p>
+        </div>
+        <button class="btn btn-primary btn-sm" data-open-modal="add-transaction-modal">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Transaction
+        </button>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-top">
+            <div class="stat-dot" style="background:var(--blue-50);"><i style="background:var(--blue);"></i></div>
+            <span class="stat-delta up">+4.2%</span>
+          </div>
+          <p class="stat-label">Total Balance</p>
+          <p class="stat-value">$18,420.50</p>
+        </div>
+        <div class="stat-card" style="animation-delay:.05s">
+          <div class="stat-top">
+            <div class="stat-dot" style="background:var(--success-50);"><i style="background:var(--success);"></i></div>
+            <span class="stat-delta up">+2.1%</span>
+          </div>
+          <p class="stat-label">Monthly Income</p>
+          <p class="stat-value">$6,250.00</p>
+        </div>
+        <div class="stat-card" style="animation-delay:.1s">
+          <div class="stat-top">
+            <div class="stat-dot" style="background:var(--danger-50);"><i style="background:var(--danger);"></i></div>
+            <span class="stat-delta down">-1.4%</span>
+          </div>
+          <p class="stat-label">Monthly Expenses</p>
+          <p class="stat-value">$3,840.25</p>
+        </div>
+        <div class="stat-card" style="animation-delay:.15s">
+          <div class="stat-top">
+            <div class="stat-dot" style="background:var(--blue-50);"><i style="background:var(--blue);"></i></div>
+            <span class="stat-delta flat">On track</span>
+          </div>
+          <p class="stat-label">Remaining Budget</p>
+          <p class="stat-value">$1,159.75</p>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="dash-col">
+          <div class="card">
+            <div class="card-head">
+              <h2>Budget Progress</h2>
+              <span class="muted-tag">This Month</span>
+            </div>
+
+            <div class="prog-row">
+              <div class="prow-top"><span>Groceries</span><span>$420 / $500</span></div>
+              <div class="prog-track"><div class="prog-fill fill-green" data-value="84"></div></div>
+            </div>
+            <div class="prog-row">
+              <div class="prow-top"><span>Dining Out</span><span style="color:var(--danger); font-weight:700;">$310 / $250</span></div>
+              <div class="prog-track"><div class="prog-fill fill-red" data-value="100"></div></div>
+            </div>
+            <div class="prog-row">
+              <div class="prow-top"><span>Transportation</span><span>$140 / $300</span></div>
+              <div class="prog-track"><div class="prog-fill fill-blue" data-value="47"></div></div>
+            </div>
+            <div class="prog-row">
+              <div class="prow-top"><span>Entertainment</span><span>$90 / $150</span></div>
+              <div class="prog-track"><div class="prog-fill fill-blue" data-value="60"></div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h2>Recent Transactions</h2>
+              <a href="transactions.html" class="link">View All</a>
+            </div>
+            <div class="tx-list">
+              <div class="tx-row">
+                <div class="tx-left"><span class="tx-dot" style="background:var(--blue);"></span><div><p class="tx-name">Whole Foods Market</p><p class="tx-meta">Groceries · Today</p></div></div>
+                <span class="tx-amt">-$84.32</span>
+              </div>
+              <div class="tx-row">
+                <div class="tx-left"><span class="tx-dot" style="background:var(--success);"></span><div><p class="tx-name">Paycheck Deposit</p><p class="tx-meta">Income · Yesterday</p></div></div>
+                <span class="tx-amt pos">+$3,125.00</span>
+              </div>
+              <div class="tx-row">
+                <div class="tx-left"><span class="tx-dot" style="background:var(--blue);"></span><div><p class="tx-name">Netflix</p><p class="tx-meta">Entertainment · Yesterday</p></div></div>
+                <span class="tx-amt">-$15.99</span>
+              </div>
+              <div class="tx-row">
+                <div class="tx-left"><span class="tx-dot" style="background:var(--blue);"></span><div><p class="tx-name">Shell Gas Station</p><p class="tx-meta">Transportation · Mar 12</p></div></div>
+                <span class="tx-amt">-$42.10</span>
+              </div>
+              <div class="tx-row">
+                <div class="tx-left"><span class="tx-dot" style="background:var(--muted-2);"></span><div><p class="tx-name">Rent Payment</p><p class="tx-meta">Housing · Mar 10</p></div></div>
+                <span class="tx-amt">-$1,200.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dash-col">
+          <div class="card">
+            <div class="card-head"><h2>Spending Categories</h2></div>
+            <div class="donut-wrap">
+              <div class="donut" style="background:conic-gradient(var(--blue) 0% 63%, var(--success) 63% 85%, #1F63AC 85% 92%, #7EB8EA 92% 97%, #C3CDC7 97% 100%);">
+                <div class="donut-center"><strong>$1,910</strong><span>Total</span></div>
+              </div>
+              <ul class="donut-legend">
+                <li><span class="dl-left"><i style="background:var(--blue);"></i>Housing</span><b>63%</b></li>
+                <li><span class="dl-left"><i style="background:var(--success);"></i>Groceries</span><b>22%</b></li>
+                <li><span class="dl-left"><i style="background:#1F63AC;"></i>Transportation</span><b>7%</b></li>
+                <li><span class="dl-left"><i style="background:#7EB8EA;"></i>Entertainment</span><b>5%</b></li>
+                <li><span class="dl-left"><i style="background:#C3CDC7;"></i>Other</span><b>3%</b></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h2>Financial Goals</h2>
+              <a href="goals.html" class="link">+ Add Goal</a>
+            </div>
+            <div class="goal-row">
+              <div class="grow-top"><span>Emergency Fund</span><b>70%</b></div>
+              <div class="prog-track"><div class="prog-fill fill-green" data-value="70"></div></div>
+              <p class="grow-sub">$4,200 of $6,000</p>
+            </div>
+            <div class="goal-row">
+              <div class="grow-top"><span>Vacation to Japan</span><b>46%</b></div>
+              <div class="prog-track"><div class="prog-fill fill-blue" data-value="46"></div></div>
+              <p class="grow-sub">$1,850 of $4,000</p>
+            </div>
+            <div class="goal-row">
+              <div class="grow-top"><span>New Laptop</span><b>60%</b></div>
+              <div class="prog-track"><div class="prog-fill fill-blue" data-value="60"></div></div>
+              <p class="grow-sub">$900 of $1,500</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Transaction modal -->
+<div class="modal-overlay" id="add-transaction-modal">
+  <div class="modal">
+    <div class="modal-head"><h3>Add Transaction</h3>
+      <button class="modal-close" data-close-modal aria-label="Close">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form id="add-transaction-form">
+      <div class="field"><label for="tx-name">Description</label><div class="input-wrap"><input type="text" id="tx-name" placeholder="e.g. Coffee Shop" required></div></div>
+      <div class="field"><label for="tx-category">Category</label>
+        <select id="tx-category">
+          <option>Groceries</option><option>Income</option><option>Entertainment</option>
+          <option>Transportation</option><option>Housing</option><option>Utilities</option><option>Dining Out</option>
+        </select>
+      </div>
+      <div class="field"><label for="tx-amount">Amount ($)</label><div class="input-wrap"><input type="number" step="0.01" id="tx-amount" placeholder="0.00" required></div></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" data-close-modal>Cancel</button>
+        <button type="submit" class="btn btn-primary">Add Transaction</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>
