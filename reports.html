@@ -91,8 +91,12 @@
           <div class="field">
             <label for="report-range">Period</label>
             <select id="report-range">
-              <option value="this-month">This Month</option>
-              <option value="last-month">Last Month</option>
+              <option value="2026-03">March 2026</option>
+              <option value="2026-04">April 2026</option>
+              <option value="2026-05">May 2026</option>
+              <option value="2026-06">June 2026</option>
+              <option value="2026-07">July 2026</option>
+              <option value="2026-08" selected>August 2026</option>
               <option value="this-year">This Year (Jan – Aug 2026)</option>
             </select>
           </div>
@@ -118,63 +122,70 @@
 
       <div class="card">
         <div class="card-head">
-          <h2>Report Archive</h2>
-          <span class="muted-tag" id="archive-count">5 saved reports</span>
+          <h2>Report Logs</h2>
+          <span class="muted-tag" id="archive-count"></span>
+        </div>
+        <div class="filter-toolbar">
+          <div class="seg" id="log-view-seg" role="group" aria-label="Active or archived logs">
+            <button type="button" class="seg-btn active" data-view="active">Active</button>
+            <button type="button" class="seg-btn" data-view="archived">Archived <span class="seg-count" id="log-archived-count">0</span></button>
+          </div>
         </div>
         <div class="table-scroll">
           <table class="archive-table">
             <thead><tr><th>Report</th><th>Type</th><th>Period</th><th>Generated</th><th></th></tr></thead>
             <tbody id="archive-tbody">
-              <tr>
+              <tr data-archived="false" data-log-id="log-1">
                 <td class="td-name">August 2026 Summary</td>
                 <td class="td-type"><span class="pill pill-blue">Income vs Expense</span></td>
                 <td class="td-period">Aug 2026</td>
                 <td class="td-gen" data-raw-date="2026-08-31">Aug 31, 2026</td>
                 <td class="td-actions"><div class="arch-actions">
                   <button class="icon-btn view" aria-label="View report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
-                  <button class="icon-btn delete" aria-label="Delete report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+                  <button class="icon-btn archive" aria-label="Archive report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg></button>
                 </div></td>
               </tr>
-              <tr>
+              <tr data-archived="false" data-log-id="log-2">
                 <td class="td-name">Category Breakdown — July</td>
                 <td class="td-type"><span class="pill pill-green">Category Breakdown</span></td>
                 <td class="td-period">Jul 2026</td>
                 <td class="td-gen" data-raw-date="2026-08-01">Aug 1, 2026</td>
                 <td class="td-actions"><div class="arch-actions">
                   <button class="icon-btn view" aria-label="View report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
-                  <button class="icon-btn delete" aria-label="Delete report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+                  <button class="icon-btn archive" aria-label="Archive report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg></button>
                 </div></td>
               </tr>
-              <tr>
+              <tr data-archived="false" data-log-id="log-3">
                 <td class="td-name">Budget Performance — Q2</td>
                 <td class="td-type"><span class="pill pill-gray">Budget Performance</span></td>
                 <td class="td-period">Apr – Jun 2026</td>
                 <td class="td-gen" data-raw-date="2026-07-03">Jul 3, 2026</td>
                 <td class="td-actions"><div class="arch-actions">
                   <button class="icon-btn view" aria-label="View report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
-                  <button class="icon-btn delete" aria-label="Delete report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+                  <button class="icon-btn archive" aria-label="Archive report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg></button>
                 </div></td>
               </tr>
-              <tr>
+              <tr data-archived="false" data-log-id="log-4">
                 <td class="td-name">H1 2026 Overview</td>
                 <td class="td-type"><span class="pill pill-blue">Income vs Expense</span></td>
                 <td class="td-period">Jan – Jun 2026</td>
                 <td class="td-gen" data-raw-date="2026-07-01">Jul 1, 2026</td>
                 <td class="td-actions"><div class="arch-actions">
                   <button class="icon-btn view" aria-label="View report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
-                  <button class="icon-btn delete" aria-label="Delete report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+                  <button class="icon-btn archive" aria-label="Archive report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg></button>
                 </div></td>
               </tr>
-              <tr>
+              <tr data-archived="false" data-log-id="log-5">
                 <td class="td-name">June 2026 Summary</td>
                 <td class="td-type"><span class="pill pill-blue">Income vs Expense</span></td>
                 <td class="td-period">Jun 2026</td>
                 <td class="td-gen" data-raw-date="2026-06-30">Jun 30, 2026</td>
                 <td class="td-actions"><div class="arch-actions">
                   <button class="icon-btn view" aria-label="View report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
-                  <button class="icon-btn delete" aria-label="Delete report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+                  <button class="icon-btn archive" aria-label="Archive report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg></button>
                 </div></td>
               </tr>
+              <tr id="log-empty-row" hidden><td class="td-empty" colspan="5" id="log-empty-text">No report logs.</td></tr>
             </tbody>
           </table>
         </div>
@@ -186,14 +197,28 @@
 <script src="main.js"></script>
 <script>
 (function(){
-  const RANGE_DATA = {
-    'this-month': { label:'August 2026', income:6250.00, expense:3840.25 },
-    'last-month': { label:'July 2026', income:6250.00, expense:3750.00 },
-    'this-year':  { label:'January – August 2026', income:48200.00, expense:29650.00 },
-  };
   const MONTHS = ['Mar','Apr','May','Jun','Jul','Aug'];
+  const MONTH_KEYS = ['2026-03','2026-04','2026-05','2026-06','2026-07','2026-08'];
   const INCOME_SERIES = [5800,6100,5950,6300,6250,6250];
-  const EXPENSE_SERIES = [3600,4200,3950,4100,3750,3840];
+  const EXPENSE_SERIES = [3600,4200,3950,4100,3750,3840.25];
+
+  // One entry per selectable month, plus a rolled-up "this-year" entry.
+  const RANGE_DATA = {};
+  MONTH_KEYS.forEach((key, i) => {
+    const [y, mo] = key.split('-').map(Number);
+    RANGE_DATA[key] = {
+      label: new Date(y, mo - 1, 1).toLocaleString('en-US', { month: 'long', year: 'numeric' }),
+      income: INCOME_SERIES[i],
+      expense: EXPENSE_SERIES[i],
+      monthIndex: i
+    };
+  });
+  RANGE_DATA['this-year'] = {
+    label: 'January – August 2026',
+    income: 48200.00,
+    expense: 29650.00,
+    monthIndex: null
+  };
   const CATEGORY_GRADIENT = 'var(--blue) 0% 63%, var(--success) 63% 85%, #1F63AC 85% 92%, #7EB8EA 92% 97%, #C3CDC7 97% 100%';
   const CATEGORY_LEGEND = [
     {name:'Housing', pct:63, color:'var(--blue)'},
@@ -225,7 +250,7 @@
     const r = RANGE_DATA[range];
     const maxVal = Math.max(...INCOME_SERIES, ...EXPENSE_SERIES);
     const bars = MONTHS.map((m,i) => `
-      <div class="bc-col">
+      <div class="bc-col${i === r.monthIndex ? ' selected' : ''}">
         <div class="bc-bars">
           <div class="bc-bar income" data-h="${Math.round(INCOME_SERIES[i]/maxVal*100)}"></div>
           <div class="bc-bar expense" data-h="${Math.round(EXPENSE_SERIES[i]/maxVal*100)}"></div>
@@ -279,6 +304,7 @@
     const r = RANGE_DATA[range];
     const totalSaved = GOAL_DATA.reduce((s,g)=>s+g.saved,0);
     const totalTarget = GOAL_DATA.reduce((s,g)=>s+g.target,0);
+    const overallPct = Math.round(totalSaved/totalTarget*100);
     const rows = GOAL_DATA.map(g => `
       <div class="prog-row">
         <div class="prow-top"><span>${g.name}</span><span style="color:var(--success);font-weight:700;">${g.pct}%</span></div>
@@ -288,9 +314,13 @@
       <div class="report-summary">
         <div class="summary-cell"><p class="sc-label">Total Saved</p><p class="sc-value green">${s}${totalSaved.toLocaleString()}</p></div>
         <div class="summary-cell"><p class="sc-label">Combined Target</p><p class="sc-value">${s}${totalTarget.toLocaleString()}</p></div>
-        <div class="summary-cell"><p class="sc-label">Overall Progress</p><p class="sc-value">${Math.round(totalSaved/totalTarget*100)}%</p></div>
+        <div class="summary-cell"><p class="sc-label">Overall Progress</p><p class="sc-value">${overallPct}%</p></div>
       </div>
       <p style="font-size:.8rem;color:var(--muted);margin-bottom:6px;">${r.label} · goal progress snapshot</p>
+      <div class="prog-row overall-goal-row">
+        <div class="prow-top"><span>Overall Goal Progress</span><span style="color:var(--success);font-weight:700;">${overallPct}%</span></div>
+        <div class="prog-track prog-track-lg"><div class="prog-fill fill-green" data-w="${overallPct}"></div></div>
+      </div>
       ${rows}`;
   }
 
@@ -345,15 +375,82 @@
 
   document.getElementById('print-report-btn').addEventListener('click', () => window.print());
 
+  const logTbody = document.getElementById('archive-tbody');
+  const logViewSeg = document.getElementById('log-view-seg');
+  const logEmptyRow = document.getElementById('log-empty-row');
+  const logEmptyText = document.getElementById('log-empty-text');
+  let logView = 'active';
+
+  function logRows(){
+    return Array.from(logTbody.querySelectorAll('tr')).filter(r => r !== logEmptyRow);
+  }
+
+  // Restore archived state saved from a previous visit (or from the
+  // Settings › Archive page) so it survives a page reload.
+  if (window.PennyArchive){
+    logRows().forEach(row => {
+      const id = row.dataset.logId;
+      if (id && PennyArchive.isArchivedRecord(PennyArchive.ARCHIVE_LOG_KEY, id)) row.dataset.archived = 'true';
+    });
+  }
+
+  function applyLogView(){
+    let shown = 0, archived = 0;
+    logRows().forEach(row => {
+      const isArchived = row.dataset.archived === 'true';
+      if (isArchived) archived++;
+
+      const btn = row.querySelector('.icon-btn.archive');
+      if (btn) btn.setAttribute('aria-label', isArchived ? 'Restore report' : 'Archive report');
+      row.classList.toggle('is-archived-row', isArchived);
+
+      const match = logView === 'archived' ? isArchived : !isArchived;
+      row.hidden = !match;
+      if (match) shown++;
+    });
+
+    document.getElementById('log-archived-count').textContent = archived;
+    document.getElementById('archive-count').textContent =
+      `${shown} ${logView === 'archived' ? 'archived' : 'active'} report${shown === 1 ? '' : 's'}`;
+
+    if (logEmptyRow){
+      logEmptyRow.hidden = shown > 0;
+      if (logEmptyText) logEmptyText.textContent = logView === 'archived'
+        ? 'No archived reports yet.'
+        : 'No active report logs.';
+    }
+  }
+
+  logViewSeg.addEventListener('click', e => {
+    const btn = e.target.closest('.seg-btn');
+    if (!btn) return;
+    logViewSeg.querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b === btn));
+    logView = btn.dataset.view;
+    applyLogView();
+  });
+
   function wireArchiveRow(row){
-    row.querySelector('.icon-btn.delete').addEventListener('click', () => {
-      row.style.opacity = '0';
-      setTimeout(() => {
-        row.remove();
-        const tbody = document.getElementById('archive-tbody');
-        document.getElementById('archive-count').textContent = tbody.children.length + ' saved reports';
-      }, 250);
-      showToast('Report removed from archive');
+    row.querySelector('.icon-btn.archive').addEventListener('click', () => {
+      const id = row.dataset.logId;
+      const nowArchived = row.dataset.archived !== 'true';
+      row.dataset.archived = nowArchived ? 'true' : 'false';
+
+      if (id && window.PennyArchive){
+        if (nowArchived){
+          PennyArchive.addArchivedRecord(PennyArchive.ARCHIVE_LOG_KEY, {
+            id,
+            name: row.querySelector('.td-name')?.textContent.trim() || '',
+            type: row.querySelector('.td-type')?.textContent.trim() || '',
+            period: row.querySelector('.td-period')?.textContent.trim() || '',
+            generated: row.querySelector('.td-gen')?.textContent.trim() || ''
+          });
+        } else {
+          PennyArchive.removeArchivedRecord(PennyArchive.ARCHIVE_LOG_KEY, id);
+        }
+      }
+
+      applyLogView();
+      showToast(nowArchived ? 'Report archived' : 'Report restored');
     });
     row.querySelector('.icon-btn.view').addEventListener('click', () => {
       const name = row.querySelector('td').textContent.trim();
@@ -361,7 +458,8 @@
       showToast('Loaded: ' + name);
     });
   }
-  document.querySelectorAll('#archive-tbody tr').forEach(wireArchiveRow);
+  logRows().forEach(wireArchiveRow);
+  applyLogView();
 
   render();
   document.addEventListener('currencychange', render);

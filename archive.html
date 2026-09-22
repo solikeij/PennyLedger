@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){var t=new URLSearchParams(location.search).get('theme')==='dark'?'dark':'light';document.documentElement.setAttribute('data-theme',t);})();</script>
+<title>Archive — PennyLedger</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <a href="index.html" class="logo">
+      <img class="logo-img logo-light" src="assets/logo-black.svg" alt="PennyLedger">
+      <img class="logo-img logo-dark" src="assets/logo-white.svg" alt="PennyLedger">
+    </a>
+    <nav class="side-nav">
+      <a href="dashboard.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</a>
+      <a href="transactions.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="14" y2="18"/></svg>Transactions</a>
+      <a href="budget.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/><circle cx="17" cy="15" r="1"/></svg>Budget</a>
+      <a href="goals.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h13l-3 4 3 4H5"/></svg>Financial Goals</a>
+      <a href="reports.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="20" x2="5" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="19" y1="20" x2="19" y2="14"/></svg>Reports</a>
+      <a href="settings.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>Settings</a>
+    </nav>
+    <div class="sidebar-spacer"></div>
+    <div class="side-profile">
+      <div class="avatar">AR</div>
+      <div class="who"><strong>Alex Rivera</strong><span>alex@email.com</span></div>
+    </div>
+    <button class="logout-btn">Log out</button>
+  </aside>
+  <div class="sidebar-overlay"></div>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="hamburger" aria-label="Open menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div style="flex:1"></div>
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search transactions">
+      </div>
+      <div class="theme-switch">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <label class="switch">
+          <input type="checkbox" class="theme-checkbox" aria-label="Toggle dark mode">
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+        </label>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="page-title" style="margin-bottom:20px;">
+        <div>
+          <h1>Archive</h1>
+          <p>Restore transactions and reports you've archived</p>
+        </div>
+        <a href="settings.html" class="btn btn-outline btn-sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          Back to Settings
+        </a>
+      </div>
+
+      <div class="card" style="margin-bottom:18px;">
+        <div class="card-head">
+          <h2>Archived Transactions</h2>
+          <span class="muted-tag" id="archive-tx-count"></span>
+        </div>
+        <div class="table-scroll">
+          <table class="archive-table">
+            <thead><tr><th>Description</th><th>Category</th><th>Date</th><th class="th-amount">Amount</th><th></th></tr></thead>
+            <tbody id="archive-tx-tbody">
+              <tr id="archive-tx-empty"><td class="td-empty" colspan="5">No archived transactions.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Archived Reports</h2>
+          <span class="muted-tag" id="archive-log-count"></span>
+        </div>
+        <div class="table-scroll">
+          <table class="archive-table">
+            <thead><tr><th>Report</th><th>Type</th><th>Period</th><th>Generated</th><th></th></tr></thead>
+            <tbody id="archive-log-tbody">
+              <tr id="archive-log-empty"><td class="td-empty" colspan="5">No archived reports.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="main.js"></script>
+<script>
+(function(){
+  const sym = () => (window.getCurrencySymbol ? getCurrencySymbol() : '$');
+
+  function renderTransactions(){
+    const tbody = document.getElementById('archive-tx-tbody');
+    const emptyRow = document.getElementById('archive-tx-empty');
+    const items = PennyArchive.readArchiveList(PennyArchive.ARCHIVE_TX_KEY)
+      .sort((a, b) => (a.desc || '').localeCompare(b.desc || ''));
+
+    tbody.querySelectorAll('tr:not(#archive-tx-empty)').forEach(r => r.remove());
+    document.getElementById('archive-tx-count').textContent =
+      `${items.length} archived transaction${items.length === 1 ? '' : 's'}`;
+    emptyRow.hidden = items.length > 0;
+
+    items.forEach(item => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td class="td-desc">${escapeHtml(item.desc)}</td>
+        <td class="td-category">${escapeHtml(item.category)}</td>
+        <td class="td-date">${escapeHtml(item.date)}</td>
+        <td class="td-amount">${escapeHtml(item.amount)}</td>
+        <td class="td-actions"><button type="button" class="icon-btn archive" aria-label="Restore transaction"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-9.36L1 10"/></svg></button></td>`;
+      row.querySelector('.icon-btn').addEventListener('click', () => {
+        PennyArchive.removeArchivedRecord(PennyArchive.ARCHIVE_TX_KEY, item.id);
+        renderTransactions();
+        showToast('Transaction restored — visit Transactions to see it back in the active list');
+      });
+      tbody.appendChild(row);
+    });
+  }
+
+  function renderReports(){
+    const tbody = document.getElementById('archive-log-tbody');
+    const emptyRow = document.getElementById('archive-log-empty');
+    const items = PennyArchive.readArchiveList(PennyArchive.ARCHIVE_LOG_KEY)
+      .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+
+    tbody.querySelectorAll('tr:not(#archive-log-empty)').forEach(r => r.remove());
+    document.getElementById('archive-log-count').textContent =
+      `${items.length} archived report${items.length === 1 ? '' : 's'}`;
+    emptyRow.hidden = items.length > 0;
+
+    items.forEach(item => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td class="td-name">${escapeHtml(item.name)}</td>
+        <td class="td-type">${item.type}</td>
+        <td class="td-period">${escapeHtml(item.period)}</td>
+        <td class="td-gen">${escapeHtml(item.generated)}</td>
+        <td class="td-actions"><div class="arch-actions"><button type="button" class="icon-btn archive" aria-label="Restore report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-9.36L1 10"/></svg></button></div></td>`;
+      row.querySelector('.icon-btn').addEventListener('click', () => {
+        PennyArchive.removeArchivedRecord(PennyArchive.ARCHIVE_LOG_KEY, item.id);
+        renderReports();
+        showToast('Report restored — visit Reports to see it back in the log');
+      });
+      tbody.appendChild(row);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderTransactions();
+    renderReports();
+  });
+  document.addEventListener('currencychange', renderTransactions);
+
+  // Exposed for other scripts/tests; not required for normal page use.
+  window.ArchivePage = { renderTransactions, renderReports };
+})();
+</script>
+</body>
+</html>

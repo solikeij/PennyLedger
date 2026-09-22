@@ -246,13 +246,13 @@
       </button>
     </div>
     <form id="add-budget-form">
-      <div class="field"><label for="budget-category">Category</label>
+      <div class="field" id="budget-category-field"><label for="budget-category">Category</label>
         <select id="budget-category">
           <option>Groceries</option><option>Entertainment</option>
           <option>Transportation</option><option>Housing</option><option>Utilities</option><option>Dining Out</option>
         </select>
       </div>
-      <div class="field"><label for="budget-amount">Budget Amount ($)</label><div class="input-wrap"><input type="number" step="0.01" id="budget-amount" placeholder="0.00" required></div></div>
+      <div class="field" id="budget-amount-field"><label for="budget-amount">Budget Amount ($)</label><div class="input-wrap"><input type="number" step="0.01" min="0.01" id="budget-amount" placeholder="0.00" required></div><small class="hint" id="budget-amount-error"></small></div>
       <div class="field"><label for="budget-period">Period</label>
         <select id="budget-period">
           <option>This Month</option><option>Next Month</option><option>This Quarter</option>

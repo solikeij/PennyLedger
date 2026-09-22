@@ -225,9 +225,13 @@ function initCurrency(){
   const select = document.getElementById('s-currency');
   if (select) {
     select.value = curr;
-    // Currency no longer applies on 'change' — it only takes effect once
-    // the user clicks "Save Changes" on the profile form, which calls
-    // setCurrency(select.value) itself (see settings.html).
+    // Currency now applies the moment a new option is picked, not just
+    // when "Save Changes" is clicked (the submit handler in settings.html
+    // still calls setCurrency too, which is a harmless no-op here).
+    select.addEventListener('change', () => {
+      setCurrency(select.value);
+      showToast(`Currency changed to ${CURRENCIES[normalizeCurrency(select.value)].name}`);
+    });
   }
 
   applyCurrencyToDom(symbol);
@@ -603,12 +607,30 @@ function setupModals(){
   // Add Budget -> prepend a progress row to the Budget Progress card (if present)
   const budgetForm = document.querySelector('#add-budget-form');
   if (budgetForm){
+    const amountInput = budgetForm.querySelector('#budget-amount');
+    const amountField = document.getElementById('budget-amount-field');
+    const amountError = document.getElementById('budget-amount-error');
+
+    function setBudgetAmountError(message){
+      if (amountField) amountField.classList.toggle('has-error', !!message);
+      if (amountError) amountError.textContent = message || '';
+    }
+    amountInput.addEventListener('input', () => setBudgetAmountError(''));
+
     budgetForm.addEventListener('submit', e => {
       e.preventDefault();
       const category = budgetForm.querySelector('#budget-category').value;
-      const amount = parseFloat(budgetForm.querySelector('#budget-amount').value || '0');
-      const sym = getCurrencySymbol();
+      const amountRaw = amountInput.value.trim();
+      const amount = parseFloat(amountRaw);
 
+      if (!amountRaw || isNaN(amount) || amount <= 0){
+        setBudgetAmountError(!amountRaw || isNaN(amount) ? 'Enter a budget amount.' : 'Amount must be greater than 0.');
+        amountInput.focus();
+        return;
+      }
+      setBudgetAmountError('');
+
+      const sym = getCurrencySymbol();
       const list = document.querySelector('#budget-progress-list');
       if (list){
         const row = document.createElement('div');
@@ -703,6 +725,13 @@ function setupTransactionFilters(){
   const rowMonth = r => (r.querySelector('[data-raw-date]')?.dataset.rawDate || '').slice(0, 7);
   const rowIsIncome = r => !!r.querySelector('.td-amount.amt-pos');
 
+  // Restore archived state saved from a previous visit (or from the
+  // Settings › Archive page) so it survives a page reload.
+  getRows().forEach(row => {
+    const id = row.dataset.txId;
+    if (id && isArchivedRecord(ARCHIVE_TX_KEY, id)) row.dataset.archived = 'true';
+  });
+
   // Fill the category + month dropdowns from the rows that are on the page
   const cats = [...new Set(getRows().map(rowCategory).filter(Boolean))].sort();
   cats.forEach(c => categoryEl.add(new Option(c, c)));
@@ -782,8 +811,24 @@ function setupTransactionFilters(){
     const btn = e.target.closest('.btn-archive');
     if (!btn) return;
     const row = btn.closest('tr');
+    const id = row.dataset.txId;
     const nowArchived = row.dataset.archived !== 'true';
     row.dataset.archived = nowArchived ? 'true' : 'false';
+
+    if (id){
+      if (nowArchived){
+        addArchivedRecord(ARCHIVE_TX_KEY, {
+          id,
+          desc: row.querySelector('.td-desc')?.textContent.trim() || '',
+          category: rowCategory(row),
+          date: row.querySelector('.td-date')?.textContent.trim() || '',
+          amount: row.querySelector('.td-amount')?.textContent.trim() || ''
+        });
+      } else {
+        removeArchivedRecord(ARCHIVE_TX_KEY, id);
+      }
+    }
+
     apply();
     showToast(nowArchived ? 'Transaction archived' : 'Transaction restored');
   });
@@ -841,6 +886,43 @@ function escapeHtml(str){
 
 /* Toast helper */
 let toastTimer;
+/* =========================================================
+   Shared Archive Store (front-end only)
+   ---------------------------------------------------------
+   Transactions and Reports each have their own "Archive" button
+   that hides an item from its normal list. To let the Settings ›
+   Archive page show every archived item in one place — and let it
+   restore them — the archived state is mirrored into localStorage
+   here. This is a stand-in for a real backend: it only tracks which
+   items are archived (plus a little display text), not the app's
+   actual transaction/report data.
+========================================================= */
+const ARCHIVE_TX_KEY = 'pennyledger_archived_transactions';
+const ARCHIVE_LOG_KEY = 'pennyledger_archived_reports';
+
+function readArchiveList(key){
+  try { return JSON.parse(localStorage.getItem(key) || '[]'); }
+  catch(e){ return []; }
+}
+function writeArchiveList(key, list){
+  try { localStorage.setItem(key, JSON.stringify(list)); } catch(e){}
+}
+function isArchivedRecord(key, id){
+  return readArchiveList(key).some(item => item.id === id);
+}
+function addArchivedRecord(key, record){
+  const list = readArchiveList(key).filter(item => item.id !== record.id);
+  list.push(record);
+  writeArchiveList(key, list);
+}
+function removeArchivedRecord(key, id){
+  writeArchiveList(key, readArchiveList(key).filter(item => item.id !== id));
+}
+window.PennyArchive = {
+  ARCHIVE_TX_KEY, ARCHIVE_LOG_KEY,
+  readArchiveList, addArchivedRecord, removeArchivedRecord, isArchivedRecord
+};
+
 function showToast(message){
   let toast = document.querySelector('.toast');
   if (!toast){
