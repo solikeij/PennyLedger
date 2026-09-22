@@ -3,52 +3,84 @@ DROP DATABASE IF EXISTS PersonalBudget_db;
 CREATE DATABASE IF NOT EXISTS PersonalBudget_db;
 USE PersonalBudget_db;
 
+
+-- =========================================
+-- USERS
+-- =========================================
+
 CREATE TABLE Users(
-	user_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT PRIMARY KEY AUTO_INCREMENT,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(100) NOT NULL,
     email_verified TINYINT(1) NOT NULL DEFAULT 0,
     created_at DATETIME NOT NULL
+);
 
-); 
+
+-- =========================================
+-- ACTIVITY TYPES
+-- =========================================
 
 CREATE TABLE Activity_Types(
-	activity_type_id INT PRIMARY KEY AUTO_INCREMENT,
+    activity_type_id INT PRIMARY KEY AUTO_INCREMENT,
     activity_name VARCHAR(100) NOT NULL
 );
 
+
+-- =========================================
+-- ACTIVITY LOGS
+-- =========================================
+
 CREATE TABLE Activity_Logs(
-	activity_id INT PRIMARY KEY AUTO_INCREMENT,
+    activity_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     activity_type_id INT NOT NULL,
     activity_description VARCHAR(100) NOT NULL,
     activity_date DATE NOT NULL,
-    
+
     FOREIGN KEY (user_id) REFERENCES Users(user_id),
     FOREIGN KEY (activity_type_id) REFERENCES Activity_Types(activity_type_id)
 );
 
+
+-- =========================================
+-- TRANSACTION TYPES
+-- =========================================
+
 CREATE TABLE TransactionTypes(
-	transaction_type_id INT PRIMARY KEY AUTO_INCREMENT,
+    transaction_type_id INT PRIMARY KEY AUTO_INCREMENT,
     type_name VARCHAR(100) NOT NULL
 );
 
+
+-- =========================================
+-- CATEGORIES
+-- =========================================
+
 CREATE TABLE Categories(
-	category_id INT PRIMARY KEY AUTO_INCREMENT,
+    category_id INT PRIMARY KEY AUTO_INCREMENT,
     category_name VARCHAR(100) NOT NULL,
     transaction_type_id INT NOT NULL,
-    
+
     FOREIGN KEY (transaction_type_id) REFERENCES TransactionTypes(transaction_type_id)
 );
+
+
+-- =========================================
+-- BUDGETS
+-- =========================================
 
 CREATE TABLE Budgets(
     budget_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     category_id INT NOT NULL,
     budget_amount DECIMAL(10, 2) NOT NULL,
+
+    -- Supports daily, weekly, and monthly budgets
     budget_period ENUM('daily', 'weekly', 'monthly') NOT NULL,
+
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
     created_at DATETIME NOT NULL,
@@ -57,14 +89,23 @@ CREATE TABLE Budgets(
     FOREIGN KEY (category_id) REFERENCES Categories(category_id)
 );
 
+
+-- =========================================
+-- PAYMENT METHODS
+-- =========================================
+
 CREATE TABLE Payment_Methods(
-	payment_method_id INT PRIMARY KEY AUTO_INCREMENT,
+    payment_method_id INT PRIMARY KEY AUTO_INCREMENT,
     payment_method_name VARCHAR(50) NOT NULL
 );
 
 
+-- =========================================
+-- TRANSACTIONS
+-- =========================================
+
 CREATE TABLE Transactions(
-	transaction_id INT PRIMARY KEY AUTO_INCREMENT,
+    transaction_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     category_id INT NOT NULL,
     transaction_type_id INT NOT NULL,
@@ -73,56 +114,81 @@ CREATE TABLE Transactions(
     transaction_date DATE NOT NULL,
     payment_method_id INT NOT NULL,
     created_at DATETIME NOT NULL,
-    
+
     FOREIGN KEY (user_id) REFERENCES Users(user_id),
     FOREIGN KEY (category_id) REFERENCES Categories(category_id),
     FOREIGN KEY (transaction_type_id) REFERENCES TransactionTypes(transaction_type_id),
-	FOREIGN KEY (payment_method_id) REFERENCES Payment_Methods(payment_method_id)
+    FOREIGN KEY (payment_method_id) REFERENCES Payment_Methods(payment_method_id)
 );
 
 
+-- =========================================
+-- GOAL STATUSES
+-- =========================================
+
 CREATE TABLE Goal_Statuses(
-	status_id INT PRIMARY KEY AUTO_INCREMENT,
+    status_id INT PRIMARY KEY AUTO_INCREMENT,
     status_name VARCHAR(100) NOT NULL
 );
 
+
+-- =========================================
+-- FINANCIAL GOALS
+-- =========================================
+
 CREATE TABLE Financial_Goals(
-	goal_id INT PRIMARY KEY AUTO_INCREMENT,
+    goal_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     goal_name VARCHAR(100) NOT NULL,
     target_amount DECIMAL(10, 2) NOT NULL,
     target_date DATE NOT NULL,
     status_id INT NOT NULL,
     created_at DATETIME NOT NULL,
-    
+
     FOREIGN KEY (user_id) REFERENCES Users(user_id),
     FOREIGN KEY (status_id) REFERENCES Goal_Statuses(status_id)
 );
 
+
+-- =========================================
+-- GOAL CONTRIBUTIONS
+-- =========================================
+
 CREATE TABLE Goal_Contribution(
-	contribution_id INT PRIMARY KEY AUTO_INCREMENT,
+    contribution_id INT PRIMARY KEY AUTO_INCREMENT,
     goal_id INT NOT NULL,
     amount DECIMAL(10, 2) NOT NULL,
     contribution_date DATE NOT NULL,
     description VARCHAR(100) NOT NULL,
-    
+
     FOREIGN KEY (goal_id) REFERENCES Financial_Goals(goal_id)
 );
 
+
+-- =========================================
+-- OTP CODES
+-- =========================================
 
 CREATE TABLE Otp_Codes(
     otp_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     code VARCHAR(6) NOT NULL,
+
+    -- Used for email verification
     purpose VARCHAR(50) NOT NULL,
+
     expires_at DATETIME NOT NULL,
     used TINYINT(1) NOT NULL DEFAULT 0,
 
-    FOREIGN KEY(user_id) REFERENCES Users(user_id)
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
 
 
-CREATE TABLE Tokens (
+-- =========================================
+-- LOGIN TOKENS
+-- =========================================
+
+CREATE TABLE Tokens(
     token_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     token VARCHAR(255) NOT NULL UNIQUE,
