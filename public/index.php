@@ -24,6 +24,9 @@
     require __DIR__ . '/../helpers/auth.php';       // for checking login
     require __DIR__ . '/../helpers/validator.php';  // for checking required fields
 
+    // Load PHPMailer functionality.
+    require __DIR__ . '/../helpers/mailer.php';
+
     // Figure out WHAT was requested (which resource, which id)
     // We build this from REQUEST_URI instead of PATH_INFO, because PATH_INFO
     // isn't always reliably set depending on the Apache/XAMPP configuration.
@@ -62,6 +65,26 @@
         
         case 'transactions':
             require __DIR__ . '/../controllers/transactions_controller.php';
+            break;
+        
+        case 'budgets':
+            require __DIR__ . '/../controllers/budgets_controller.php';
+            break;
+        
+        case 'goals':
+            require __DIR__ . '/../controllers/goals_controller.php';
+            break;
+
+        case 'reports':
+            require __DIR__ . '/../controllers/reports_controller.php';
+            break;
+        
+        case 'activity-logs':
+            require __DIR__ . '/../controllers/activity_logs_controller.php';
+            break;
+
+        case 'mail-test':
+            require __DIR__ . '/../controllers/mail_test_controller.php';
             break;
             
         case 'transaction-types':

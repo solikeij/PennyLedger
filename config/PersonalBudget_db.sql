@@ -44,14 +44,15 @@ CREATE TABLE Categories(
 );
 
 CREATE TABLE Budgets(
-	budget_id INT PRIMARY KEY AUTO_INCREMENT,
+    budget_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     category_id INT NOT NULL,
     budget_amount DECIMAL(10, 2) NOT NULL,
+    budget_period ENUM('daily', 'weekly', 'monthly') NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
     created_at DATETIME NOT NULL,
-    
+
     FOREIGN KEY (user_id) REFERENCES Users(user_id),
     FOREIGN KEY (category_id) REFERENCES Categories(category_id)
 );
