@@ -3,12 +3,14 @@ import { render, screen, within, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import App from "../src/App";
-import { STORAGE_KEY } from "../src/state/AppContext";
+import { ACCOUNTS_KEY, SESSION_KEY } from "../src/state/AuthContext";
 import { monthlyIncome, formatDate, progress, toCsv } from "../src/lib/format";
 import { createReport, reportCsvRows } from "../src/lib/reports";
 import { initialData } from "../src/state/data";
 
 function open(path) {
+  if (!["/", "/login", "/signup"].includes(path))
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify("alex-demo"));
   return render(
     <MemoryRouter initialEntries={[path]}>
       <App />
@@ -182,7 +184,7 @@ describe("connected React workflows", () => {
       screen.getByLabelText("Verify Password", { exact: true }),
       "mismatch",
     );
-    await user.click(screen.getByRole("checkbox", { name: /Agree With/ }));
+    await user.click(screen.getByRole("checkbox", { name: /I understand/ }));
     await user.click(screen.getByRole("button", { name: "Sign Up" }));
     expect(screen.getByRole("alert")).toHaveTextContent(
       "Passwords don't match",
@@ -195,10 +197,10 @@ describe("connected React workflows", () => {
     await user.click(screen.getByRole("button", { name: "Sign Up" }));
     await waitFor(() =>
       expect(
-        screen.getByRole("heading", { name: "Good afternoon, Alex" }),
+        screen.getByRole("heading", { name: "Good afternoon, Test" }),
       ).toBeInTheDocument(),
     );
-    expect(localStorage.getItem(STORAGE_KEY)).not.toContain("secret123");
+    expect(localStorage.getItem(ACCOUNTS_KEY)).not.toContain("secret123");
   });
   it("supports old archive storage on the same origin", () => {
     localStorage.setItem(

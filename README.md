@@ -83,13 +83,27 @@ tests/
 
 During conversion, formerly isolated DOM updates were connected through shared React state: adding a transaction now updates the dashboard, transaction list, and matching budget. Budgets and goals appear across their pages and reports. Generated reports are saved as snapshots and can actually be viewed from logs. CSV exports contain the selected report; the full JSON export contains the app's actual local data. Budget summaries are calculated from the category records rather than the original inconsistent hardcoded totals. User-entered text is rendered through React rather than inserted as HTML.
 
+## Admin and user accounts
+
+Use the separate sign-in portals with these dummy accounts:
+
+| Role                 | Email                  | Password  | Sign-in route |
+| -------------------- | ---------------------- | --------- | ------------- |
+| Administrator        | admin@pennyledger.demo | Admin123! | /admin/login  |
+| User (sample ledger) | alex@email.com         | User123!  | /login        |
+| User (empty ledger)  | jamie@pennyledger.demo | User123!  | /login        |
+
+The admin area includes an overview at /admin, user management at /admin/users, the latest 200 account events at /admin/activity, and registration controls at /admin/settings. Administrators can create users, edit names and email addresses, set a new password through Edit, and suspend or restore access with confirmation. Admin accounts cannot be modified through user management. Suspended users cannot sign in; their data is retained.
+
+Signup creates a user account with an empty ledger. Each account has separate transactions, budgets, goals, profile, income, and report snapshots. Existing data from the original demo is imported only into Alex's account. Logout clears the current tab's session. Signed-in users are redirected away from the wrong role's routes.
+
 ## Demo data and persistence
 
-This remains a front-end demo. It has no server, database, real authentication, password changes, account deletion, bank connection, or implemented two-factor authentication. It never saves passwords. Login/signup open the demo dashboard, as the original project did. Security promises in the original landing-page copy are inherited marketing text, not implemented security guarantees.
+This remains a front-end demo with no server, database, secure authentication service, real account deletion, bank connection, or implemented two-factor authentication. Admin password resets work for local accounts; the user settings password form remains a demonstration. Newly entered passwords are stored as salted SHA-256 verifiers rather than plaintext; published dummy credentials are included in the source. This is not production password storage or authorization: browser data and route checks can be altered locally. Use dummy information only. Production deployment needs server-side authentication, authorization, and account-scoped storage. Security promises in the original landing-page copy are inherited marketing text, not implemented guarantees.
 
-Profile, transactions, budgets, goals, income estimates, and report snapshots are stored in this browser under `pennyledger_react_v1`. Preferences use the original `pennyledger_theme`, `pennyledger_currency`, and `pennyledger_dateformat` keys. Existing original archive flags are imported on first launch if available on the same origin. Browser storage is origin-specific and is not shared between users, devices, ports, or deployments. If storage is unavailable, the app continues in memory.
+Profile, transactions, budgets, goals, income estimates, and report snapshots are stored in this browser under `pennyledger_react_v1_<account-id>`. Account records and activity use `pennyledger_accounts_v1`; the current account ID uses `pennyledger_session_v1` in sessionStorage. Preferences use the original `pennyledger_theme`, `pennyledger_currency`, and `pennyledger_dateformat` keys. Existing original archive flags are imported on first launch if available on the same origin. Browser storage is origin-specific and is not shared between users, devices, ports, or deployments. If storage is unavailable, the app continues in memory.
 
-Changing currency changes display symbols only; there is no exchange-rate conversion. Historical income/expense and category reports retain the original sample series; they are not an accounting history calculated from all transactions. Budget and goal reports use current shared-state snapshots. The H1 sample only contains March–June records because the original source has no January–February monthly series. Dashboard opening totals and growth badges retain demo values; newly entered transactions adjust its balance and expense figures. Archiving hides records but does not undo their financial amounts.
+Changing currency changes display symbols only; there is no exchange-rate conversion. Historical income/expense and category reports retain the original sample series; they are not an accounting history calculated from all transactions. Budget and goal reports use current shared-state snapshots. The H1 sample only contains March–June records because the original source has no January–February monthly series. Alex?s dashboard opening totals and growth badges retain demo values; other users start with zero opening balances; newly entered transactions adjust its balance and expense figures. Archiving hides records but does not undo their financial amounts.
 
 The original footer links for company/support/legal destinations remain placeholders. Google Fonts requires internet access; system-font fallbacks are included.
 
@@ -99,6 +113,6 @@ Run `npm run build` and host the contents of `dist/`. Configure the host to retu
 
 ## Verification
 
-The included tests cover all ten pages, legacy redirects, preference persistence, transaction creation and archive restoration, budget validation, safe text rendering, goal edits, report generation/restoration, signup validation, date formatting, income estimates, and CSV generation.
+The included tests cover admin route guards, credential checks, user creation/editing, password resets, suspension/restoration, registration controls, isolated ledgers, all ten client pages, legacy redirects, preference persistence, transaction creation and archive restoration, budget validation, safe text rendering, goal edits, report generation/restoration, signup validation, date formatting, income estimates, and CSV generation.
 
 Build setup references: [React app setup](https://react.dev/learn/build-a-react-app-from-scratch) and [Vite guide](https://vite.dev/guide/).

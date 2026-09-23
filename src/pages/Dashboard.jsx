@@ -1,3 +1,4 @@
+import { useAuth } from "../state/AuthContext";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useApp } from "../state/AppContext";
@@ -13,10 +14,13 @@ export default function Dashboard() {
   const { transactions, budgets, goals, income, profile, money, date } =
     useApp();
   const [modal, setModal] = useState(null);
+  const { account } = useAuth();
+  const demo = account.id === "alex-demo";
   const added = transactions.filter((tx) => tx.added);
-  const balance = 18420.5 + added.reduce((sum, tx) => sum + tx.amount, 0);
+  const balance =
+    (demo ? 18420.5 : 0) + added.reduce((sum, tx) => sum + tx.amount, 0);
   const expenses =
-    3840.25 +
+    (demo ? 3840.25 : 0) +
     added.reduce((sum, tx) => sum + (tx.amount < 0 ? -tx.amount : 0), 0);
   const remaining = budgets.reduce(
     (sum, budget) => sum + budget.limit - budget.spent,

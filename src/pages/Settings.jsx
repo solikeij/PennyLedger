@@ -1,3 +1,4 @@
+import { useAuth } from "../state/AuthContext";
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useApp } from "../state/AppContext";
@@ -23,6 +24,7 @@ function SettingRow({ title, description, children, danger = false }) {
 }
 
 export default function Settings() {
+  const { updateIdentity } = useAuth();
   const app = useApp();
   const {
     profile,
@@ -42,6 +44,11 @@ export default function Settings() {
     const form = new FormData(event.currentTarget);
     const name = form.get("name").trim();
     if (!name) return notify("Please enter your name.");
+    try {
+      updateIdentity(name, form.get("email"));
+    } catch (error) {
+      return notify(error.message);
+    }
     dispatch({
       type: "profile",
       value: {

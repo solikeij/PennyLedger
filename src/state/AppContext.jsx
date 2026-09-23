@@ -10,6 +10,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { initialData } from "./data";
 import { CURRENCIES, DATE_FORMATS, formatDate, money } from "../lib/format";
 
+import { useAuth } from "./AuthContext";
+
 const AppContext = createContext(null);
 export const STORAGE_KEY = "pennyledger_react_v1";
 
@@ -22,8 +24,11 @@ function read(key, fallback, json = false) {
   }
 }
 
-function loadData() {
-  const saved = read(STORAGE_KEY, null, true);
+function loadData(account) {
+  const key = account ? `${STORAGE_KEY}_${account.id}` : STORAGE_KEY;
+  const saved =
+    read(key, null, true) ||
+    (account?.id === "alex-demo" ? read(STORAGE_KEY, null, true) : null);
   if (
     saved &&
     ["transactions", "budgets", "goals", "reports"].every((key) =>
@@ -31,8 +36,25 @@ function loadData() {
     ) &&
     saved.profile
   ) {
-    return { ...initialData, ...saved };
+    return {
+      ...initialData,
+      ...saved,
+      profile: {
+        ...saved.profile,
+        name: account?.name || saved.profile.name,
+        email: account?.email || saved.profile.email,
+      },
+    };
   }
+  if (account && account.id !== "alex-demo")
+    return {
+      transactions: [],
+      budgets: [],
+      goals: [],
+      reports: [],
+      income: 0,
+      profile: { name: account.name, email: account.email, phone: "" },
+    };
   const txArchive = read("pennyledger_archived_transactions", [], true);
   const reportArchive = read("pennyledger_archived_reports", [], true);
   return {
@@ -102,6 +124,8 @@ export function ledgerReducer(state, action) {
 }
 
 export function AppProvider({ children }) {
+  const { account } = useAuth();
+  const storageKey = account ? `${STORAGE_KEY}_${account.id}` : null;
   const location = useLocation();
   const navigate = useNavigate();
   const params = new URLSearchParams(location.search);
@@ -120,17 +144,17 @@ export function AppProvider({ children }) {
       read("pennyledger_dateformat", DATE_FORMATS[0]);
     return DATE_FORMATS.includes(value) ? value : DATE_FORMATS[0];
   });
-  const [data, dispatch] = useReducer(ledgerReducer, undefined, loadData);
+  const [data, dispatch] = useReducer(ledgerReducer, account, loadData);
   const [toast, setToast] = useState("");
   const toastTimer = useRef(null);
 
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      if (storageKey) localStorage.setItem(storageKey, JSON.stringify(data));
     } catch {
       /* In-memory operation remains available. */
     }
-  }, [data]);
+  }, [data, storageKey]);
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     try {

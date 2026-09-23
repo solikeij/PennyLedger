@@ -4,6 +4,7 @@ import { cleanup } from "@testing-library/react";
 
 beforeEach(() => {
   localStorage.clear();
+  sessionStorage.clear();
   window.scrollTo = vi.fn();
   Element.prototype.scrollIntoView = vi.fn();
   URL.createObjectURL = vi.fn(() => "blob:demo");
