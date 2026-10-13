@@ -14,6 +14,7 @@
 $currentUser = require_auth($conn);
 $userId = (int) $currentUser['user_id'];
 
+// Map a saved report record to its API response fields.
 function report_log_row(array $row): array
 {
     return [

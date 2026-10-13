@@ -12,6 +12,7 @@ const aliases = {
   "current-password": "current_password",
   "new-password": "new_password",
 };
+// Read a server validation message for a field inside ErrorForm.
 export function useFieldError(name) {
   const errors = useContext(Errors);
   return (
@@ -23,6 +24,7 @@ export function useFieldError(name) {
         errors.contribution_date))
   );
 }
+// Display the validation message beside its matching form field.
 export function FieldError({ name }) {
   const error = useFieldError(name);
   return error ? (
@@ -31,6 +33,7 @@ export function FieldError({ name }) {
     </small>
   ) : null;
 }
+// Display a request failure and any warning about an unconfirmed save.
 export function FailureMessage({ error }) {
   return error ? (
     <p className="form-error" role="alert">
@@ -38,6 +41,7 @@ export function FailureMessage({ error }) {
     </p>
   ) : null;
 }
+// Share server validation errors with fields and handle form submission.
 export default function ErrorForm({ failure, children, onSubmit, ...props }) {
   const [checking, setChecking] = useState(false);
   const [status, setStatus] = useState("");

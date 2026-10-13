@@ -8,6 +8,7 @@ vi.mock("../src/lib/api", () => ({ api: mocks.api }));
 vi.mock("../src/state/AppContext", () => ({
   useApp: () => ({ serverPagination: true, dataVersion: 0 }),
 }));
+// Provide the component and shared state needed for this integration test.
 function Harness() {
   const [query, setQuery] = useState("");
   const list = usePagedResource("/transactions", { q: query });

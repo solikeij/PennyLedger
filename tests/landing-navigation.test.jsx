@@ -13,6 +13,7 @@ vi.mock("../src/state/AppContext", () => ({
 afterEach(() => {
   window.location.hash = "";
 });
+// Render the test view with its required router and providers.
 function mount(hash) {
   window.location.hash = hash;
   render(

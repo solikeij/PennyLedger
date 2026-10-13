@@ -7,6 +7,7 @@ import { TransactionTable } from "./Transactions";
 import { ReportTable } from "./Reports";
 import { isArchived } from "../lib/report-archive";
 
+// Display archived transactions and reports with restore actions.
 export default function Archive() {
   const { transactions, reports } = useApp();
   const archivedTransactions = transactions

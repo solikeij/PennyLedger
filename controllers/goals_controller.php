@@ -24,6 +24,7 @@ function goal_select_sql(): string
             LEFT JOIN Goal_Contribution gc ON gc.goal_id = g.goal_id";
 }
 
+// Map a database goal and contribution total to React fields.
 function goal_row(array $row): array
 {
     return [

@@ -1,4 +1,5 @@
 import { localDate } from "./format";
+// Calculate this month's income, expenses, and applicable budget totals.
 export function ledgerTotals(transactions, budgets, today = localDate()) {
   const month = today.slice(0, 7);
   const matchingBudgets = budgets.filter(

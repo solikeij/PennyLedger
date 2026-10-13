@@ -29,6 +29,7 @@ function budget_select_sql(): string
             LEFT JOIN TransactionTypes tt ON tt.transaction_type_id = t.transaction_type_id";
 }
 
+// Map a database budget and its spending total to React fields.
 function budget_row(array $row): array
 {
     return [

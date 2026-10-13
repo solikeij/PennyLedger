@@ -16,6 +16,7 @@ it("fits a narrow mobile viewport and flips above a control near the bottom", ()
     });
   vi.stubGlobal("innerWidth", 360);
   vi.stubGlobal("innerHeight", 640);
+  // Provide the component and shared state needed for this integration test.
   function Harness() {
     const anchor = useRef(null);
     return (

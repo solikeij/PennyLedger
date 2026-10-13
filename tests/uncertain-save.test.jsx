@@ -15,6 +15,7 @@ it("retains form values and checks an uncertain write instead of resubmitting it
       }),
     );
   api.mockResolvedValue({ confirmed: true });
+  // Provide the component and shared state needed for this integration test.
   function Harness() {
     const [failure, setFailure] = useState("");
     return (

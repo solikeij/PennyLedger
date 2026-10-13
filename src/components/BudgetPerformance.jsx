@@ -5,6 +5,7 @@ import { download, localDate, toCsv } from "../lib/format";
 import { budgetPerformanceCsvRows } from "../lib/budget-performance";
 import { Icon } from "./UI";
 
+// Show the expense records used to calculate a budget report.
 function AuditTable({ transactions }) {
   const { money, date } = useApp();
   if (!transactions.length)
@@ -45,6 +46,7 @@ function AuditTable({ transactions }) {
   );
 }
 
+// Load and display the selected month's budget report, with export and print actions.
 export default function BudgetPerformance() {
   const { money, transactions, budgets } = useApp();
   const [month, setMonth] = useState(() => localDate().slice(0, 7));
@@ -77,6 +79,7 @@ export default function BudgetPerformance() {
     };
   }, [month, refresh, transactions, budgets]);
   useEffect(() => {
+    // Remove temporary print styling after printing or leaving the page.
     const cleanup = () =>
       document.body.classList.remove("budget-performance-print");
     window.addEventListener("afterprint", cleanup);

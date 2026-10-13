@@ -4,6 +4,7 @@ import { Icon, PageTitle, ProgressBar } from "../components/UI";
 import { GoalModal, GoalContributionModal } from "../components/Forms";
 import { progress } from "../lib/format";
 
+// Display savings progress and goal management actions.
 export default function Goals() {
   const { goals, money } = useApp();
   const [editing, setEditing] = useState(null);

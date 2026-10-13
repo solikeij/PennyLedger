@@ -13,11 +13,13 @@ import {
   ThemeSwitch,
 } from "../components/UI";
 
+// Create or edit an account from the administrator workspace.
 function UserEditor({ user, onClose }) {
   const { createUser, updateUser } = useAuth();
   const { notify } = useApp();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  // Submit account details and refresh the administrator view.
   async function submit(event) {
     event.preventDefault();
     const values = Object.fromEntries(new FormData(event.currentTarget));
@@ -78,6 +80,7 @@ function UserEditor({ user, onClose }) {
     </Modal>
   );
 }
+// Format administrator timestamps with an optional time of day.
 function AdminDate({ value, withTime = false }) {
   const { dateFormat } = useApp();
   const parsed = new Date(value);
@@ -90,6 +93,7 @@ function AdminDate({ value, withTime = false }) {
   );
 }
 
+// Display administrator login and signup events.
 function ActivityTable({ entries }) {
   return (
     <div className="table-scroll">
@@ -122,6 +126,7 @@ function ActivityTable({ entries }) {
   );
 }
 
+// Choose the display style for an account status.
 function statusPill(status) {
   const normalized = ["active", "inactive", "suspended", "deleted"].includes(
     status,
@@ -139,6 +144,7 @@ function statusPill(status) {
   return <span className={`pill ${tone}`}>{label}</span>;
 }
 
+// Provide administrator user management, authentication history, and registration settings.
 export default function Admin({ section = "overview" }) {
   const {
     users,

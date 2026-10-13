@@ -23,6 +23,7 @@ try {
   for (let attempt = 0; attempt < 100; attempt++) {
     try { await fetch(base); break; } catch { await new Promise((resolve) => setTimeout(resolve, 50)); }
   }
+  // Send a fixture API request and check its expected response status.
   async function request(path, { method = 'GET', body, who = 'user', key, status = 200 } = {}) {
     const response = await fetch(base + path, { method, headers: {
       Authorization: `Bearer ${fixture.users[who].token}`, 'Content-Type': 'application/json',

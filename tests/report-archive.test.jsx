@@ -7,6 +7,7 @@ import { isArchived } from "../src/lib/report-archive";
 
 const mocks = vi.hoisted(() => ({ app: {}, save: vi.fn() }));
 vi.mock("../src/state/AppContext", () => ({ useApp: () => mocks.app }));
+// Provide the component and shared state needed for this integration test.
 function Harness() {
   const [reports, setReports] = useState([
     {

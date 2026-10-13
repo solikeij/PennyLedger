@@ -35,6 +35,7 @@ const titles = {
   "/settings/activity-logs": "Activity Logs",
 };
 
+// Wrap the application in its authentication and shared-data providers.
 export default function App() {
   return (
     <AuthProvider>
@@ -43,6 +44,7 @@ export default function App() {
   );
 }
 
+// Select pages and enforce access rules for the current route.
 function AppRoutes() {
   const { account } = useAuth();
   const location = useLocation();

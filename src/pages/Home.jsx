@@ -5,6 +5,7 @@ import { useAuth } from "../state/AuthContext";
 import logoBlack from "../assets/logo-black.svg";
 import logoWhite from "../assets/logo-white.svg";
 
+// Render the public introduction, feature sections, and account links.
 export default function Home() {
   const { account } = useAuth();
   const logoDestination = account

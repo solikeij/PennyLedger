@@ -9,6 +9,7 @@ import { useAuth } from "./AuthContext";
 const AppContext = createContext(null);
 export const STORAGE_KEY = "pennyledger_react_v1";
 
+// Read a browser preference while handling unavailable storage.
 function readPreference(key, fallback) {
   try {
     return localStorage.getItem(key) || fallback;
@@ -28,6 +29,7 @@ const emptyLedger = {
   profile: { name: "", email: "", phone: "", photo: null },
 };
 
+// Load and share account data, preferences, notifications, and mutation actions.
 export function AppProvider({ children }) {
   const { account } = useAuth();
   const location = useLocation();
@@ -64,6 +66,7 @@ export function AppProvider({ children }) {
     analyticsTransactions: "/reports?type=ledger",
     activities: "/activity-logs",
   };
+  // Reload one data section and track its loading or failure state.
   async function refreshSection(section) {
     const epoch = generation.current;
     const version = (loadVersions.current[section] || 0) + 1;
@@ -142,12 +145,14 @@ export function AppProvider({ children }) {
 
   useEffect(() => () => clearTimeout(toastTimer.current), []);
 
+  // Show a temporary status message after an account action.
   function notify(message) {
     clearTimeout(toastTimer.current);
     setToast(message); // Fixed the old undefined setToasting call.
     toastTimer.current = setTimeout(() => setToast(""), 3000);
   }
 
+  // Update a display preference and preserve it in the route query.
   function preference(key, value, setter) {
     setter(value);
 
@@ -159,6 +164,7 @@ export function AppProvider({ children }) {
     );
   }
 
+  // Save a transaction and refresh the affected ledger, budgets, and activity.
   async function createTransaction(values) {
     // PHP validates and creates the record. Use its numeric ID and saved data.
     const saved = await api("/transactions", { method: "POST", body: values });
@@ -171,6 +177,7 @@ export function AppProvider({ children }) {
     return saved;
   }
 
+  // Save transaction edits and refresh the dependent financial totals.
   async function updateTransaction(id, values) {
     const saved = await api(`/transactions/${id}`, {
       method: "PUT",
@@ -189,6 +196,7 @@ export function AppProvider({ children }) {
     return saved;
   }
 
+  // Delete a transaction and refresh ledger totals and activity.
   async function deleteTransaction(id) {
     await api(`/transactions/${id}`, { method: "DELETE" });
     setData((old) => ({
@@ -203,6 +211,7 @@ export function AppProvider({ children }) {
     ]);
   }
 
+  // Archive or restore a transaction and refresh the affected account data.
   async function archiveTransaction(id, archived) {
     const action = archived ? "restore" : "archive";
     await api(`/transactions/${id}/${action}`, { method: "PATCH" });
@@ -216,10 +225,12 @@ export function AppProvider({ children }) {
     // Archiving changes visibility, not historical financial totals.
   }
 
+  // Reload saved budgets after ledger or budget changes.
   async function refreshBudgets() {
     return refreshSection("budgets");
   }
 
+  // Save a new budget and add its server-confirmed record to shared state.
   async function createBudget(values) {
     const saved = await api("/budgets", { method: "POST", body: values });
     setData((old) => ({ ...old, budgets: [saved, ...old.budgets] }));
@@ -227,6 +238,7 @@ export function AppProvider({ children }) {
     return saved;
   }
 
+  // Save budget edits and replace the matching shared record.
   async function updateBudget(id, values) {
     const saved = await api(`/budgets/${id}`, { method: "PUT", body: values });
     setData((old) => ({
@@ -237,6 +249,7 @@ export function AppProvider({ children }) {
     return saved;
   }
 
+  // Delete a budget and remove its shared record after server confirmation.
   async function deleteBudget(id) {
     await api(`/budgets/${id}`, { method: "DELETE" });
     setData((old) => ({
@@ -246,6 +259,7 @@ export function AppProvider({ children }) {
     await refreshActivity();
   }
 
+  // Save a wallet and update shared wallet data.
   async function createWallet(values) {
     const saved = await api("/wallets", { method: "POST", body: values });
     setData((old) => ({ ...old, wallets: [...old.wallets, saved] }));
@@ -253,6 +267,7 @@ export function AppProvider({ children }) {
     return saved;
   }
 
+  // Save wallet details and update the matching shared record.
   async function updateWallet(id, values) {
     const saved = await api(`/wallets/${id}`, { method: "PUT", body: values });
     setData((old) => ({
@@ -263,6 +278,7 @@ export function AppProvider({ children }) {
     return saved;
   }
 
+  // Delete a wallet with password confirmation and refresh the wallet list.
   async function deleteWallet(id, password) {
     await api(`/wallets/${id}`, { method: "DELETE", body: { password } });
     await refreshActivity();
@@ -272,6 +288,7 @@ export function AppProvider({ children }) {
     }));
   }
 
+  // Create or update a savings goal and refresh its shared data.
   async function saveGoal(values, id = null) {
     const saved = await api(id ? `/goals/${id}` : "/goals", {
       method: id ? "PUT" : "POST",
@@ -287,6 +304,7 @@ export function AppProvider({ children }) {
     return saved;
   }
 
+  // Save a contribution and refresh the affected savings totals.
   async function addGoalContribution(values) {
     await api("/goal-contributions", { method: "POST", body: values });
     await refreshActivity();
@@ -302,6 +320,7 @@ export function AppProvider({ children }) {
     await refreshSection("goals");
   }
 
+  // Persist a generated report snapshot and update the report list.
   async function addReport(values) {
     const saved = await api("/report-logs", { method: "POST", body: values });
     setData((old) => ({ ...old, reports: [saved, ...old.reports] }));
@@ -309,6 +328,7 @@ export function AppProvider({ children }) {
     return saved;
   }
 
+  // Archive or restore a report after server confirmation.
   async function archiveReport(id, archived) {
     archived = isArchived(archived);
     const saved = await api(
@@ -333,6 +353,7 @@ export function AppProvider({ children }) {
     }));
   }
 
+  // Update shared profile details after the server saves them.
   function updateProfile(profile) {
     void refreshActivity();
     setData((old) => ({
@@ -341,6 +362,7 @@ export function AppProvider({ children }) {
     }));
   }
 
+  // Save the expected monthly income without creating a ledger transaction.
   async function saveIncomeEstimate(amount) {
     const result = await api("/profile/income-estimate", {
       method: "PUT",
@@ -403,6 +425,7 @@ export function AppProvider({ children }) {
   );
 }
 
+// Read the shared application state and actions from its provider.
 export function useApp() {
   const value = useContext(AppContext);
   if (!value) throw new Error("useApp must be inside AppProvider");

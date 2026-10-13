@@ -5,27 +5,32 @@ const baseUrl = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
 const TOKEN_KEY = "penny_api_token";
 const pendingWrites = new Map();
 
+// Read the session token used to authenticate API requests.
 export function getToken() {
   return sessionStorage.getItem(TOKEN_KEY);
 }
 
+// Store or clear the current session token.
 export function setToken(token) {
   if (token) sessionStorage.setItem(TOKEN_KEY, token);
   else sessionStorage.removeItem(TOKEN_KEY);
 }
 
+// Build an API endpoint URL from the configured PHP base URL.
 export function apiUrl(path) {
   if (!baseUrl)
     throw new Error("Set VITE_API_BASE_URL in .env.local and restart React.");
   return `${baseUrl}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
+// Resolve an uploaded asset path relative to PHP's public folder.
 export function assetUrl(path) {
   if (!path || !baseUrl) return null;
   // Uploaded photo paths are relative to PHP's public/ folder.
   return `${baseUrl.replace(/index\.php$/, "")}${path.replace(/^\//, "")}`;
 }
 
+// Send an authenticated request with timeouts, save replay keys, and structured errors.
 export async function api(
   path,
   { method = "GET", body, token = getToken(), signal, timeoutMs = 15000 } = {},
@@ -37,6 +42,7 @@ export async function api(
       ? JSON.stringify([path, body, token])
       : null;
   if (signature) {
+    // Reuse the key after an uncertain save so a retry cannot create a duplicate.
     if (!pendingWrites.has(signature))
       pendingWrites.set(signature, crypto.randomUUID());
     headers["Idempotency-Key"] = pendingWrites.get(signature);
@@ -47,6 +53,7 @@ export async function api(
   }
 
   const controller = new AbortController();
+  // Forward an external cancellation request to the pending API call.
   const abort = () => controller.abort(signal?.reason);
   if (signal?.aborted) abort();
   signal?.addEventListener("abort", abort, { once: true });

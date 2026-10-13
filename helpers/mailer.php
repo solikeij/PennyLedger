@@ -11,6 +11,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../config/mail.php';
 
+// Send an SMTP message and log delivery failures for server troubleshooting.
 function send_email(string $to, string $subject, string $body, ?string $plainText = null): bool
 {
     $plain = $plainText ?? strip_tags($body);

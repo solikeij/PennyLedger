@@ -1,5 +1,6 @@
 import { useApp } from "../state/AppContext";
 
+// Render saved report totals, breakdowns, trends, and comparisons.
 export default function ReportSnapshot({ report }) {
   const { money } = useApp();
   const expensePercent =
@@ -27,6 +28,7 @@ export default function ReportSnapshot({ report }) {
         `${20 + (index * 280) / Math.max(1, report.trend.length - 1)},${110 - ((item.net - min) / (max - min)) * 90}`,
     )
     .join(" ");
+  // Format a report comparison as a percentage and currency difference.
   const changeLabel = (change) =>
     `${change.percent == null ? "No percentage baseline" : `${change.percent > 0 ? "+" : ""}${change.percent}%`} (${change.amount >= 0 ? "+" : "-"}${money(Math.abs(change.amount))})`;
   const hasMonthly = report.budgets.some((b) => b.isMonthlyPlan);

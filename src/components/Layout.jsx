@@ -6,6 +6,7 @@ import { Icon, Logo, ThemeSwitch } from "./UI";
 
 import { useAuth } from "../state/AuthContext";
 
+// Render shared navigation and the current protected page.
 export default function Layout({ admin = false }) {
   const { account, logout } = useAuth();
   const { profile, notify } = useApp();
@@ -17,6 +18,7 @@ export default function Layout({ admin = false }) {
     setOpen(false);
   }, [location.pathname]);
   useEffect(() => {
+    // Close the navigation when the user requests dismissal.
     const close = (event) => {
       if (event.key === "Escape") setOpen(false);
     };

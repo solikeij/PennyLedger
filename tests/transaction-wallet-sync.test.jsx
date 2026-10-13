@@ -8,6 +8,7 @@ vi.mock("../src/state/AuthContext", () => ({
   useAuth: () => ({ account: { id: 10, role: "user" } }),
 }));
 vi.mock("../src/lib/api", () => ({ api: mocks.api, assetUrl: () => null }));
+// Provide the component and shared state needed for this integration test.
 function Harness() {
   const { wallets, transactions, loading, createTransaction } = useApp();
   return (

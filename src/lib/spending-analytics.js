@@ -1,11 +1,13 @@
 import { localDate } from "./format";
 
+// Move a month key backward or forward for spending comparisons.
 export function shiftMonth(month, offset) {
   const [year, number] = month.split("-").map(Number);
   const date = new Date(year, number - 1 + offset, 1);
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 }
 
+// Analyze completed-month history and current spending to suggest planning adjustments.
 export function spendingAnalytics(
   transactions = [],
   budgets = [],
@@ -23,6 +25,7 @@ export function spendingAnalytics(
     .sort()
     .reverse()
     .slice(0, 3);
+  // Summarize a month's recorded income, expenses, and expense categories.
   function totals(key) {
     const items = valid.filter((tx) => tx.date.startsWith(key));
     const categories = new Map();
@@ -57,6 +60,7 @@ export function spendingAnalytics(
     ? history.reduce((sum, item) => sum + item.income, 0) / history.length
     : 0;
   const suggestedLimit =
+    // Estimate from completed-month expenses, with a ten-percent planning buffer.
     history.length && averageExpense > 0
       ? Math.ceil((averageExpense * 110) / 100)
       : null;

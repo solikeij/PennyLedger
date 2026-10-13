@@ -1,3 +1,4 @@
+// Calculate budget status and remaining amounts using rounded cents.
 export function budgetStatus(budget) {
   const spent = Math.round(Number(budget.spent) * 100);
   const limit = Math.round(Number(budget.limit) * 100);

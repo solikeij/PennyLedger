@@ -1,6 +1,7 @@
 <?php
 
 // All account removal paths share the same dependent-record cleanup.
+// Check the account password before a sensitive account action.
 function verify_account_password(mysqli $conn, int $userId, array $input): void
 {
     require_fields($input, ['password']);
@@ -13,6 +14,7 @@ function verify_account_password(mysqli $conn, int $userId, array $input): void
     }
 }
 
+// Queue a profile image for cleanup with the surrounding database change.
 function queue_account_photo(mysqli $conn, ?string $path): void
 {
     if (!$path)
@@ -25,6 +27,7 @@ function queue_account_photo(mysqli $conn, ?string $path): void
     mysqli_stmt_execute($stmt);
 }
 
+// Retry removal of queued profile images and clear completed cleanup entries.
 function cleanup_account_photos(mysqli $conn): void
 {
     // The queue survives a filesystem failure and is retried on later requests.
@@ -47,6 +50,7 @@ function cleanup_account_photos(mysqli $conn): void
     }
 }
 
+// Delete an account and its dependent records after ownership and password checks.
 function permanently_delete_account(mysqli $conn, int $userId): void
 {
     $stmt = mysqli_prepare($conn, 'SELECT photo_path FROM Users WHERE user_id = ? FOR UPDATE');

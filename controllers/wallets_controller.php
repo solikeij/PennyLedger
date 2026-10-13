@@ -7,6 +7,7 @@
 
 $user = require_auth($conn);
 $userId = (int) $user['user_id'];
+// Map a database wallet record to the fields expected by React.
 function wallet_row(array $row): array
 {
     return ['id' => (int) $row['wallet_id'],

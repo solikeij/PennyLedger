@@ -3,6 +3,7 @@ import { useApp } from "../state/AppContext";
 import { spendingAnalytics } from "../lib/spending-analytics";
 import { download } from "../lib/format";
 
+// Show spending estimates, suggested adjustments, and the previous-month review.
 export default function SpendingInsights({
   onUseBudget,
   reviewOnly = false,
@@ -15,11 +16,13 @@ export default function SpendingInsights({
     money,
   } = useApp();
   const analysis = spendingAnalytics(transactions, budgets);
+  // Format a month key as a readable month and year for insights.
   const monthName = (month) =>
     new Date(`${month}-01T12:00:00`).toLocaleDateString("en-US", {
       month: "long",
       year: "numeric",
     });
+  // Turn a spending adjustment into a short user-facing reminder.
   const describe = (item) =>
     item.kind === "over"
       ? `You are ${money(item.amount)} over this month’s limit. Review purchases before adding more expenses.`

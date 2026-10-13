@@ -8,6 +8,7 @@ export function projectedMonthlyBudget(budgets, { amount, date, type, transactio
     item.startDate?.slice(0, 7) === month,
   );
   if (!budget) return null;
+  // Replace the original expense only when it belongs to the proposed month.
   const previous = transaction?.amount < 0 && transaction.date?.startsWith(month)
     ? Math.round(-transaction.amount * 100) : 0;
   const projected = Math.round(Number(budget.spent) * 100) - previous + Math.round(Number(amount) * 100);
@@ -15,6 +16,7 @@ export function projectedMonthlyBudget(budgets, { amount, date, type, transactio
   return projected > limit ? { limit: limit / 100, projected: projected / 100, excess: (projected - limit) / 100 } : null;
 }
 
+// Calculate budget spending from the full ledger, including archived expenses.
 export function monthlyBudgetProgress(budgets, transactions) {
   return budgets.map((budget) => {
     if (budget.category !== "Monthly budget")

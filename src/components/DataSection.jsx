@@ -10,6 +10,7 @@ const labels = {
   profile: "profile",
   reports: "reports",
 };
+// Show loading or retry controls until the required account data is available.
 export default function DataSection({ sections, children }) {
   const { sectionState, refreshSection } = useApp();
   if (!sectionState) return children;

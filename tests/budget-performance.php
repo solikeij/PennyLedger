@@ -1,15 +1,18 @@
 <?php
 
 require __DIR__ . '/../helpers/budget_performance.php';
+// Stop a PHP calculation test when an expected condition is false.
 function check($condition, $message)
 {
     if (!$condition)
         throw new RuntimeException($message);
 }
+// Build a budget fixture for calculation tests.
 function budget($id, $category, $limit, $name = 'Food', $start = '2026-10-01', $end = '2026-10-31')
 {
     return ['budget_id' => $id, 'category_id' => $category, 'budget_amount' => $limit, 'category_name' => $name, 'budget_period' => 'monthly', 'start_date' => $start, 'end_date' => $end];
 }
+// Build a transaction fixture for calculation tests.
 function tx($id, $category, $amount, $date = '2026-10-12', $archived = false)
 {
     return ['transaction_id' => $id, 'category_id' => $category, 'amount' => $amount, 'transaction_date' => $date, 'description' => 'Expense', 'category_name' => 'Food', 'archived' => $archived];

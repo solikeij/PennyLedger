@@ -14,6 +14,7 @@ import {
   ThemeSwitch,
 } from "../components/UI";
 
+// Render a labelled settings option with its controls.
 function SettingRow({ title, description, children, danger = false }) {
   return (
     <div className="settings-row">
@@ -26,6 +27,7 @@ function SettingRow({ title, description, children, danger = false }) {
   );
 }
 
+// Manage profile details, display preferences, passwords, and account deletion.
 export default function Settings() {
   const { updateIdentity, logout } = useAuth();
   const app = useApp();
@@ -61,6 +63,7 @@ export default function Settings() {
     return () => URL.revokeObjectURL(url);
   }, [pendingPhoto]);
   const displayedPhoto = removePhoto ? null : photoPreview || profile.photo;
+  // Save profile fields and the pending photo change together from the settings form.
   async function saveProfile(event) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
@@ -102,6 +105,7 @@ export default function Settings() {
     }
     notify("Profile updated");
   }
+  // Validate and submit a password change, then handle the updated session state.
   async function changePassword(event) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
@@ -126,6 +130,7 @@ export default function Settings() {
       setPasswordError(failure);
     }
   }
+  // Validate a selected profile image and stage it for saving.
   function photo(event) {
     const file = event.target.files?.[0];
     if (!file) return;

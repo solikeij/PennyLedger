@@ -1,5 +1,6 @@
 <?php
 
+// Create the user's default cash wallet once, under a database lock.
 function ensure_physical_money(mysqli $conn, int $userId): void
 {
     if (!isset($GLOBALS['managed_write']))

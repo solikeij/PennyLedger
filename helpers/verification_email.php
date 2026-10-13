@@ -47,6 +47,7 @@ function verification_email_html(string $code, string $name = '', ?DateTimeImmut
 HTML;
 }
 
+// Build the plain-text alternative for verification email clients.
 function verification_email_text(string $code, string $name = ''): string
 {
     $greeting = trim($name) !== '' ? 'Hi, ' . trim($name) : 'Hi';

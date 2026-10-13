@@ -20,6 +20,7 @@ function require_fields(array $data, array $required): void
     }
 }
 
+// Validate and return a positive numeric request value.
 function require_positive_number(mixed $value, string $field): float
 {
     if (!is_numeric($value) || !is_finite((float) $value) || round((float) $value, 2) <= 0) {
@@ -29,6 +30,7 @@ function require_positive_number(mixed $value, string $field): float
     return round((float) $value, 2);
 }
 
+// Validate and return a calendar date in API format.
 function require_date(mixed $value, string $field): string
 {
     if (!is_string($value) || !preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/D', $value)) {
@@ -42,6 +44,7 @@ function require_date(mixed $value, string $field): string
     return $value;
 }
 
+// Validate a request value against the permitted choices.
 function require_enum(mixed $value, string $field, array $allowed): string
 {
     if (!in_array($value, $allowed, true)) {
@@ -53,6 +56,7 @@ function require_enum(mixed $value, string $field, array $allowed): string
     return (string) $value;
 }
 
+// Validate and trim a required text field within its length limit.
 function require_string(mixed $value, string $field, int $maxLength): string
 {
     if (!is_string($value))
@@ -91,6 +95,7 @@ function require_category_name(mixed $value): string
     return $value;
 }
 
+// Validate a request identifier as a positive integer.
 function require_positive_id(mixed $value, string $field): int
 {
     if ((!is_int($value) && !is_string($value)) || !preg_match('/^[1-9][0-9]*$/D', (string) $value) || filter_var($value, FILTER_VALIDATE_INT) === false) {

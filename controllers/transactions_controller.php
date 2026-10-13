@@ -15,6 +15,7 @@
 $currentUser = require_auth($conn);
 $userId = (int) $currentUser['user_id'];
 
+// Map a database transaction to React, using negative amounts for expenses.
 function transaction_row(array $row): array
 {
     // The database keeps positive amounts. React uses a negative number for
@@ -36,6 +37,7 @@ function transaction_row(array $row): array
     ];
 }
 
+// Build the shared transaction query with category, type, and payment labels.
 function transaction_select_sql(): string
 {
     return "SELECT t.*, c.category_name, tt.code AS type_code, pm.payment_method_name

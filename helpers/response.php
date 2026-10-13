@@ -48,6 +48,7 @@ function send_success($data = null, ?string $message = null, int $statusCode = 2
     exit;
 }
 
+// Roll back a failed managed write and send structured JSON errors.
 function send_error(string $message, int $statusCode = 400, array $errors = []): never
 {
     if (isset($GLOBALS['managed_write'])) {
@@ -74,6 +75,7 @@ function send_error(string $message, int $statusCode = 400, array $errors = []):
     exit;
 }
 
+// Decode the request body into the array used by API controllers.
 function get_json_input(): array
 {
     $raw = file_get_contents('php://input');

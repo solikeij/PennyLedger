@@ -7,6 +7,7 @@ import { localDate, monthlyIncome } from "../lib/format";
 import { projectedMonthlyBudget } from "../lib/monthly-budget";
 import { Field, FormActions, Modal } from "./UI";
 
+// Let transaction forms choose a saved category or enter a new name.
 function CategoryField({ categories, defaultValue = "" }) {
   const [value, setValue] = useState(defaultValue);
   const [open, setOpen] = useState(false);
@@ -20,6 +21,7 @@ function CategoryField({ categories, defaultValue = "" }) {
         .getElementById(`${id}-${active}`)
         ?.scrollIntoView({ block: "nearest" });
   }, [open, active, id]);
+  // Apply a category choice and return focus to the input.
   function choose(name) {
     setValue(name);
     setOpen(false);
@@ -146,6 +148,7 @@ function CategoryField({ categories, defaultValue = "" }) {
   );
 }
 
+// Add or edit a transaction with validation and a monthly-budget reminder.
 export function TransactionModal({ transaction, onClose }) {
   const { createTransaction, updateTransaction, notify, currency, budgets = [], money } = useApp();
   const [draftAmount, setDraftAmount] = useState(transaction ? Math.abs(transaction.amount) : "");
@@ -183,6 +186,7 @@ export function TransactionModal({ transaction, onClose }) {
       .finally(() => setLoadingChoices(false));
   }, []);
 
+  // Validate the form and persist its record before closing the dialog.
   async function submit(event) {
     event.preventDefault();
     if (saving.current || error?.uncertain) return;
@@ -370,10 +374,12 @@ export function TransactionModal({ transaction, onClose }) {
   );
 }
 
+// Create or edit an overall spending limit for a selected month.
 export function BudgetModal({ budget, initialMonth, initialLimit, onClose }) {
   const { budgets, createBudget, updateBudget, currency, notify } = useApp();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  // Validate the form and persist its record before closing the dialog.
   async function submit(event) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
@@ -472,6 +478,7 @@ export function BudgetModal({ budget, initialMonth, initialLimit, onClose }) {
     </Modal>
   );
 }
+// Create or edit a savings goal and its target details.
 export function GoalModal({ goal, onClose }) {
   const { saveGoal, addGoalContribution, currency, notify } = useApp();
   const [busy, setBusy] = useState(false);
@@ -490,6 +497,7 @@ export function GoalModal({ goal, onClose }) {
       .catch((failure) => setError(failure));
   }, [goal?.statusId]);
 
+  // Validate the form and persist its record before closing the dialog.
   async function submit(event) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
@@ -599,6 +607,7 @@ export function GoalModal({ goal, onClose }) {
   );
 }
 
+// Record a new contribution toward an existing savings goal.
 export function GoalContributionModal({ goal, onClose }) {
   const { addGoalContribution, currency, money, notify } = useApp();
   const [busy, setBusy] = useState(false);
@@ -672,6 +681,7 @@ export function GoalContributionModal({ goal, onClose }) {
   );
 }
 
+// Convert the entered pay frequency into an expected monthly income.
 export function IncomeModal({ onClose }) {
   const {
     income: expectedIncome,
@@ -682,6 +692,7 @@ export function IncomeModal({ onClose }) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const saving = useRef(false);
+  // Validate the form and persist its record before closing the dialog.
   async function submit(event) {
     event.preventDefault();
     if (saving.current || error?.uncertain) return;
@@ -765,6 +776,7 @@ export function IncomeModal({ onClose }) {
   );
 }
 
+// Display the placeholder savings dialog.
 export function SavingsModal({ onClose }) {
   return (
     <Modal title="Savings" onClose={onClose}>

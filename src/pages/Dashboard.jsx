@@ -23,6 +23,7 @@ import { progress, localDate } from "../lib/format";
 import { ledgerTotals } from "../lib/ledger-totals";
 import SpendingInsights from "../components/SpendingInsights";
 
+// Add, edit, or delete a named wallet and its expense type.
 function WalletModal({ wallet, onClose }) {
   const { createWallet, updateWallet, deleteWallet, notify } = useApp();
   const [expenseTypes, setExpenseTypes] = useState([
@@ -184,6 +185,7 @@ function WalletModal({ wallet, onClose }) {
   );
 }
 
+// Display account totals, wallets, recent transactions, budgets, and savings goals.
 export default function Dashboard() {
   const {
     transactions,

@@ -22,6 +22,7 @@ import {
   Summary,
 } from "../components/UI";
 
+// List generated reports and provide view and archive actions.
 export function ReportTable({ records, onView }) {
   const { date, archiveReport, notify } = useApp();
   const [pending, setPending] = useState(null);
@@ -118,6 +119,7 @@ export function ReportTable({ records, onView }) {
   );
 }
 
+// Display a generated report snapshot for review and export.
 export function ReportPreview({ report }) {
   const { money } = useApp();
   if (report.type === "income-expense" && report.comparison)
@@ -294,6 +296,7 @@ export function ReportPreview({ report }) {
   );
 }
 
+// Generate, list, preview, and export financial reports.
 export default function Reports() {
   const {
     transactions: recentTransactions,
@@ -310,6 +313,7 @@ export default function Reports() {
   const [generationError, setGenerationError] = useState("");
   const generatingRef = useRef(false);
   useEffect(() => {
+    // Remove temporary print styling after printing or leaving the page.
     const cleanup = () =>
       document.body.classList.remove("generated-report-print");
     window.addEventListener("afterprint", cleanup);
@@ -337,6 +341,7 @@ export default function Reports() {
     { archived: String(view === "archived") },
     records,
   );
+  // Build a report from the selected period and persist its snapshot.
   async function generate(event) {
     event.preventDefault();
     if (generatingRef.current || generationError?.uncertain) return;

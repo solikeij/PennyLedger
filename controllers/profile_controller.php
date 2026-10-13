@@ -14,6 +14,7 @@
 $currentUser = require_auth($conn);
 $userId = (int) $currentUser['user_id'];
 
+// Read the current profile fields returned after account updates.
 function profile_response(mysqli $conn, int $userId): array
 {
     $stmt = mysqli_prepare($conn, "

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "./api";
 import { useApp } from "../state/AppContext";
 
+// Fetch a filtered API page and manage paging, retries, and cancellation.
 export function usePagedResource(path, filters, fallback = []) {
   const { dataVersion = 0, serverPagination = false } = useApp();
   const query = new URLSearchParams(filters).toString();
@@ -66,6 +67,7 @@ export function usePagedResource(path, filters, fallback = []) {
   };
 }
 
+// Load every API page for a complete export or account list.
 export async function fetchAllPages(path) {
   const items = [];
   let page = 1,

@@ -7,6 +7,7 @@ import { useSearchParams } from "react-router-dom";
 import { useApp } from "../state/AppContext";
 import { Icon, Modal, PageTitle, Segments } from "../components/UI";
 
+// List transactions with signed amount colors and edit, delete, and archive actions.
 export function TransactionTable({ records, restoreOnly = false }) {
   const { money, date, archiveTransaction, deleteTransaction, notify } =
     useApp();
@@ -156,6 +157,7 @@ export function TransactionTable({ records, restoreOnly = false }) {
   );
 }
 
+// Display searchable, filtered transaction history and transaction-entry actions.
 export default function Transactions() {
   const {
     transactions,

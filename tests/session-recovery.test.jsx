@@ -7,6 +7,7 @@ vi.mock("../src/lib/api", () => ({
   getToken: vi.fn(),
   setToken: vi.fn(),
 }));
+// Provide the component and shared state needed for this integration test.
 function Harness() {
   const { account } = useAuth();
   return <p>{account?.name || "Signed out"}</p>;

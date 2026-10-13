@@ -14,6 +14,7 @@ import { budgetStatus } from "../lib/budget-status";
 import { ledgerTotals } from "../lib/ledger-totals";
 import SpendingInsights from "../components/SpendingInsights";
 
+// Display monthly spending plans and provide budget management actions.
 export default function Budget() {
   const {
     budgets: allBudgets,

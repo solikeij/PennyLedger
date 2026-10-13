@@ -5,6 +5,7 @@ import PagedList from "../components/PagedList";
 import { usePagedResource } from "../lib/use-paged-resource";
 import { useApp } from "../state/AppContext";
 
+// Display the signed-in user's private activity history with filters and paging.
 export default function ActivityLogs() {
   const { date } = useApp();
   const [filters, setFilters] = useState({
@@ -14,6 +15,7 @@ export default function ActivityLogs() {
     to: "",
   });
   const list = usePagedResource("/activity-logs", filters);
+  // Update an activity filter from its form input.
   const change = (key) => (event) =>
     setFilters((old) => ({ ...old, [key]: event.target.value }));
   return (

@@ -10,6 +10,7 @@ export default function FloatingOptions({
 }) {
   const [position, setPosition] = useState({ visibility: "hidden" });
   useEffect(() => {
+    // Position the dropdown within the available viewport space.
     const place = () => {
       if (!anchor.current) return;
       const rect = anchor.current.getBoundingClientRect();
@@ -41,6 +42,7 @@ export default function FloatingOptions({
         ),
       });
     };
+    // Dismiss the dropdown when the user clicks outside it.
     const outside = (event) => {
       if (
         !anchor.current.contains(event.target) &&
@@ -48,6 +50,7 @@ export default function FloatingOptions({
       )
         onClose();
     };
+    // Dismiss the dropdown when Escape is pressed.
     const escape = (event) => {
       if (event.key === "Escape") {
         event.preventDefault();

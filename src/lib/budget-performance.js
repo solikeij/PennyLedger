@@ -1,3 +1,4 @@
+// Build export rows from the budget performance report and its expense audit.
 export function budgetPerformanceCsvRows(report) {
   const rows = [
     ["Budget Performance & Limit Tracking", report.period],

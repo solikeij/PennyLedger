@@ -11,6 +11,7 @@ function splitName(name = "") {
   return { first_name: words.shift() || "", last_name: words.join(" ") || "—" };
 }
 
+// Share account identity, session recovery, and administrator account actions.
 export function AuthProvider({ children }) {
   const [account, setAccount] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -22,6 +23,7 @@ export function AuthProvider({ children }) {
   const [adminError, setAdminError] = useState("");
   const [registrationOpen, setRegistrationOpenState] = useState(true);
 
+  // Verify a stored session token and restore the signed-in account.
   async function recoverSession() {
     const attempt = ++sessionAttempt.current;
     setSessionError("");
@@ -44,6 +46,7 @@ export function AuthProvider({ children }) {
     }
   }
   useEffect(() => {
+    // Clear the local identity when the API reports an expired session.
     const expire = () => {
       ++sessionAttempt.current;
       setAccount(null);
@@ -75,6 +78,7 @@ export function AuthProvider({ children }) {
     refreshAdmin().catch(console.error);
   }, [account?.id, account?.role]);
 
+  // Authenticate credentials and verify the requested user or administrator role.
   async function login(email, password, expectedRole = "user") {
     ++sessionAttempt.current;
     const result = await api("/auth/login", {
@@ -95,6 +99,7 @@ export function AuthProvider({ children }) {
     return result.user;
   }
 
+  // Submit registration details and prepare email verification.
   async function register(values) {
     return api("/auth/register", {
       method: "POST",
@@ -109,6 +114,7 @@ export function AuthProvider({ children }) {
     });
   }
 
+  // Confirm a verification code with the authentication API.
   async function verifyOtp(email, otp) {
     return api("/auth/verify-otp", {
       method: "POST",
@@ -117,6 +123,7 @@ export function AuthProvider({ children }) {
     });
   }
 
+  // Request a replacement email verification code.
   async function resendOtp(email) {
     // The backend limits resend requests and only accepts unverified accounts.
     return api("/auth/resend-otp", {
@@ -126,6 +133,7 @@ export function AuthProvider({ children }) {
     });
   }
 
+  // End the server session and clear local account identity.
   async function logout() {
     ++sessionAttempt.current;
     try {
@@ -137,6 +145,7 @@ export function AuthProvider({ children }) {
     }
   }
 
+  // Refresh the displayed identity after a profile update.
   async function updateIdentity(firstName, lastName, email, phone = "") {
     const revised = await api("/profile", {
       method: "PUT",
@@ -146,8 +155,10 @@ export function AuthProvider({ children }) {
     return revised;
   }
 
+  // Reload administrator account lists, authentication events, and settings.
   async function refreshAdmin() {
     setAdminLoading(true);
+    // Load all user pages for an administrator account-status view.
     const loadUsers = async (status = "") => {
       const query = status ? `?status=${status}&per_page=100` : "?per_page=100";
       const firstPage = await api(`/admin/users${query}`);
@@ -212,6 +223,7 @@ export function AuthProvider({ children }) {
     setAdminLoading(false);
   }
 
+  // Create an account through the applicable registration or administrator endpoint.
   async function createUser(values, selfRegistration = false) {
     if (selfRegistration) return register(values);
     const created = await api("/admin/users", {
@@ -226,6 +238,7 @@ export function AuthProvider({ children }) {
     return created;
   }
 
+  // Save administrator account details or status and reload the account lists.
   async function updateUser(id, values) {
     if (values.status) {
       await api(`/admin/users/${id}/status`, {
@@ -245,21 +258,25 @@ export function AuthProvider({ children }) {
     await refreshAdmin();
   }
 
+  // Archive a user account from the administrator workspace.
   async function deleteUser(id) {
     await api(`/admin/users/${id}/delete`, { method: "PATCH", body: {} });
     await refreshAdmin();
   }
 
+  // Restore an archived user account and refresh administrator data.
   async function restoreUser(id) {
     await api(`/admin/users/${id}/restore`, { method: "PATCH", body: {} });
     await refreshAdmin();
   }
 
+  // Permanently delete an account using administrator password confirmation.
   async function permanentlyDeleteUser(id, password) {
     await api(`/admin/users/${id}`, { method: "DELETE", body: { password } });
     await refreshAdmin();
   }
 
+  // Save whether public account registration is available.
   async function setRegistrationOpen(value) {
     const result = await api("/admin/settings", {
       method: "PUT",
@@ -320,12 +337,14 @@ export function AuthProvider({ children }) {
   );
 }
 
+// Read the shared authenticated identity and account actions.
 export function useAuth() {
   const value = useContext(AuthContext);
   if (!value) throw new Error("useAuth must be inside AuthProvider");
   return value;
 }
 
+// Allow a route only when the signed-in account has the required role.
 export function RequireRole({ role }) {
   const { account } = useAuth();
   if (!account)

@@ -11,6 +11,7 @@ vi.mock("../src/state/AuthContext", () => ({
   useAuth: () => ({ account: mocks.account }),
 }));
 vi.mock("../src/lib/api", () => ({ api: mocks.api, assetUrl: () => null }));
+// Provide the component and shared state needed for this integration test.
 function Harness() {
   const { activities, createWallet, loading } = useApp();
   return (
@@ -31,6 +32,7 @@ function Harness() {
     </>
   );
 }
+// Render the test view with its required router and providers.
 function mount() {
   return render(
     <MemoryRouter>

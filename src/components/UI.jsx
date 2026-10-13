@@ -8,6 +8,7 @@ import { useFieldError } from "./ErrorForm";
 import logoBlack from "../assets/logo-black.svg";
 import logoWhite from "../assets/logo-white.svg";
 
+// Render a shared SVG icon selected by name.
 export function Icon({ name, ...props }) {
   const paths = {
     dashboard: (
@@ -114,6 +115,7 @@ export function Icon({ name, ...props }) {
   );
 }
 
+// Link the theme-aware logo to the appropriate account landing page.
 export function Logo() {
   const { account } = useAuth();
   return (
@@ -127,6 +129,7 @@ export function Logo() {
   );
 }
 
+// Toggle the shared light or dark appearance preference.
 export function ThemeSwitch() {
   const { theme, setTheme } = useApp();
   return (
@@ -150,6 +153,7 @@ export function ThemeSwitch() {
   );
 }
 
+// Render a consistent page heading, description, and optional actions.
 export function PageTitle({ title, description, children }) {
   return (
     <div className="page-title page-heading">
@@ -162,6 +166,7 @@ export function PageTitle({ title, description, children }) {
   );
 }
 
+// Render a dialog with focus handling, keyboard dismissal, and background scroll locking.
 export function Modal({ title, onClose, children }) {
   const ref = useRef(null);
   const closeRef = useRef(onClose);
@@ -172,6 +177,7 @@ export function Modal({ title, onClose, children }) {
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     ref.current?.querySelector("input,select,button")?.focus();
+    // Handle Escape and keep keyboard focus inside the open dialog.
     function keydown(event) {
       if (event.key === "Escape") closeRef.current();
       if (event.key === "Tab") {
@@ -228,6 +234,7 @@ export function Modal({ title, onClose, children }) {
   );
 }
 
+// Render a labelled input with its local or server validation message.
 export function Field({ label, error, children, ...props }) {
   const serverError = useFieldError(props.name);
   error = error || serverError;
@@ -255,6 +262,7 @@ export function Field({ label, error, children, ...props }) {
   );
 }
 
+// Render a password input with a visibility toggle and validation feedback.
 export function PasswordField({
   label = "Password",
   name = "password",
@@ -299,6 +307,7 @@ export function PasswordField({
   );
 }
 
+// Render reusable cancel and submit buttons for modal forms.
 export function FormActions({ onClose, label = "Save Changes" }) {
   return (
     <div className="modal-actions">
@@ -312,6 +321,7 @@ export function FormActions({ onClose, label = "Save Changes" }) {
   );
 }
 
+// Show bounded progress with accessible percentage information.
 export function ProgressBar({ value, fill = "green" }) {
   return (
     <div
@@ -330,6 +340,7 @@ export function ProgressBar({ value, fill = "green" }) {
   );
 }
 
+// Display a budget limit, spending progress, and status.
 export function BudgetRow({ budget }) {
   const { money } = useApp();
   const over = budget.spent > budget.limit;
@@ -354,6 +365,7 @@ export function BudgetRow({ budget }) {
   );
 }
 
+// Render an accessible set of mutually exclusive filter buttons.
 export function Segments({ value, onChange, label, options }) {
   return (
     <div className="seg" role="group" aria-label={label}>
@@ -375,6 +387,7 @@ export function Segments({ value, onChange, label, options }) {
   );
 }
 
+// Render a compact group of labelled summary values.
 export function Summary({ items }) {
   return (
     <div className="budget-summary">

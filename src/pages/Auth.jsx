@@ -4,6 +4,7 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../state/AuthContext";
 import { Field, Logo, PasswordField, ThemeSwitch } from "../components/UI";
 
+// Handle login, signup, verification-code requests, and administrator sign-in.
 export default function Auth({ signup = false, admin = false }) {
   const { account, login, register, verifyOtp, resendOtp, registrationOpen } =
     useAuth();
@@ -39,6 +40,7 @@ export default function Auth({ signup = false, admin = false }) {
       />
     );
 
+  // Validate credentials and dispatch the selected authentication action.
   async function submit(event) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);

@@ -19,6 +19,7 @@ function bearer_token(): ?string
     return trim($matches[1]);
 }
 
+// Verify the hashed session token and return the active account.
 function require_auth(mysqli $conn): array
 {
     $token = bearer_token();
@@ -69,6 +70,7 @@ function require_auth(mysqli $conn): array
     return $user;
 }
 
+// Require a valid session with the administrator role.
 function require_admin(mysqli $conn): array
 {
     $user = require_auth($conn);
@@ -92,6 +94,7 @@ function log_activity(mysqli $conn, int $actorId, string $activityCode, string $
     mysqli_stmt_execute($private);
     if (!in_array($action, ['LOGIN', 'SIGNUP'], true))
         return;
+    // Only login and signup events enter the administrator authentication history.
     $stmt = mysqli_prepare($conn, 'INSERT INTO Auth_Events (user_id, event_type) VALUES (?, ?)');
     mysqli_stmt_bind_param($stmt, 'is', $actorId, $action);
     mysqli_stmt_execute($stmt);

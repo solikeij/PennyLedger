@@ -32,12 +32,14 @@ export function buildReportRanges(transactions, budgets = []) {
   ];
 }
 
+// Check whether a transaction falls inside the selected report dates.
 function inRange(tx, range) {
   if (range === "this-year")
     return tx.date?.startsWith(String(new Date().getFullYear()));
   return tx.date?.startsWith(range);
 }
 
+// Build a report snapshot from transactions, budgets, and savings goals.
 export function createReport(type, range, transactions, budgets, goals) {
   const period =
     buildReportRanges(transactions).find((item) => item.key === range)?.label ||
@@ -128,6 +130,7 @@ export function createReport(type, range, transactions, budgets, goals) {
   };
 }
 
+// Convert a report snapshot into rows for CSV export.
 export function reportCsvRows(report) {
   switch (report.type) {
     case "category":
@@ -172,6 +175,7 @@ export function reportCsvRows(report) {
   }
 }
 
+// Calculate detailed report breakdowns, trends, and prior-period comparisons.
 export function reportSnapshotDetails(range, transactions) {
   const yearView = range === "this-year";
   const base = yearView
@@ -187,6 +191,7 @@ export function reportSnapshotDetails(range, transactions) {
   const previousRows = transactions.filter((tx) =>
     tx.date?.startsWith(previousKey),
   );
+  // Sum either income or expenses for a report comparison.
   const total = (rows, income) =>
     Math.round(
       rows.reduce(
@@ -202,6 +207,7 @@ export function reportSnapshotDetails(range, transactions) {
     expense = total(selected, false);
   const oldIncome = total(previousRows, true),
     oldExpense = total(previousRows, false);
+  // Calculate absolute and percentage changes between report periods.
   const change = (now, old) => ({
     amount: Math.round((now - old) * 100) / 100,
     percent: old ? Math.round(((now - old) / old) * 1000) / 10 : null,

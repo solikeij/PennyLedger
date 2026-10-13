@@ -63,6 +63,7 @@ const CURRENCIES = {
   EUR: { code: "EUR", symbol: "€", name: "Euro (EUR)" },
 };
 
+// Validate a currency choice and fall back to the supported default.
 function normalizeCurrency(input) {
   if (!input) return "USD";
   const str = input.trim().toUpperCase();
@@ -72,6 +73,7 @@ function normalizeCurrency(input) {
   return "USD";
 }
 
+// Read the selected currency for the legacy static pages.
 function getCurrency() {
   const params = new URLSearchParams(location.search);
   const paramVal = params.get("currency");
@@ -83,11 +85,13 @@ function getCurrency() {
   return "USD";
 }
 
+// Resolve the display symbol for a currency code.
 function getCurrencySymbol(code) {
   const c = normalizeCurrency(code || getCurrency());
   return CURRENCIES[c] ? CURRENCIES[c].symbol : "$";
 }
 
+// Format a legacy page amount using the active currency.
 function formatCurrency(amount, includeSign = false) {
   const sym = getCurrencySymbol();
   const num = Number(amount) || 0;
@@ -102,6 +106,7 @@ function formatCurrency(amount, includeSign = false) {
   return `${num < 0 ? "-" : ""}${sym}${formatted}`;
 }
 
+// Build links that preserve the current display preferences.
 function getQueryString() {
   const theme = document.documentElement.getAttribute("data-theme");
   const currency = getCurrency();
@@ -115,6 +120,7 @@ function getQueryString() {
   return q ? "?" + q : "";
 }
 
+// Carry display preferences into internal page links.
 function updateInternalLinks() {
   const theme = document.documentElement.getAttribute("data-theme");
   const currency = getCurrency();
@@ -137,10 +143,12 @@ function updateInternalLinks() {
   });
 }
 
+// Refresh links after the theme preference changes.
 function updateThemeLinks(theme) {
   updateInternalLinks();
 }
 
+// Restore the saved theme and connect its toggle controls.
 function initTheme() {
   const params = new URLSearchParams(location.search);
   let theme = params.get("theme");
@@ -161,6 +169,7 @@ function initTheme() {
   });
 }
 
+// Save and apply the selected light or dark theme.
 function setTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme);
   try {
@@ -178,6 +187,7 @@ function setTheme(theme) {
   updateInternalLinks();
 }
 
+// Update currency labels and values on the static page.
 function applyCurrencyToDom(symbol) {
   if (!document.body) return;
   const walker = document.createTreeWalker(
@@ -211,6 +221,7 @@ function applyCurrencyToDom(symbol) {
   });
 }
 
+// Save and apply a legacy page currency choice.
 function setCurrency(code) {
   const curr = normalizeCurrency(code);
   const symbol = getCurrencySymbol(curr);
@@ -241,6 +252,7 @@ function setCurrency(code) {
   );
 }
 
+// Restore the currency preference and connect its controls.
 function initCurrency() {
   const curr = getCurrency();
   const symbol = getCurrencySymbol(curr);
@@ -300,6 +312,7 @@ const MONTH_MAP = {
   dec: 12,
 };
 
+// Validate a date-format choice and select a supported fallback.
 function normalizeDateFormat(input) {
   if (!input) return "MMM D, YYYY";
   const str = input.trim();
@@ -318,6 +331,7 @@ function normalizeDateFormat(input) {
   return "MMM D, YYYY";
 }
 
+// Read the date format selected for the static pages.
 function getDateFormat() {
   const params = new URLSearchParams(location.search);
   const paramVal = params.get("dateformat");
@@ -329,6 +343,7 @@ function getDateFormat() {
   return "MMM D, YYYY";
 }
 
+// Convert a stored date into its calendar parts for display.
 function parseDate(input) {
   if (!input) return null;
   if (input instanceof Date && !isNaN(input.getTime())) {
@@ -385,6 +400,7 @@ function parseDate(input) {
   return null;
 }
 
+// Render calendar parts using the selected date format.
 function formatDateParts(parts, formatType) {
   if (!parts) return "";
   const fmt = normalizeDateFormat(formatType || getDateFormat());
@@ -403,11 +419,13 @@ function formatDateParts(parts, formatType) {
   return `${monthName} ${d}, ${y}`;
 }
 
+// Render a date in the selected display format.
 function formatDate(date, formatType) {
   const parts = parseDate(date);
   return parts ? formatDateParts(parts, formatType) : "";
 }
 
+// Refresh date labels on the static page.
 function applyDateFormatToDom(formatType) {
   const fmt = normalizeDateFormat(formatType || getDateFormat());
   const elements = document.querySelectorAll(
@@ -431,6 +449,7 @@ function applyDateFormatToDom(formatType) {
   });
 }
 
+// Save and apply the selected legacy date format.
 function setDateFormat(formatType) {
   const fmt = normalizeDateFormat(formatType);
 
@@ -460,6 +479,7 @@ function setDateFormat(formatType) {
   );
 }
 
+// Restore the date format and connect its controls.
 function initDateFormat() {
   const fmt = getDateFormat();
 
@@ -515,10 +535,12 @@ function setupSidebarToggle() {
   const overlay = document.querySelector(".sidebar-overlay");
   if (!toggle || !sidebar || !overlay) return;
 
+  // Open the sidebar and activate its dismissible backdrop.
   const open = () => {
     sidebar.classList.add("open");
     overlay.classList.add("open");
   };
+  // Close the navigation when the user requests dismissal.
   const close = () => {
     sidebar.classList.remove("open");
     overlay.classList.remove("open");
@@ -543,9 +565,11 @@ function setupPasswordToggles() {
   });
 }
 
+// Build the icon used by password visibility controls.
 function eyeIcon() {
   return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>`;
 }
+// Build the icon for the hidden-password state.
 function eyeOffIcon() {
   return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.6 21.6 0 0 1 5.06-5.94M9.9 4.24A10.4 10.4 0 0 1 12 4c7 0 11 7 11 7a21.6 21.6 0 0 1-2.6 3.63M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
 }
@@ -715,6 +739,7 @@ function setupModals() {
     const amountField = document.getElementById("budget-amount-field");
     const amountError = document.getElementById("budget-amount-error");
 
+    // Display or clear an invalid budget amount message.
     function setBudgetAmountError(message) {
       if (amountField) amountField.classList.toggle("has-error", !!message);
       if (amountError) amountError.textContent = message || "";
@@ -849,12 +874,16 @@ function setupTransactionFilters() {
   const emptyText = document.getElementById("tx-empty-text");
 
   const state = { type: "all", view: "active" };
+  // Collect transaction rows for the active history filters.
   const getRows = () =>
     Array.from(tbody.querySelectorAll("tr")).filter((r) => r !== emptyRow);
+  // Read a transaction row category for filtering.
   const rowCategory = (r) =>
     (r.querySelector(".td-category")?.textContent || "").trim();
+  // Read a transaction row month for filtering.
   const rowMonth = (r) =>
     (r.querySelector("[data-raw-date]")?.dataset.rawDate || "").slice(0, 7);
+  // Identify income rows in the legacy transaction table.
   const rowIsIncome = (r) => !!r.querySelector(".td-amount.amt-pos");
 
   // Restore archived state saved from a previous visit (or from the
@@ -881,6 +910,7 @@ function setupTransactionFilters() {
     monthEl.add(new Option(label, key));
   });
 
+  // Apply the selected transaction filters and update the visible row count.
   function apply() {
     const q = (searchEl.value || "").trim().toLowerCase();
     let shown = 0,
@@ -937,6 +967,7 @@ function setupTransactionFilters() {
     }
   }
 
+  // Connect a segmented filter control to transaction filtering.
   function bindSeg(seg, key, attr) {
     seg.addEventListener("click", (e) => {
       const btn = e.target.closest(".seg-btn");
@@ -1004,6 +1035,7 @@ function goalMoney(n) {
   );
 }
 
+// Build a legacy savings card from goal details.
 function goalCardMarkup() {
   return `
     <div class="gc-top">
@@ -1017,6 +1049,7 @@ function goalCardMarkup() {
     <div class="gc-foot"><span></span><b></b></div>`;
 }
 
+// Refresh an existing legacy savings card after an edit.
 function updateGoalCard(card, goal) {
   const pct =
     goal.target > 0
@@ -1039,6 +1072,7 @@ function updateGoalCard(card, goal) {
   card.querySelector(".gc-foot b").textContent = pct + "%";
 }
 
+// Choose a category or status badge style for the static page.
 function pillClass(category) {
   const map = {
     Income: "pill-green",
@@ -1052,6 +1086,7 @@ function pillClass(category) {
   return map[category] || "pill-gray";
 }
 
+// Escape text before inserting it into generated HTML.
 function escapeHtml(str) {
   const div = document.createElement("div");
   div.textContent = str;
@@ -1074,6 +1109,7 @@ let toastTimer;
 const ARCHIVE_TX_KEY = "pennyledger_archived_transactions";
 const ARCHIVE_LOG_KEY = "pennyledger_archived_reports";
 
+// Read archived record identifiers from browser storage.
 function readArchiveList(key) {
   try {
     return JSON.parse(localStorage.getItem(key) || "[]");
@@ -1081,19 +1117,23 @@ function readArchiveList(key) {
     return [];
   }
 }
+// Save archived record identifiers in browser storage.
 function writeArchiveList(key, list) {
   try {
     localStorage.setItem(key, JSON.stringify(list));
   } catch (e) {}
 }
+// Check whether a legacy record is in the archive list.
 function isArchivedRecord(key, id) {
   return readArchiveList(key).some((item) => item.id === id);
 }
+// Add a record identifier to the legacy archive list.
 function addArchivedRecord(key, record) {
   const list = readArchiveList(key).filter((item) => item.id !== record.id);
   list.push(record);
   writeArchiveList(key, list);
 }
+// Remove a record identifier from the legacy archive list.
 function removeArchivedRecord(key, id) {
   writeArchiveList(
     key,
@@ -1109,6 +1149,7 @@ window.PennyArchive = {
   isArchivedRecord,
 };
 
+// Show a temporary notification on the static pages.
 function showToast(message) {
   let toast = document.querySelector(".toast");
   if (!toast) {

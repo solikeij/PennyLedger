@@ -1,3 +1,4 @@
+// Display list loading, errors, and pagination controls around its content.
 export default function PagedList({ list, children }) {
   if (list.loading) return <p role="status">Loading records…</p>;
   if (list.error)
