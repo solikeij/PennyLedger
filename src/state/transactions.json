@@ -1,0 +1,82 @@
+[
+  {
+    "id": "tx-1",
+    "description": "Whole Foods Market",
+    "category": "Groceries",
+    "date": "2026-03-14",
+    "amount": -84.32,
+    "archived": false
+  },
+  {
+    "id": "tx-2",
+    "description": "Paycheck Deposit",
+    "category": "Income",
+    "date": "2026-03-13",
+    "amount": 3125.0,
+    "archived": false
+  },
+  {
+    "id": "tx-3",
+    "description": "Netflix Subscription",
+    "category": "Entertainment",
+    "date": "2026-03-13",
+    "amount": -15.99,
+    "archived": false
+  },
+  {
+    "id": "tx-4",
+    "description": "Shell Gas Station",
+    "category": "Transportation",
+    "date": "2026-03-12",
+    "amount": -42.1,
+    "archived": false
+  },
+  {
+    "id": "tx-5",
+    "description": "Rent Payment",
+    "category": "Housing",
+    "date": "2026-03-10",
+    "amount": -1200.0,
+    "archived": false
+  },
+  {
+    "id": "tx-6",
+    "description": "Spotify Premium",
+    "category": "Entertainment",
+    "date": "2026-03-09",
+    "amount": -11.99,
+    "archived": false
+  },
+  {
+    "id": "tx-7",
+    "description": "Trader Joe's",
+    "category": "Groceries",
+    "date": "2026-03-08",
+    "amount": -56.2,
+    "archived": false
+  },
+  {
+    "id": "tx-8",
+    "description": "Freelance Payment",
+    "category": "Income",
+    "date": "2026-03-07",
+    "amount": 450.0,
+    "archived": false
+  },
+  {
+    "id": "tx-9",
+    "description": "Electric Bill",
+    "category": "Utilities",
+    "date": "2026-03-06",
+    "amount": -98.4,
+    "archived": false
+  },
+  {
+    "id": "tx-10",
+    "description": "Coffee Shop",
+    "category": "Dining Out",
+    "date": "2026-03-05",
+    "amount": -6.75,
+    "archived": false
+  }
+]

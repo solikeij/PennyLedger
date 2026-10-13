@@ -1,0 +1,10 @@
+node_modules/
+dist/
+coverage/
+*.local
+.publish-repo/
+*-test-results.txt
+frontend-test-results.txt
+verification-email-preview.html
+smtp-password.txt
+public/uploads/

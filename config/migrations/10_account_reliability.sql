@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS File_Cleanup (
+ path VARCHAR(255) PRIMARY KEY,
+ queued_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS User_Activity (
+ activity_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+ user_id INT NOT NULL,
+ description VARCHAR(255) NOT NULL,
+ amount DECIMAL(14,2) NULL,
+ created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ INDEX idx_user_activity (user_id, activity_id),
+ FOREIGN KEY (user_id) REFERENCES Users(user_id)
+);
