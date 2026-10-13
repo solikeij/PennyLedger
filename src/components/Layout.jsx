@@ -1,4 +1,4 @@
-import DataSection from './DataSection';
+import DataSection from "./DataSection";
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useApp } from "../state/AppContext";
@@ -47,7 +47,15 @@ export default function Layout({ admin = false }) {
         <nav className="side-nav" aria-label="Main navigation">
           {links.map(([path, label]) => (
             <NavLink key={path} to={`/${path}`} end={path === "admin"}>
-              <Icon name={admin ? (path === "admin/archive" ? "archive" : "settings") : path} />
+              <Icon
+                name={
+                  admin
+                    ? path === "admin/archive"
+                      ? "archive"
+                      : "settings"
+                    : path
+                }
+              />
               {label}
             </NavLink>
           ))}
@@ -56,12 +64,18 @@ export default function Layout({ admin = false }) {
         <div className="side-profile">
           <div className="avatar">
             {!admin && profile.photo ? (
-              <img className="profile-photo" src={profile.photo} alt="Your profile" />
-            ) : (admin ? account.name : profile.name)
-              .split(" ")
-              .map((word) => word[0])
-              .slice(0, 2)
-              .join("")}
+              <img
+                className="profile-photo"
+                src={profile.photo}
+                alt="Your profile"
+              />
+            ) : (
+              (admin ? account.name : profile.name)
+                .split(" ")
+                .map((word) => word[0])
+                .slice(0, 2)
+                .join("")
+            )}
           </div>
           <div className="who">
             <strong>{admin ? account.name : profile.name}</strong>
@@ -71,8 +85,9 @@ export default function Layout({ admin = false }) {
         <button
           className="logout-btn"
           onClick={async () => {
-            try { await logout(); }
-            finally {
+            try {
+              await logout();
+            } finally {
               notify("Logged out");
               navigate(admin ? "/admin/login" : "/login");
             }
@@ -116,7 +131,19 @@ export default function Layout({ admin = false }) {
           <ThemeSwitch />
         </div>
         <main className="content">
-          <DataSection sections={admin ? [] : ({ '/budget': ['budgets', 'analyticsTransactions'], '/goals': ['goals'], '/settings': ['profile'] }[location.pathname] || [])}><Outlet /></DataSection>
+          <DataSection
+            sections={
+              admin
+                ? []
+                : {
+                    "/budget": ["budgets", "analyticsTransactions"],
+                    "/goals": ["goals"],
+                    "/settings": ["profile"],
+                  }[location.pathname] || []
+            }
+          >
+            <Outlet />
+          </DataSection>
         </main>
       </div>
     </div>

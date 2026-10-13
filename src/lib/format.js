@@ -41,9 +41,22 @@ export function progress(saved, target) {
 }
 
 export function monthlyIncome(amount, frequency) {
-  const periods = { weekly: 52 / 12, biweekly: 26 / 12, monthly: 1, annually: 1 / 12 };
-  if (!Number.isFinite(Number(amount)) || Number(amount) < 0 || !(frequency in periods)) return NaN;
-  return Math.round((Number(amount) * periods[frequency] + Number.EPSILON) * 100) / 100;
+  const periods = {
+    weekly: 52 / 12,
+    biweekly: 26 / 12,
+    monthly: 1,
+    annually: 1 / 12,
+  };
+  if (
+    !Number.isFinite(Number(amount)) ||
+    Number(amount) < 0 ||
+    !(frequency in periods)
+  )
+    return NaN;
+  return (
+    Math.round((Number(amount) * periods[frequency] + Number.EPSILON) * 100) /
+    100
+  );
 }
 
 export function toCsv(rows) {

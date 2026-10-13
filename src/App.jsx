@@ -61,7 +61,10 @@ function AppRoutes() {
           <Route element={<Layout admin />}>
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/users" element={<Admin section="users" />} />
-            <Route path="/admin/archive" element={<Admin section="archive" />} />
+            <Route
+              path="/admin/archive"
+              element={<Admin section="archive" />}
+            />
             <Route
               path="/admin/activity"
               element={<Admin section="activity" />}

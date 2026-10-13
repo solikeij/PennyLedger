@@ -25,25 +25,37 @@ export function AuthProvider({ children }) {
   async function recoverSession() {
     const attempt = ++sessionAttempt.current;
     setSessionError("");
-    if (!getToken()) { setLoading(false); return; }
+    if (!getToken()) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
-      const profile = await api('/profile');
+      const profile = await api("/profile");
       if (attempt === sessionAttempt.current) setAccount(profile);
     } catch (failure) {
       if (attempt !== sessionAttempt.current) return;
-      if (failure.status === 401) { setToken(null); setAccount(null); }
-      else setSessionError(failure.message);
-    } finally { if (attempt === sessionAttempt.current) setLoading(false); }
+      if (failure.status === 401) {
+        setToken(null);
+        setAccount(null);
+      } else setSessionError(failure.message);
+    } finally {
+      if (attempt === sessionAttempt.current) setLoading(false);
+    }
   }
   useEffect(() => {
     const expire = () => {
       ++sessionAttempt.current;
-      setAccount(null); setSessionError(''); setLoading(false);
+      setAccount(null);
+      setSessionError("");
+      setLoading(false);
     };
-    window.addEventListener('penny-session-expired', expire);
+    window.addEventListener("penny-session-expired", expire);
     recoverSession();
-    return () => { ++sessionAttempt.current; window.removeEventListener('penny-session-expired', expire); };
+    return () => {
+      ++sessionAttempt.current;
+      window.removeEventListener("penny-session-expired", expire);
+    };
   }, []);
 
   useEffect(() => {
@@ -66,11 +78,17 @@ export function AuthProvider({ children }) {
   async function login(email, password, expectedRole = "user") {
     ++sessionAttempt.current;
     const result = await api("/auth/login", {
-      method: "POST", body: { email, password }, token: null,
+      method: "POST",
+      body: { email, password },
+      token: null,
     });
     if (result.user.role !== expectedRole) {
-      await api("/auth/logout", { method: "POST", token: result.token }).catch(() => {});
-      throw new Error(`Use the ${result.user.role} sign-in page for this account.`);
+      await api("/auth/logout", { method: "POST", token: result.token }).catch(
+        () => {},
+      );
+      throw new Error(
+        `Use the ${result.user.role} sign-in page for this account.`,
+      );
     }
     setToken(result.token);
     setAccount(result.user);
@@ -80,31 +98,49 @@ export function AuthProvider({ children }) {
   async function register(values) {
     return api("/auth/register", {
       method: "POST",
-      body: { ...(values.firstName !== undefined
-        ? { first_name: values.firstName, last_name: values.lastName }
-        : splitName(values.name)), email: values.email, password: values.password },
+      body: {
+        ...(values.firstName !== undefined
+          ? { first_name: values.firstName, last_name: values.lastName }
+          : splitName(values.name)),
+        email: values.email,
+        password: values.password,
+      },
       token: null,
     });
   }
 
   async function verifyOtp(email, otp) {
-    return api("/auth/verify-otp", { method: "POST", body: { email, otp }, token: null });
+    return api("/auth/verify-otp", {
+      method: "POST",
+      body: { email, otp },
+      token: null,
+    });
   }
 
   async function resendOtp(email) {
     // The backend limits resend requests and only accepts unverified accounts.
-    return api("/auth/resend-otp", { method: "POST", body: { email }, token: null });
+    return api("/auth/resend-otp", {
+      method: "POST",
+      body: { email },
+      token: null,
+    });
   }
 
   async function logout() {
     ++sessionAttempt.current;
-    try { if (getToken()) await api("/auth/logout", { method: "POST" }); }
-    finally { setToken(null); setAccount(null); setSessionError(''); }
+    try {
+      if (getToken()) await api("/auth/logout", { method: "POST" });
+    } finally {
+      setToken(null);
+      setAccount(null);
+      setSessionError("");
+    }
   }
 
   async function updateIdentity(firstName, lastName, email, phone = "") {
     const revised = await api("/profile", {
-      method: "PUT", body: { first_name: firstName, last_name: lastName, email, phone },
+      method: "PUT",
+      body: { first_name: firstName, last_name: lastName, email, phone },
     });
     setAccount(revised);
     return revised;
@@ -116,8 +152,11 @@ export function AuthProvider({ children }) {
       const query = status ? `?status=${status}&per_page=100` : "?per_page=100";
       const firstPage = await api(`/admin/users${query}`);
       const pages = Math.ceil(firstPage.total / 100);
-      const extraPages = await Promise.all(Array.from({ length: Math.max(0, pages - 1) }, (_, index) =>
-        api(`/admin/users${query}&page=${index + 2}`)));
+      const extraPages = await Promise.all(
+        Array.from({ length: Math.max(0, pages - 1) }, (_, index) =>
+          api(`/admin/users${query}&page=${index + 2}`),
+        ),
+      );
       return [...firstPage.items, ...extraPages.flatMap((page) => page.items)];
     };
     const results = await Promise.allSettled([
@@ -126,7 +165,12 @@ export function AuthProvider({ children }) {
       api("/admin/auth-events?per_page=200"),
       api("/admin/settings"),
     ]);
-    const labels = ["accounts", "deleted accounts", "authentication events", "admin settings"];
+    const labels = [
+      "accounts",
+      "deleted accounts",
+      "authentication events",
+      "admin settings",
+    ];
     const values = results.map((result, index) => {
       if (result.status === "fulfilled") return result.value;
       console.error(`Failed to load admin ${labels[index]}`, result.reason);
@@ -137,21 +181,34 @@ export function AuthProvider({ children }) {
     // Let one failed request leave other admin data visible instead of
     // rejecting the whole dashboard and making every count look like zero.
     setUsers((current) => {
-      const currentPeople = current.filter((user) => !user.deletedAt && user.status !== "deleted");
-      const currentArchive = current.filter((user) => user.deletedAt || user.status === "deleted");
-      const rows = [...(people ?? currentPeople), ...(archived ?? currentArchive)];
-      return rows.map((user) => ({ ...user,
+      const currentPeople = current.filter(
+        (user) => !user.deletedAt && user.status !== "deleted",
+      );
+      const currentArchive = current.filter(
+        (user) => user.deletedAt || user.status === "deleted",
+      );
+      const rows = [
+        ...(people ?? currentPeople),
+        ...(archived ?? currentArchive),
+      ];
+      return rows.map((user) => ({
+        ...user,
         created: user.createdAt || user.created,
-        lastLogin: user.lastLoginAt || user.lastLogin }));
+        lastLogin: user.lastLoginAt || user.lastLogin,
+      }));
     });
     if (logs) setActivity(logs.items);
     if (settings) setRegistrationOpenState(settings.registrationOpen);
-    setAdminError(results
-      .map((result, index) => result.status === "rejected"
-        ? `${labels[index]}: ${result.reason?.message || "request failed"}`
-        : null)
-      .filter(Boolean)
-      .join(" · "));
+    setAdminError(
+      results
+        .map((result, index) =>
+          result.status === "rejected"
+            ? `${labels[index]}: ${result.reason?.message || "request failed"}`
+            : null,
+        )
+        .filter(Boolean)
+        .join(" · "),
+    );
     setAdminLoading(false);
   }
 
@@ -159,7 +216,11 @@ export function AuthProvider({ children }) {
     if (selfRegistration) return register(values);
     const created = await api("/admin/users", {
       method: "POST",
-      body: { ...splitName(values.name), email: values.email, password: values.password },
+      body: {
+        ...splitName(values.name),
+        email: values.email,
+        password: values.password,
+      },
     });
     await refreshAdmin();
     return created;
@@ -167,12 +228,18 @@ export function AuthProvider({ children }) {
 
   async function updateUser(id, values) {
     if (values.status) {
-      await api(`/admin/users/${id}/status`, { method: "PATCH", body: { status: values.status } });
+      await api(`/admin/users/${id}/status`, {
+        method: "PATCH",
+        body: { status: values.status },
+      });
     } else {
       await api(`/admin/users/${id}`, {
         method: "PUT",
-        body: { ...splitName(values.name), email: values.email,
-          ...(values.password ? { password: values.password } : {}) },
+        body: {
+          ...splitName(values.name),
+          email: values.email,
+          ...(values.password ? { password: values.password } : {}),
+        },
       });
     }
     await refreshAdmin();
@@ -189,26 +256,68 @@ export function AuthProvider({ children }) {
   }
 
   async function permanentlyDeleteUser(id, password) {
-    await api(`/admin/users/${id}`, { method: 'DELETE', body: { password } });
+    await api(`/admin/users/${id}`, { method: "DELETE", body: { password } });
     await refreshAdmin();
   }
 
   async function setRegistrationOpen(value) {
     const result = await api("/admin/settings", {
-      method: "PUT", body: { registrationOpen: value },
+      method: "PUT",
+      body: { registrationOpen: value },
     });
     setRegistrationOpenState(result.registrationOpen);
   }
 
-  return <AuthContext.Provider value={{
-    account, loading, users, activity, adminLoading, adminError, registrationOpen,
-    login, register, verifyOtp, resendOtp, logout, updateIdentity,
-    createUser, updateUser, deleteUser, restoreUser, permanentlyDeleteUser, setRegistrationOpen, refreshAdmin,
-  }}>{loading ? <p role="status">Checking your session…</p> : sessionError ?
-    <section className="card" role="alert"><h1>Could not load your account</h1><p>{sessionError}</p>
-      <button className="btn btn-primary" onClick={recoverSession}>Retry</button>
-      <button className="btn btn-outline" onClick={() => { setToken(null); setSessionError(''); setAccount(null); }}>Sign out</button>
-    </section> : children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        account,
+        loading,
+        users,
+        activity,
+        adminLoading,
+        adminError,
+        registrationOpen,
+        login,
+        register,
+        verifyOtp,
+        resendOtp,
+        logout,
+        updateIdentity,
+        createUser,
+        updateUser,
+        deleteUser,
+        restoreUser,
+        permanentlyDeleteUser,
+        setRegistrationOpen,
+        refreshAdmin,
+      }}
+    >
+      {loading ? (
+        <p role="status">Checking your session…</p>
+      ) : sessionError ? (
+        <section className="card" role="alert">
+          <h1>Could not load your account</h1>
+          <p>{sessionError}</p>
+          <button className="btn btn-primary" onClick={recoverSession}>
+            Retry
+          </button>
+          <button
+            className="btn btn-outline"
+            onClick={() => {
+              setToken(null);
+              setSessionError("");
+              setAccount(null);
+            }}
+          >
+            Sign out
+          </button>
+        </section>
+      ) : (
+        children
+      )}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {
@@ -219,10 +328,18 @@ export function useAuth() {
 
 export function RequireRole({ role }) {
   const { account } = useAuth();
-  if (!account) return <Navigate replace to={role === "admin" ? "/admin/login" : "/login"} />;
+  if (!account)
+    return (
+      <Navigate replace to={role === "admin" ? "/admin/login" : "/login"} />
+    );
   // Missing roles never pass. PHP also checks permissions on every request.
   if (account.role !== role) {
-    return <Navigate replace to={account.role === "admin" ? "/admin" : "/dashboard"} />;
+    return (
+      <Navigate
+        replace
+        to={account.role === "admin" ? "/admin" : "/dashboard"}
+      />
+    );
   }
   return <Outlet />;
 }

@@ -7,13 +7,25 @@ import logoWhite from "../assets/logo-white.svg";
 
 export default function Home() {
   const { account } = useAuth();
-  const logoDestination = account ? account.role === "admin" ? "/admin" : "/dashboard" : "/";
+  const logoDestination = account
+    ? account.role === "admin"
+      ? "/admin"
+      : "/dashboard"
+    : "/";
   const root = useRef(null);
   const location = useLocation();
   useEffect(() => {
     const section = location.hash.slice(1);
     if (["top", "features", "security"].includes(section)) {
-      root.current?.querySelector(`#${section}`)?.scrollIntoView({ behavior: window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+      root.current
+        ?.querySelector(`#${section}`)
+        ?.scrollIntoView({
+          behavior: window.matchMedia?.("(prefers-reduced-motion: reduce)")
+            .matches
+            ? "auto"
+            : "smooth",
+          block: "start",
+        });
     }
   }, [location.hash]);
   useEffect(() => {
@@ -84,7 +96,8 @@ export default function Home() {
             <p>
               Your cash, GCash, spending, and savings plans deserve one clear
               picture. Track income and expenses, build category budgets, and
-              put money toward the goals that matter to you—all in one workspace.
+              put money toward the goals that matter to you—all in one
+              workspace.
             </p>
             <div className="hero-actions">
               <Link className="btn btn-hero-outline" to="/signup">
@@ -204,20 +217,79 @@ export default function Home() {
           </div>
         </div>
         <div className="feature-grid landing-extra-features">
-          <article className="feature-card"><div className="fc-icon"><Icon name="wallet" /></div><h3>Bring your wallets together</h3><p>Keep cash, digital wallets, and bank cards in one place. Give each wallet a name and expense type to organize your transactions.</p></article>
-          <article className="feature-card"><div className="fc-icon"><Icon name="budget" /></div><h3>Know what you can spend</h3><p>Compare this month’s income, expenses, and budget limits. See what remains in your budget before planning your next purchase.</p></article>
-          <article className="feature-card"><div className="fc-icon"><Icon name="plus" /></div><h3>Make saving a habit</h3><p>Create a goal with a target and date, then use Add Money to record each contribution. Watch your progress grow without rewriting the goal.</p></article>
+          <article className="feature-card">
+            <div className="fc-icon">
+              <Icon name="wallet" />
+            </div>
+            <h3>Bring your wallets together</h3>
+            <p>
+              Keep cash, digital wallets, and bank cards in one place. Give each
+              wallet a name and expense type to organize your transactions.
+            </p>
+          </article>
+          <article className="feature-card">
+            <div className="fc-icon">
+              <Icon name="budget" />
+            </div>
+            <h3>Know what you can spend</h3>
+            <p>
+              Compare this month’s income, expenses, and budget limits. See what
+              remains in your budget before planning your next purchase.
+            </p>
+          </article>
+          <article className="feature-card">
+            <div className="fc-icon">
+              <Icon name="plus" />
+            </div>
+            <h3>Make saving a habit</h3>
+            <p>
+              Create a goal with a target and date, then use Add Money to record
+              each contribution. Watch your progress grow without rewriting the
+              goal.
+            </p>
+          </article>
         </div>
       </section>
 
       <section className="section landing-how">
-        <div className="section-head"><span className="eyebrow">A routine you can keep</span><h2>From scattered numbers to a plan</h2><p>Built for everyday expenses, student budgets, and the milestones you’re saving toward.</p></div>
-        <div className="feature-grid">
-          <article className="feature-card"><span className="eyebrow">01 · Set up</span><h3>Start with your wallets</h3><p>Add your wallets and choose their expense types. Choose the date format that feels familiar.</p></article>
-          <article className="feature-card"><span className="eyebrow">02 · Record</span><h3>Give every transaction a place</h3><p>Log your allowance, salary, purchases, and bills. Set category spending limits with a budget process.</p></article>
-          <article className="feature-card"><span className="eyebrow">03 · Review</span><h3>Turn progress into your next step</h3><p>Review your dashboard, explore spending categories, and add contributions to your savings goals.</p></article>
+        <div className="section-head">
+          <span className="eyebrow">A routine you can keep</span>
+          <h2>From scattered numbers to a plan</h2>
+          <p>
+            Built for everyday expenses, student budgets, and the milestones
+            you’re saving toward.
+          </p>
         </div>
-        <p className="landing-note">You record and manage your transactions. PennyLedger does not connect to your bank or move money between financial accounts.</p>
+        <div className="feature-grid">
+          <article className="feature-card">
+            <span className="eyebrow">01 · Set up</span>
+            <h3>Start with your wallets</h3>
+            <p>
+              Add your wallets and choose their expense types. Choose the date
+              format that feels familiar.
+            </p>
+          </article>
+          <article className="feature-card">
+            <span className="eyebrow">02 · Record</span>
+            <h3>Give every transaction a place</h3>
+            <p>
+              Log your allowance, salary, purchases, and bills. Set category
+              spending limits with a budget process.
+            </p>
+          </article>
+          <article className="feature-card">
+            <span className="eyebrow">03 · Review</span>
+            <h3>Turn progress into your next step</h3>
+            <p>
+              Review your dashboard, explore spending categories, and add
+              contributions to your savings goals.
+            </p>
+          </article>
+        </div>
+        <p className="landing-note">
+          You record and manage your transactions. PennyLedger does not connect
+          to your bank or move money between financial accounts.
+        </p>
       </section>
 
       <section className="section" id="security" style={{ paddingTop: "0" }}>
@@ -231,16 +303,38 @@ export default function Home() {
           </p>
         </div>
         <div className="feature-grid">
-          <article className="feature-card"><h3>Verified account access</h3><p>Verify your email before signing in. Passwords are stored as hashes, and password changes sign you out of existing sessions.</p></article>
-          <article className="feature-card"><h3>Your own financial workspace</h3><p>Personal records are checked against the signed-in account. Administrator tools use a separate role for account management.</p></article>
-          <article className="feature-card"><h3>Control your records</h3><p>Export your ledger data and archive transactions you want to keep out of your main history. Restore archived records when you need them.</p></article>
+          <article className="feature-card">
+            <h3>Verified account access</h3>
+            <p>
+              Verify your email before signing in. Passwords are stored as
+              hashes, and password changes sign you out of existing sessions.
+            </p>
+          </article>
+          <article className="feature-card">
+            <h3>Your own financial workspace</h3>
+            <p>
+              Personal records are checked against the signed-in account.
+              Administrator tools use a separate role for account management.
+            </p>
+          </article>
+          <article className="feature-card">
+            <h3>Control your records</h3>
+            <p>
+              Export your ledger data and archive transactions you want to keep
+              out of your main history. Restore archived records when you need
+              them.
+            </p>
+          </article>
         </div>
       </section>
 
       <div className="cta-band">
         <div>
           <h2>Ready to take control of your money?</h2>
-          <p>Build a budget, organize your wallets, and take the next step toward your savings goals.</p>
+          <p>
+            Build a budget, organize your wallets, and take the next step toward
+            your savings goals.
+          </p>
         </div>
         <Link className="btn btn-primary" to="/signup">
           Get Started — It's Free

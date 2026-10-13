@@ -1,5 +1,5 @@
-import ErrorForm, { FailureMessage } from '../components/ErrorForm';
-import { fetchAllPages } from '../lib/use-paged-resource';
+import ErrorForm, { FailureMessage } from "../components/ErrorForm";
+import { fetchAllPages } from "../lib/use-paged-resource";
 import { useAuth } from "../state/AuthContext";
 import { api } from "../lib/api";
 import { useEffect, useRef, useState } from "react";
@@ -37,10 +37,10 @@ export default function Settings() {
     notify,
     updateProfile,
   } = app;
-  const [profileError, setProfileError] = useState('');
-  const [accountAction, setAccountAction] = useState('archive');
+  const [profileError, setProfileError] = useState("");
+  const [accountAction, setAccountAction] = useState("archive");
   const [accountBusy, setAccountBusy] = useState(false);
-  const [accountError, setAccountError] = useState('');
+  const [accountError, setAccountError] = useState("");
   const [exportBusy, setExportBusy] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -52,7 +52,10 @@ export default function Settings() {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [profileBusy, setProfileBusy] = useState(false);
   useEffect(() => {
-    if (!pendingPhoto) { setPhotoPreview(null); return; }
+    if (!pendingPhoto) {
+      setPhotoPreview(null);
+      return;
+    }
     const url = URL.createObjectURL(pendingPhoto);
     setPhotoPreview(url);
     return () => URL.revokeObjectURL(url);
@@ -63,12 +66,18 @@ export default function Settings() {
     const form = new FormData(event.currentTarget);
     const firstName = form.get("first_name").trim();
     const lastName = form.get("last_name").trim();
-    if (!firstName || !lastName) return notify("Please enter your first and last name.");
+    if (!firstName || !lastName)
+      return notify("Please enter your first and last name.");
     setProfileBusy(true);
-    setProfileError('');
+    setProfileError("");
     let identitySaved = false;
     try {
-      const revised = await updateIdentity(firstName, lastName, form.get("email"), form.get("phone").trim());
+      const revised = await updateIdentity(
+        firstName,
+        lastName,
+        form.get("email"),
+        form.get("phone").trim(),
+      );
       updateProfile(revised);
       identitySaved = true;
       if (pendingPhoto) {
@@ -84,10 +93,13 @@ export default function Settings() {
       setRemovePhoto(false);
       if (photoInput.current) photoInput.current.value = "";
     } catch (error) {
-      if (identitySaved) error.message = `Profile details saved, but the photo change ${error.uncertain ? 'could not be confirmed' : 'failed'}. ${error.message}`;
+      if (identitySaved)
+        error.message = `Profile details saved, but the photo change ${error.uncertain ? "could not be confirmed" : "failed"}. ${error.message}`;
       setProfileError(error);
       return;
-    } finally { setProfileBusy(false); }
+    } finally {
+      setProfileBusy(false);
+    }
     notify("Profile updated");
   }
   async function changePassword(event) {
@@ -100,14 +112,19 @@ export default function Settings() {
     try {
       // PHP verifies the current password, saves a new hash, and revokes
       // existing sessions. A successful change returns the user to login.
-      await api("/profile/password", { method: "PUT", body: {
-        current_password: form.get("current-password"),
-        new_password: form.get("new-password"),
-      } });
+      await api("/profile/password", {
+        method: "PUT",
+        body: {
+          current_password: form.get("current-password"),
+          new_password: form.get("new-password"),
+        },
+      });
       setPasswordError("");
       await logout().catch(() => {});
       window.location.hash = "#/login";
-    } catch (failure) { setPasswordError(failure); }
+    } catch (failure) {
+      setPasswordError(failure);
+    }
   }
   function photo(event) {
     const file = event.target.files?.[0];
@@ -181,44 +198,57 @@ export default function Settings() {
           </div>
           <ErrorForm failure={profileError} onSubmit={saveProfile}>
             <fieldset disabled={profileBusy} className="admin-fieldset">
-            <div className="settings-fields">
-              <Field
-                label="First name"
-                name="first_name"
-                defaultValue={profile.firstName}
-                required
-              />
-              <Field label="Last name" name="last_name" defaultValue={profile.lastName} required maxLength={100} />
-              <Field
-                label="Email"
-                name="email"
-                type="email"
-                defaultValue={profile.email}
-                required
-              />
-              <Field
-                label="Phone"
-                name="phone"
-                type="tel"
-                defaultValue={profile.phone}
-                placeholder="+63 900 000 0000"
-              />
-
-            </div>
-            <FailureMessage error={profileError} />
-            <p className="report-caption">Profile details and photo are saved when you click Save Changes.</p>
-            <button type="button" className="btn btn-outline btn-sm" onClick={(event) => {
-              event.currentTarget.form.reset();
-              setPendingPhoto(null);
-              setRemovePhoto(false);
-              if (photoInput.current) photoInput.current.value = "";
-            }}>Discard Changes</button>
-            <button
-              className="btn btn-primary btn-sm settings-save"
-              type="submit"
-            >
-              {profileBusy ? "Saving…" : "Save Changes"}
-            </button>
+              <div className="settings-fields">
+                <Field
+                  label="First name"
+                  name="first_name"
+                  defaultValue={profile.firstName}
+                  required
+                />
+                <Field
+                  label="Last name"
+                  name="last_name"
+                  defaultValue={profile.lastName}
+                  required
+                  maxLength={100}
+                />
+                <Field
+                  label="Email"
+                  name="email"
+                  type="email"
+                  defaultValue={profile.email}
+                  required
+                />
+                <Field
+                  label="Phone"
+                  name="phone"
+                  type="tel"
+                  defaultValue={profile.phone}
+                  placeholder="+63 900 000 0000"
+                />
+              </div>
+              <FailureMessage error={profileError} />
+              <p className="report-caption">
+                Profile details and photo are saved when you click Save Changes.
+              </p>
+              <button
+                type="button"
+                className="btn btn-outline btn-sm"
+                onClick={(event) => {
+                  event.currentTarget.form.reset();
+                  setPendingPhoto(null);
+                  setRemovePhoto(false);
+                  if (photoInput.current) photoInput.current.value = "";
+                }}
+              >
+                Discard Changes
+              </button>
+              <button
+                className="btn btn-primary btn-sm settings-save"
+                type="submit"
+              >
+                {profileBusy ? "Saving…" : "Save Changes"}
+              </button>
             </fieldset>
           </ErrorForm>
         </section>
@@ -247,7 +277,9 @@ export default function Settings() {
               }}
             >
               {DATE_FORMATS.map((value) => (
-                <option key={value} value={value}>{formatDate(localDate(), value)}</option>
+                <option key={value} value={value}>
+                  {formatDate(localDate(), value)}
+                </option>
               ))}
             </select>
           </SettingRow>
@@ -255,9 +287,7 @@ export default function Settings() {
         <section className="card settings-card">
           <div className="card-head">
             <h2>Security</h2>
-            <p>
-              Your password is managed by the PennyLedger server.
-            </p>
+            <p>Your password is managed by the PennyLedger server.</p>
           </div>
           <ErrorForm failure={passwordError} onSubmit={changePassword}>
             <PasswordField
@@ -292,7 +322,6 @@ export default function Settings() {
               Update Password
             </button>
           </ErrorForm>
-
         </section>
         <section className="card settings-card">
           <div className="card-head">
@@ -309,9 +338,20 @@ export default function Settings() {
           </SettingRow>
         </section>
         <section className="card settings-card">
-          <div className="card-head"><h2>Activity Logs</h2><p>Your private account activity.</p></div>
-          <SettingRow title="View activity logs" description="Search and filter your account history">
-            <Link to="/settings/activity-logs" className="btn btn-outline btn-sm">Open Activity Logs</Link>
+          <div className="card-head">
+            <h2>Activity Logs</h2>
+            <p>Your private account activity.</p>
+          </div>
+          <SettingRow
+            title="View activity logs"
+            description="Search and filter your account history"
+          >
+            <Link
+              to="/settings/activity-logs"
+              className="btn btn-outline btn-sm"
+            >
+              Open Activity Logs
+            </Link>
           </SettingRow>
         </section>
         <section className="card settings-card danger-card">
@@ -329,70 +369,170 @@ export default function Settings() {
               onClick={async () => {
                 setExportBusy(true);
                 try {
-                const [savedProfile, budgets, wallets, goals] = await Promise.all([
-                  api('/profile'), api('/budgets'), api('/wallets'), api('/goals'),
-                ]);
-                const transactions = await fetchAllPages("/transactions");
-                const logs = await fetchAllPages("/report-logs");
-                const reports = [];
-                for (const log of logs) reports.push(await api(`/report-logs/${log.id}`));
-                const data = {
-                  exportedAt: new Date().toISOString(),
-                  profile: savedProfile,
-                  transactions,
-                  budgets,
-                  wallets,
-                  goals,
-                  reports,
+                  const [savedProfile, budgets, wallets, goals] =
+                    await Promise.all([
+                      api("/profile"),
+                      api("/budgets"),
+                      api("/wallets"),
+                      api("/goals"),
+                    ]);
+                  const transactions = await fetchAllPages("/transactions");
+                  const logs = await fetchAllPages("/report-logs");
+                  const reports = [];
+                  for (const log of logs)
+                    reports.push(await api(`/report-logs/${log.id}`));
+                  const data = {
+                    exportedAt: new Date().toISOString(),
+                    profile: savedProfile,
+                    transactions,
+                    budgets,
+                    wallets,
+                    goals,
+                    reports,
 
-                  preferences: { currency, dateFormat, theme: app.theme },
-                };
-                download(
-                  JSON.stringify(data, null, 2),
-                  "pennyledger-data-export.json",
-                  "application/json",
-                );
-                notify("Data export downloaded");
-                } catch (failure) { notify(`Export failed: ${failure.message}`); }
-                finally { setExportBusy(false); }
+                    preferences: { currency, dateFormat, theme: app.theme },
+                  };
+                  download(
+                    JSON.stringify(data, null, 2),
+                    "pennyledger-data-export.json",
+                    "application/json",
+                  );
+                  notify("Data export downloaded");
+                } catch (failure) {
+                  notify(`Export failed: ${failure.message}`);
+                } finally {
+                  setExportBusy(false);
+                }
               }}
             >
               {exportBusy ? "Preparing export?" : "Export"}
             </button>
           </SettingRow>
-          <SettingRow title="Archive account" description="Disable sign-in and preserve your data. An administrator can restore it; your email stays reserved." danger>
-            <button className="btn btn-outline btn-sm" onClick={() => { setAccountAction('archive'); setDeleteOpen(true); setDeleteText(''); setDeletePassword(''); setAccountError(''); }}>Archive Account</button>
+          <SettingRow
+            title="Archive account"
+            description="Disable sign-in and preserve your data. An administrator can restore it; your email stays reserved."
+            danger
+          >
+            <button
+              className="btn btn-outline btn-sm"
+              onClick={() => {
+                setAccountAction("archive");
+                setDeleteOpen(true);
+                setDeleteText("");
+                setDeletePassword("");
+                setAccountError("");
+              }}
+            >
+              Archive Account
+            </button>
           </SettingRow>
-          <SettingRow title="Permanently delete account" description="Erase your account, ledger records, and profile photo. Your email becomes available for registration. This cannot be undone." danger>
-            <button className="btn btn-danger btn-sm" onClick={() => { setAccountAction('delete'); setDeleteOpen(true); setDeleteText(''); setDeletePassword(''); setAccountError(''); }}>Permanently Delete Account</button>
+          <SettingRow
+            title="Permanently delete account"
+            description="Erase your account, ledger records, and profile photo. Your email becomes available for registration. This cannot be undone."
+            danger
+          >
+            <button
+              className="btn btn-danger btn-sm"
+              onClick={() => {
+                setAccountAction("delete");
+                setDeleteOpen(true);
+                setDeleteText("");
+                setDeletePassword("");
+                setAccountError("");
+              }}
+            >
+              Permanently Delete Account
+            </button>
           </SettingRow>
         </section>
       </div>
-      {deleteOpen && <Modal title={accountAction === 'archive' ? 'Archive your account?' : 'Permanently delete your account?'} onClose={() => { if (!accountBusy) setDeleteOpen(false); }}>
-        <ErrorForm failure={accountError} onSubmit={async (event) => {
-          event.preventDefault();
-          const confirmation = accountAction === 'archive' ? 'ARCHIVE' : 'DELETE';
-          if (deleteText !== confirmation) return setAccountError('Type ' + confirmation + ' to confirm');
-          setAccountBusy(true); setAccountError('');
-          try {
-            await api(accountAction === 'archive' ? '/profile/archive' : '/profile', { method: accountAction === 'archive' ? 'PATCH' : 'DELETE', body: { password: deletePassword } });
-            await logout().catch(() => {});
-            window.location.hash = '#/login';
-          } catch (failure) { setAccountError(failure); }
-          finally { setAccountBusy(false); }
-        }}>
-          <fieldset disabled={accountBusy} className="admin-fieldset">
-            <p className="report-caption">{accountAction === 'archive' ? 'Your data and email remain reserved. Contact an administrator to restore access.' : 'Your account, all ledger records, and uploaded profile photo will be permanently removed. This cannot be undone.'}</p>
-            <Field label={accountAction === 'archive' ? 'Type ARCHIVE to confirm' : 'Type DELETE to confirm'} value={deleteText} onChange={(event) => setDeleteText(event.target.value)} required />
-            <PasswordField label="Confirm your password" name="password" value={deletePassword} onChange={(event) => setDeletePassword(event.target.value)} autoComplete="current-password" required />
-            <FailureMessage error={accountError} />
-            <div className="modal-actions">
-              <button type="button" className="btn btn-outline" onClick={() => setDeleteOpen(false)}>Cancel</button>
-              <button type="submit" className="btn btn-danger" disabled={accountBusy || !!accountError?.uncertain}>{accountBusy ? 'Please wait?' : accountAction === 'archive' ? 'Archive Account' : 'Permanently Delete Account'}</button>
-            </div>
-          </fieldset>
-        </ErrorForm>
-      </Modal>}
+      {deleteOpen && (
+        <Modal
+          title={
+            accountAction === "archive"
+              ? "Archive your account?"
+              : "Permanently delete your account?"
+          }
+          onClose={() => {
+            if (!accountBusy) setDeleteOpen(false);
+          }}
+        >
+          <ErrorForm
+            failure={accountError}
+            onSubmit={async (event) => {
+              event.preventDefault();
+              const confirmation =
+                accountAction === "archive" ? "ARCHIVE" : "DELETE";
+              if (deleteText !== confirmation)
+                return setAccountError("Type " + confirmation + " to confirm");
+              setAccountBusy(true);
+              setAccountError("");
+              try {
+                await api(
+                  accountAction === "archive" ? "/profile/archive" : "/profile",
+                  {
+                    method: accountAction === "archive" ? "PATCH" : "DELETE",
+                    body: { password: deletePassword },
+                  },
+                );
+                await logout().catch(() => {});
+                window.location.hash = "#/login";
+              } catch (failure) {
+                setAccountError(failure);
+              } finally {
+                setAccountBusy(false);
+              }
+            }}
+          >
+            <fieldset disabled={accountBusy} className="admin-fieldset">
+              <p className="report-caption">
+                {accountAction === "archive"
+                  ? "Your data and email remain reserved. Contact an administrator to restore access."
+                  : "Your account, all ledger records, and uploaded profile photo will be permanently removed. This cannot be undone."}
+              </p>
+              <Field
+                label={
+                  accountAction === "archive"
+                    ? "Type ARCHIVE to confirm"
+                    : "Type DELETE to confirm"
+                }
+                value={deleteText}
+                onChange={(event) => setDeleteText(event.target.value)}
+                required
+              />
+              <PasswordField
+                label="Confirm your password"
+                name="password"
+                value={deletePassword}
+                onChange={(event) => setDeletePassword(event.target.value)}
+                autoComplete="current-password"
+                required
+              />
+              <FailureMessage error={accountError} />
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  className="btn btn-outline"
+                  onClick={() => setDeleteOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-danger"
+                  disabled={accountBusy || !!accountError?.uncertain}
+                >
+                  {accountBusy
+                    ? "Please wait?"
+                    : accountAction === "archive"
+                      ? "Archive Account"
+                      : "Permanently Delete Account"}
+                </button>
+              </div>
+            </fieldset>
+          </ErrorForm>
+        </Modal>
+      )}
     </>
   );
 }

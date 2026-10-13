@@ -1,9 +1,9 @@
-import ErrorForm from '../components/ErrorForm';
-import DataSection from '../components/DataSection';
-import PagedList from '../components/PagedList';
-import { usePagedResource } from '../lib/use-paged-resource';
-import SpendingInsights from '../components/SpendingInsights';
-import BudgetPerformance from '../components/BudgetPerformance';
+import ErrorForm from "../components/ErrorForm";
+import DataSection from "../components/DataSection";
+import PagedList from "../components/PagedList";
+import { usePagedResource } from "../lib/use-paged-resource";
+import SpendingInsights from "../components/SpendingInsights";
+import BudgetPerformance from "../components/BudgetPerformance";
 import ReportSnapshot from "../components/ReportSnapshot";
 import { api } from "../lib/api";
 import { monthlyBudgetProgress } from "../lib/monthly-budget";
@@ -28,7 +28,11 @@ export function ReportTable({ records, onView }) {
   const [error, setError] = useState("");
   return (
     <div className="table-scroll">
-      {error && <p role="alert" className="form-error">{error}</p>}
+      {error && (
+        <p role="alert" className="form-error">
+          {error}
+        </p>
+      )}
       <table className="archive-table">
         <thead>
           <tr>
@@ -72,14 +76,30 @@ export function ReportTable({ records, onView }) {
                       setPending(report.id);
                       setError("");
                       try {
-                        await archiveReport(report.id, isArchived(report.archived));
-                        notify(isArchived(report.archived) ? "Report restored" : "Report archived");
-                      } catch (failure) { setError(failure.message); }
-                      finally { setPending(null); }
+                        await archiveReport(
+                          report.id,
+                          isArchived(report.archived),
+                        );
+                        notify(
+                          isArchived(report.archived)
+                            ? "Report restored"
+                            : "Report archived",
+                        );
+                      } catch (failure) {
+                        setError(failure.message);
+                      } finally {
+                        setPending(null);
+                      }
                     }}
                   >
-                    <Icon name={isArchived(report.archived) ? "restore" : "archive"} />
-                    {pending === report.id ? "Saving…" : isArchived(report.archived) ? "Restore" : "Archive"}
+                    <Icon
+                      name={isArchived(report.archived) ? "restore" : "archive"}
+                    />
+                    {pending === report.id
+                      ? "Saving…"
+                      : isArchived(report.archived)
+                        ? "Restore"
+                        : "Archive"}
                   </button>
                 </div>
               </td>
@@ -100,7 +120,8 @@ export function ReportTable({ records, onView }) {
 
 export function ReportPreview({ report }) {
   const { money } = useApp();
-  if (report.type === "income-expense" && report.comparison) return <ReportSnapshot report={report} />;
+  if (report.type === "income-expense" && report.comparison)
+    return <ReportSnapshot report={report} />;
   if (report.type === "income-expense") {
     const max = Math.max(
       ...report.series.map((month) => Math.max(month.income, month.expense)),
@@ -202,8 +223,24 @@ export function ReportPreview({ report }) {
     );
   }
   if (report.type === "budget") {
-    const spent = report.budgetPerformance?.summary.total_spent ?? report.budgets.filter(b => !report.budgets.some(plan => plan.isMonthlyPlan) || b.isMonthlyPlan).reduce((sum, item) => sum + item.spent, 0);
-    const limit = report.budgetPerformance?.summary.total_allocated ?? report.budgets.filter(b => !report.budgets.some(plan => plan.isMonthlyPlan) || b.isMonthlyPlan).reduce((sum, item) => sum + item.limit, 0);
+    const spent =
+      report.budgetPerformance?.summary.total_spent ??
+      report.budgets
+        .filter(
+          (b) =>
+            !report.budgets.some((plan) => plan.isMonthlyPlan) ||
+            b.isMonthlyPlan,
+        )
+        .reduce((sum, item) => sum + item.spent, 0);
+    const limit =
+      report.budgetPerformance?.summary.total_allocated ??
+      report.budgets
+        .filter(
+          (b) =>
+            !report.budgets.some((plan) => plan.isMonthlyPlan) ||
+            b.isMonthlyPlan,
+        )
+        .reduce((sum, item) => sum + item.limit, 0);
     return (
       <>
         <Summary
@@ -258,13 +295,29 @@ export function ReportPreview({ report }) {
 }
 
 export default function Reports() {
-  const { transactions: recentTransactions, analyticsTransactions: transactions = recentTransactions, budgets, goals, reports, addReport, notify } = useApp();
+  const {
+    transactions: recentTransactions,
+    analyticsTransactions: transactions = recentTransactions,
+    budgets,
+    goals,
+    reports,
+    addReport,
+    notify,
+  } = useApp();
   const [type, setType] = useState("income-expense");
   const [range, setRange] = useState(() => localDate().slice(0, 7));
   const [generating, setGenerating] = useState(false);
   const [generationError, setGenerationError] = useState("");
   const generatingRef = useRef(false);
-  useEffect(() => { const cleanup = () => document.body.classList.remove("generated-report-print"); window.addEventListener("afterprint", cleanup); return () => { cleanup(); window.removeEventListener("afterprint", cleanup); }; }, []);
+  useEffect(() => {
+    const cleanup = () =>
+      document.body.classList.remove("generated-report-print");
+    window.addEventListener("afterprint", cleanup);
+    return () => {
+      cleanup();
+      window.removeEventListener("afterprint", cleanup);
+    };
+  }, []);
   const [view, setView] = useState("active");
   const [historyOpen, setHistoryOpen] = useState(false);
   const [historyError, setHistoryError] = useState("");
@@ -272,32 +325,72 @@ export default function Reports() {
   const [snapshot, setSnapshot] = useState(null);
   const preview = useRef(null);
   const reportRanges = buildReportRanges(transactions, budgets);
-  if (!reportRanges.some(item => item.key === range)) reportRanges.unshift({ key: range, label: snapshot?.period || range });
-  const report = snapshot || createReport(type, range, transactions, budgets, goals);
+  if (!reportRanges.some((item) => item.key === range))
+    reportRanges.unshift({ key: range, label: snapshot?.period || range });
+  const report =
+    snapshot || createReport(type, range, transactions, budgets, goals);
   const records = reports.filter(
     (report) => isArchived(report.archived) === (view === "archived"),
   );
-  const list = usePagedResource('/report-logs', { archived: String(view === 'archived') }, records);
+  const list = usePagedResource(
+    "/report-logs",
+    { archived: String(view === "archived") },
+    records,
+  );
   async function generate(event) {
     event.preventDefault();
     if (generatingRef.current || generationError?.uncertain) return;
-    generatingRef.current = true; setGenerating(true); setGenerationError("");
+    generatingRef.current = true;
+    setGenerating(true);
+    setGenerationError("");
     try {
-      const [freshTransactions, freshBudgets, freshGoals] = await Promise.all([api("/reports?type=ledger"), api("/budgets"), api("/goals")]);
-      const value = createReport(type, range, freshTransactions, monthlyBudgetProgress(freshBudgets, freshTransactions), freshGoals);
+      const [freshTransactions, freshBudgets, freshGoals] = await Promise.all([
+        api("/reports?type=ledger"),
+        api("/budgets"),
+        api("/goals"),
+      ]);
+      const value = createReport(
+        type,
+        range,
+        freshTransactions,
+        monthlyBudgetProgress(freshBudgets, freshTransactions),
+        freshGoals,
+      );
       if (type === "budget" && range !== "this-year") {
         const [year, month] = range.split("-");
-        const performance = await api("/reports/budget-performance?year=" + year + "&month=" + Number(month));
+        const performance = await api(
+          "/reports/budget-performance?year=" +
+            year +
+            "&month=" +
+            Number(month),
+        );
         value.budgetPerformance = performance;
-        value.budgets = performance.budgets.map(b => ({ id: b.budget_id, category: b.category, limit: b.allocated_limit, spent: b.total_spent, isMonthlyPlan: b.is_monthly_plan }));
+        value.budgets = performance.budgets.map((b) => ({
+          id: b.budget_id,
+          category: b.category,
+          limit: b.allocated_limit,
+          spent: b.total_spent,
+          isMonthlyPlan: b.is_monthly_plan,
+        }));
       }
-      await addReport({ name: value.name + " - " + value.period, type, range, period: value.period, snapshot: value });
+      await addReport({
+        name: value.name + " - " + value.period,
+        type,
+        range,
+        period: value.period,
+        snapshot: value,
+      });
       setSnapshot(value);
-      setView("active"); setHistoryOpen(true);
+      setView("active");
+      setHistoryOpen(true);
       preview.current?.scrollIntoView({ behavior: "smooth", block: "center" });
       notify("Report generated and added to logs");
-    } catch (failure) { setGenerationError(failure); }
-    finally { generatingRef.current = false; setGenerating(false); }
+    } catch (failure) {
+      setGenerationError(failure);
+    } finally {
+      generatingRef.current = false;
+      setGenerating(false);
+    }
   }
   return (
     <>
@@ -305,95 +398,146 @@ export default function Reports() {
         title="Reports"
         description="Generate insights from your data and browse past reports"
       />
-      <section className="card report-card" style={{ marginBottom: 18 }}><DataSection sections={["analyticsTransactions", "budgets", "goals"]}><ErrorForm failure={generationError} onSubmit={generate}>
-        <div className="card-head">
-          <h2>Generate a Report</h2>
-        </div>
-        <div className="report-types">
-          {reportTypes.map((item) => (
-            <button
-              type="button"
-              key={item.id}
-              className={`report-type${type === item.id ? " active" : ""}`}
-              disabled={generating}
-              aria-pressed={type === item.id}
-              onClick={() => {
-                setType(item.id);
-                setSnapshot(null);
-              }}
-            >
-              <Icon name={item.icon} />
-              <strong>{item.name}</strong>
-              <span>{item.description}</span>
-            </button>
-          ))}
-        </div>
-        <div className="report-controls">
-          <div className="field">
-            <label htmlFor="report-range">Period</label>
-            <select
-              id="report-range"
-              disabled={generating}
-              value={range}
-              onChange={(event) => {
-                setRange(event.target.value);
-                setSnapshot(null);
-              }}
-            >
-              {reportRanges.map((item) => (
-                <option key={item.key} value={item.key}>
-                  {item.label}
-                </option>
+      <section className="card report-card" style={{ marginBottom: 18 }}>
+        <DataSection sections={["analyticsTransactions", "budgets", "goals"]}>
+          <ErrorForm failure={generationError} onSubmit={generate}>
+            <div className="card-head">
+              <h2>Generate a Report</h2>
+            </div>
+            <div className="report-types">
+              {reportTypes.map((item) => (
+                <button
+                  type="button"
+                  key={item.id}
+                  className={`report-type${type === item.id ? " active" : ""}`}
+                  disabled={generating}
+                  aria-pressed={type === item.id}
+                  onClick={() => {
+                    setType(item.id);
+                    setSnapshot(null);
+                  }}
+                >
+                  <Icon name={item.icon} />
+                  <strong>{item.name}</strong>
+                  <span>{item.description}</span>
+                </button>
               ))}
-            </select>
-          </div>
-          <button type="submit" className="btn btn-primary" disabled={generating || !!generationError?.uncertain}>
-            <Icon name="reports" />
-            {generating ? "Generating..." : "Generate Report"}
-          </button>
-        </div>
-        <div className="report-actions report-action-toolbar" role="toolbar" aria-label="Report export actions">
-          <button
-            type="button"
-            className="btn btn-outline btn-sm"
-            onClick={() => {
-              download(
-                toCsv(reportCsvRows(report)),
-                `pennyledger-${report.type}-${report.range}.csv`,
-                "text/csv;charset=utf-8",
-              );
-              notify("CSV downloaded");
-            }}
-          >
-            <Icon name="download" />
-            Export CSV
-          </button>
-          <button
-            type="button"
-            className="btn btn-outline btn-sm"
-            onClick={() => { document.body.classList.add("generated-report-print"); try { window.print(); } catch { document.body.classList.remove("generated-report-print"); } }}
-          >
-            <Icon name="print" />
-            Print Report
-          </button>
-        </div>
-        {generationError && <p role="alert" className="form-error">{generationError.message || generationError}</p>}
-        <p className="report-caption" role="status">{generating ? "Refreshing records and saving report..." : snapshot ? "Saved report snapshot - ready to export or print" : "Live preview - click Generate Report to save this snapshot"}</p>
-        <div className="report-preview" ref={preview}>
-          <h2 className="print-title">
-            {report.name} — {report.period}
-          </h2>
-          <ReportPreview report={report} />
-        </div>
-
-      </ErrorForm></DataSection></section>
+            </div>
+            <div className="report-controls">
+              <div className="field">
+                <label htmlFor="report-range">Period</label>
+                <select
+                  id="report-range"
+                  disabled={generating}
+                  value={range}
+                  onChange={(event) => {
+                    setRange(event.target.value);
+                    setSnapshot(null);
+                  }}
+                >
+                  {reportRanges.map((item) => (
+                    <option key={item.key} value={item.key}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={generating || !!generationError?.uncertain}
+              >
+                <Icon name="reports" />
+                {generating ? "Generating..." : "Generate Report"}
+              </button>
+            </div>
+            <div
+              className="report-actions report-action-toolbar"
+              role="toolbar"
+              aria-label="Report export actions"
+            >
+              <button
+                type="button"
+                className="btn btn-outline btn-sm"
+                onClick={() => {
+                  download(
+                    toCsv(reportCsvRows(report)),
+                    `pennyledger-${report.type}-${report.range}.csv`,
+                    "text/csv;charset=utf-8",
+                  );
+                  notify("CSV downloaded");
+                }}
+              >
+                <Icon name="download" />
+                Export CSV
+              </button>
+              <button
+                type="button"
+                className="btn btn-outline btn-sm"
+                onClick={() => {
+                  document.body.classList.add("generated-report-print");
+                  try {
+                    window.print();
+                  } catch {
+                    document.body.classList.remove("generated-report-print");
+                  }
+                }}
+              >
+                <Icon name="print" />
+                Print Report
+              </button>
+            </div>
+            {generationError && (
+              <p role="alert" className="form-error">
+                {generationError.message || generationError}
+              </p>
+            )}
+            <p className="report-caption" role="status">
+              {generating
+                ? "Refreshing records and saving report..."
+                : snapshot
+                  ? "Saved report snapshot - ready to export or print"
+                  : "Live preview - click Generate Report to save this snapshot"}
+            </p>
+            <div className="report-preview" ref={preview}>
+              <h2 className="print-title">
+                {report.name} — {report.period}
+              </h2>
+              <ReportPreview report={report} />
+            </div>
+          </ErrorForm>
+        </DataSection>
+      </section>
       <BudgetPerformance />
       <SpendingInsights reviewOnly />
-      <details className="card report-logs report-history" open={historyOpen} onToggle={(event) => setHistoryOpen(event.currentTarget.open)}>
-        <summary>Saved report history ({list.loading || list.error ? "?" : list.total} {view})</summary>
+      <details
+        className="card report-logs report-history"
+        open={historyOpen}
+        onToggle={(event) => setHistoryOpen(event.currentTarget.open)}
+      >
+        <summary>
+          Saved report history ({list.loading || list.error ? "?" : list.total}{" "}
+          {view})
+        </summary>
         <div className="card-head">
           <h2>Report Logs</h2>
-          <button className="btn btn-outline btn-sm" disabled={historyPending} onClick={async () => { setHistoryPending(true); setHistoryError(""); try { list.retry(); } catch (failure) { setHistoryError(failure.message); } finally { setHistoryPending(false); } }}>{historyPending ? "Refreshing..." : "Refresh logs"}</button>
+          <button
+            className="btn btn-outline btn-sm"
+            disabled={historyPending}
+            onClick={async () => {
+              setHistoryPending(true);
+              setHistoryError("");
+              try {
+                list.retry();
+              } catch (failure) {
+                setHistoryError(failure.message);
+              } finally {
+                setHistoryPending(false);
+              }
+            }}
+          >
+            {historyPending ? "Refreshing..." : "Refresh logs"}
+          </button>
           <span className="muted-tag">
             {list.loading || list.error ? "?" : list.total} {view} reports
           </span>
@@ -408,31 +552,56 @@ export default function Reports() {
               {
                 value: "archived",
                 label: "Archived",
-                count: reports.filter((report) => isArchived(report.archived)).length,
+                count: reports.filter((report) => isArchived(report.archived))
+                  .length,
               },
             ]}
           />
         </div>
-        {historyError && <p role="alert" className="form-error">{historyError}</p>}
-        <PagedList list={list}><ReportTable
-          records={list.items}
-          onView={async (record) => {
-            if (generating || historyPending) return;
-            setHistoryPending(true); setHistoryError("");
-            try {
-              const saved = record.snapshot ? record : await api("/report-logs/" + record.id);
-              const value = saved.snapshot;
-              if (!value || !Array.isArray(value.series) || !Array.isArray(value.categories) || !Array.isArray(value.budgets) || !Array.isArray(value.goals)) {
-                throw new Error("This report has no valid saved snapshot. Generate a new report for this period.");
+        {historyError && (
+          <p role="alert" className="form-error">
+            {historyError}
+          </p>
+        )}
+        <PagedList list={list}>
+          <ReportTable
+            records={list.items}
+            onView={async (record) => {
+              if (generating || historyPending) return;
+              setHistoryPending(true);
+              setHistoryError("");
+              try {
+                const saved = record.snapshot
+                  ? record
+                  : await api("/report-logs/" + record.id);
+                const value = saved.snapshot;
+                if (
+                  !value ||
+                  !Array.isArray(value.series) ||
+                  !Array.isArray(value.categories) ||
+                  !Array.isArray(value.budgets) ||
+                  !Array.isArray(value.goals)
+                ) {
+                  throw new Error(
+                    "This report has no valid saved snapshot. Generate a new report for this period.",
+                  );
+                }
+                setType(saved.type);
+                setRange(saved.range);
+                setSnapshot(value);
+                preview.current?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "center",
+                });
+                notify("Loaded saved report: " + saved.name);
+              } catch (failure) {
+                setHistoryError(failure.message);
+              } finally {
+                setHistoryPending(false);
               }
-              setType(saved.type); setRange(saved.range); setSnapshot(value);
-              preview.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-              notify("Loaded saved report: " + saved.name);
-            } catch (failure) { setHistoryError(failure.message); }
-            finally { setHistoryPending(false); }
-
-          }}
-        /></PagedList>
+            }}
+          />
+        </PagedList>
       </details>
     </>
   );

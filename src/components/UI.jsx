@@ -4,7 +4,7 @@ import { useApp } from "../state/AppContext";
 import { useAuth } from "../state/AuthContext";
 import { progress } from "../lib/format";
 import { budgetStatus } from "../lib/budget-status";
-import { useFieldError } from './ErrorForm';
+import { useFieldError } from "./ErrorForm";
 import logoBlack from "../assets/logo-black.svg";
 import logoWhite from "../assets/logo-white.svg";
 
@@ -117,7 +117,10 @@ export function Icon({ name, ...props }) {
 export function Logo() {
   const { account } = useAuth();
   return (
-    <Link to={account ? account.role === "admin" ? "/admin" : "/dashboard" : "/"} className="logo">
+    <Link
+      to={account ? (account.role === "admin" ? "/admin" : "/dashboard") : "/"}
+      className="logo"
+    >
       <img className="logo-img logo-light" src={logoBlack} alt="PennyLedger" />
       <img className="logo-img logo-dark" src={logoWhite} alt="PennyLedger" />
     </Link>
@@ -235,7 +238,12 @@ export function Field({ label, error, children, ...props }) {
       <label htmlFor={id}>{label}</label>
       {children || (
         <div className="input-wrap">
-          <input {...props} id={id} aria-invalid={!!error} aria-describedby={error ? `${id}-error` : undefined} />
+          <input
+            {...props}
+            id={id}
+            aria-invalid={!!error}
+            aria-describedby={error ? `${id}-error` : undefined}
+          />
         </div>
       )}
       {error && (
@@ -282,7 +290,11 @@ export function PasswordField({
           <Icon name="eye" />
         </button>
       </div>
-      {error && <small className="hint form-error" role="alert" id={`${id}-error`}>{error}</small>}
+      {error && (
+        <small className="hint form-error" role="alert" id={`${id}-error`}>
+          {error}
+        </small>
+      )}
     </div>
   );
 }
@@ -334,8 +346,9 @@ export function BudgetRow({ budget }) {
         value={progress(budget.spent, budget.limit)}
         fill={over ? "red" : budget.category === "Groceries" ? "green" : "blue"}
       />
-      <p className={over ? 'budget-overage' : 'report-caption'}>
-        {status.label} · {status.percent.toFixed(1)}% used{over ? ` · Exceeded by ${money(status.exceeded)}` : ''}
+      <p className={over ? "budget-overage" : "report-caption"}>
+        {status.label} · {status.percent.toFixed(1)}% used
+        {over ? ` · Exceeded by ${money(status.exceeded)}` : ""}
       </p>
     </div>
   );

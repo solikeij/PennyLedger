@@ -1,4 +1,4 @@
-import ErrorForm from '../components/ErrorForm';
+import ErrorForm from "../components/ErrorForm";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../state/AuthContext";
@@ -82,7 +82,12 @@ function AdminDate({ value, withTime = false }) {
   const { dateFormat } = useApp();
   const parsed = new Date(value);
   if (!value || Number.isNaN(parsed.getTime())) return "—";
-  return <>{formatDate(localDate(parsed), dateFormat)}{withTime ? `, ${parsed.toLocaleTimeString()}` : ""}</>;
+  return (
+    <>
+      {formatDate(localDate(parsed), dateFormat)}
+      {withTime ? `, ${parsed.toLocaleTimeString()}` : ""}
+    </>
+  );
 }
 
 function ActivityTable({ entries }) {
@@ -99,7 +104,9 @@ function ActivityTable({ entries }) {
         <tbody>
           {entries.map((entry, index) => (
             <tr key={index}>
-              <td><AdminDate value={entry.timestamp} withTime /></td>
+              <td>
+                <AdminDate value={entry.timestamp} withTime />
+              </td>
               <td>{entry.eventType}</td>
               <td>{entry.user}</td>
             </tr>
@@ -116,15 +123,18 @@ function ActivityTable({ entries }) {
 }
 
 function statusPill(status) {
-  const normalized = ["active", "inactive", "suspended", "deleted"].includes(status)
+  const normalized = ["active", "inactive", "suspended", "deleted"].includes(
+    status,
+  )
     ? status
     : "unknown";
-  const tone = {
-    active: "pill-green",
-    inactive: "pill-gray",
-    suspended: "pill-red",
-    deleted: "pill-gray",
-  }[normalized] || "pill-gray";
+  const tone =
+    {
+      active: "pill-green",
+      inactive: "pill-gray",
+      suspended: "pill-red",
+      deleted: "pill-gray",
+    }[normalized] || "pill-gray";
   const label = normalized[0].toUpperCase() + normalized.slice(1);
   return <span className={`pill ${tone}`}>{label}</span>;
 }
@@ -150,8 +160,12 @@ export default function Admin({ section = "overview" }) {
   const [confirm, setConfirm] = useState(null);
   const [statusSaving, setStatusSaving] = useState(null);
   const members = users.filter((user) => user.role === "user");
-  const liveMembers = members.filter((user) => !user.deletedAt && user.status !== "deleted");
-  const archivedMembers = members.filter((user) => user.deletedAt || user.status === "deleted");
+  const liveMembers = members.filter(
+    (user) => !user.deletedAt && user.status !== "deleted",
+  );
+  const archivedMembers = members.filter(
+    (user) => user.deletedAt || user.status === "deleted",
+  );
   const visible = liveMembers.filter(
     (user) =>
       (status === "all" || user.status === status) &&
@@ -190,23 +204,39 @@ export default function Admin({ section = "overview" }) {
         <>
           <Summary
             items={[
-              { label: "Total Users", value: adminLoading && !users.length ? "…" : members.length },
+              {
+                label: "Total Users",
+                value: adminLoading && !users.length ? "…" : members.length,
+              },
               {
                 label: "Active Users",
-                value: adminLoading && !users.length ? "…" : liveMembers.filter((user) => user.status === "active").length,
+                value:
+                  adminLoading && !users.length
+                    ? "…"
+                    : liveMembers.filter((user) => user.status === "active")
+                        .length,
                 tone: "green",
               },
               {
                 label: "Inactive Users",
-                value: adminLoading && !users.length ? "…" : liveMembers.filter((user) => user.status === "inactive").length,
+                value:
+                  adminLoading && !users.length
+                    ? "…"
+                    : liveMembers.filter((user) => user.status === "inactive")
+                        .length,
               },
               {
                 label: "Suspended Users",
-                value: adminLoading && !users.length ? "…" : liveMembers.filter((user) => user.status === "suspended").length,
+                value:
+                  adminLoading && !users.length
+                    ? "…"
+                    : liveMembers.filter((user) => user.status === "suspended")
+                        .length,
               },
               {
                 label: "Deleted Accounts",
-                value: adminLoading && !users.length ? "…" : archivedMembers.length,
+                value:
+                  adminLoading && !users.length ? "…" : archivedMembers.length,
               },
             ]}
           />
@@ -292,14 +322,16 @@ export default function Admin({ section = "overview" }) {
                       <strong>{user.name}</strong>
                       <span className="admin-email">{user.email}</span>
                     </td>
+                    <td>{statusPill(user.status)}</td>
                     <td>
-                      {statusPill(user.status)}
+                      <AdminDate value={user.created} />
                     </td>
-                    <td><AdminDate value={user.created} /></td>
                     <td>
-                      {user.lastLogin
-                        ? <AdminDate value={user.lastLogin} withTime />
-                        : "Never"}
+                      {user.lastLogin ? (
+                        <AdminDate value={user.lastLogin} withTime />
+                      ) : (
+                        "Never"
+                      )}
                     </td>
                     <td>
                       <div className="admin-actions">
@@ -310,7 +342,9 @@ export default function Admin({ section = "overview" }) {
                         >
                           Delete
                         </button>
-                        {["active", "inactive", "suspended"].includes(user.status) ? (
+                        {["active", "inactive", "suspended"].includes(
+                          user.status,
+                        ) ? (
                           <select
                             className="filter-select admin-status-select"
                             aria-label={`Change ${user.name} status`}
@@ -320,8 +354,12 @@ export default function Admin({ section = "overview" }) {
                               const nextStatus = event.target.value;
                               setStatusSaving(user.id);
                               try {
-                                await updateUser(user.id, { status: nextStatus });
-                                notify(`Account status changed to ${nextStatus}`);
+                                await updateUser(user.id, {
+                                  status: nextStatus,
+                                });
+                                notify(
+                                  `Account status changed to ${nextStatus}`,
+                                );
                               } catch (error) {
                                 notify(error.message);
                               } finally {
@@ -334,7 +372,9 @@ export default function Admin({ section = "overview" }) {
                             <option value="suspended">Suspended</option>
                           </select>
                         ) : (
-                          <span className="report-caption">Status unavailable</span>
+                          <span className="report-caption">
+                            Status unavailable
+                          </span>
                         )}
                       </div>
                     </td>
@@ -355,12 +395,14 @@ export default function Admin({ section = "overview" }) {
           <div className="card-head">
             <div>
               <h2>Deleted Accounts</h2>
-          <p className="report-caption">
-            Deleted accounts are kept here with their ledger data. Restore an
-            account to allow sign-in again.
-          </p>
+              <p className="report-caption">
+                Deleted accounts are kept here with their ledger data. Restore
+                an account to allow sign-in again.
+              </p>
             </div>
-            <Link className="btn btn-outline btn-sm" to="/admin/users">Back to Users</Link>
+            <Link className="btn btn-outline btn-sm" to="/admin/users">
+              Back to Users
+            </Link>
           </div>
           <div className="search-box admin-archive-search">
             <input
@@ -371,9 +413,14 @@ export default function Admin({ section = "overview" }) {
             />
           </div>
           <p className="report-caption">
-            {archivedMembers.filter((user) =>
-              `${user.name} ${user.email}`.toLowerCase().includes(search.trim().toLowerCase()),
-            ).length} archived accounts
+            {
+              archivedMembers.filter((user) =>
+                `${user.name} ${user.email}`
+                  .toLowerCase()
+                  .includes(search.trim().toLowerCase()),
+              ).length
+            }{" "}
+            archived accounts
           </p>
           <div className="table-scroll">
             <table className="admin-table">
@@ -389,7 +436,9 @@ export default function Admin({ section = "overview" }) {
               <tbody>
                 {archivedMembers
                   .filter((user) =>
-                    `${user.name} ${user.email}`.toLowerCase().includes(search.trim().toLowerCase()),
+                    `${user.name} ${user.email}`
+                      .toLowerCase()
+                      .includes(search.trim().toLowerCase()),
                   )
                   .map((user) => (
                     <tr key={user.id}>
@@ -398,12 +447,18 @@ export default function Admin({ section = "overview" }) {
                         <span className="admin-email">{user.email}</span>
                       </td>
                       <td>{statusPill("deleted")}</td>
-                      <td><AdminDate value={user.deletedAt} withTime /></td>
-                      <td><AdminDate value={user.created} /></td>
+                      <td>
+                        <AdminDate value={user.deletedAt} withTime />
+                      </td>
+                      <td>
+                        <AdminDate value={user.created} />
+                      </td>
                       <td>
                         <button
                           className="btn btn-outline btn-sm"
-                          onClick={() => setConfirm({ user, action: "restore" })}
+                          onClick={() =>
+                            setConfirm({ user, action: "restore" })
+                          }
                         >
                           Restore
                         </button>
@@ -411,11 +466,20 @@ export default function Admin({ section = "overview" }) {
                     </tr>
                   ))}
                 {!archivedMembers.length && (
-                  <tr><td colSpan={5}>No deleted accounts in the archive.</td></tr>
+                  <tr>
+                    <td colSpan={5}>No deleted accounts in the archive.</td>
+                  </tr>
                 )}
-                {!!archivedMembers.length && !archivedMembers.some((user) =>
-                  `${user.name} ${user.email}`.toLowerCase().includes(search.trim().toLowerCase()),
-                ) && <tr><td colSpan={5}>No accounts match your search.</td></tr>}
+                {!!archivedMembers.length &&
+                  !archivedMembers.some((user) =>
+                    `${user.name} ${user.email}`
+                      .toLowerCase()
+                      .includes(search.trim().toLowerCase()),
+                  ) && (
+                    <tr>
+                      <td colSpan={5}>No accounts match your search.</td>
+                    </tr>
+                  )}
               </tbody>
             </table>
           </div>
@@ -424,59 +488,82 @@ export default function Admin({ section = "overview" }) {
       {section === "activity" && (
         <section className="card">
           <p className="report-caption">
-            Latest 200 LOGIN and SIGNUP events. Only user, event type, and timestamp are available.
+            Latest 200 LOGIN and SIGNUP events. Only user, event type, and
+            timestamp are available.
           </p>
           <ActivityTable entries={activity} />
         </section>
       )}
       {section === "settings" && (
         <div className="settings-grid">
-        <section className="card settings-card">
-          <div className="card-head">
-            <h2>Appearance</h2>
-            <p>Choose how PennyLedger looks on your screen.</p>
-          </div>
-          <div className="settings-row">
-            <div className="sr-text"><strong>Dark mode</strong><span>Switch between light and dark themes</span></div>
-            <div className="sr-control"><ThemeSwitch /></div>
-          </div>
-          <div className="settings-row">
-            <div className="sr-text"><strong>Date format</strong><span>How dates are displayed throughout the admin pages</span></div>
-            <div className="sr-control">
-              <select aria-label="Date format" className="filter-select" value={dateFormat}
-                onChange={(event) => { setDateFormat(event.target.value); notify("Date format changed"); }}>
-                {DATE_FORMATS.map((value) => <option key={value} value={value}>{formatDate(localDate(), value)}</option>)}
-              </select>
+          <section className="card settings-card">
+            <div className="card-head">
+              <h2>Appearance</h2>
+              <p>Choose how PennyLedger looks on your screen.</p>
             </div>
-          </div>
-        </section>
-        <section className="card settings-card">
-          <div className="card-head">
-            <h2>Registration</h2>
-            <p>
-              Choose whether visitors can create new user accounts.
-              Administrators can still create users.
+            <div className="settings-row">
+              <div className="sr-text">
+                <strong>Dark mode</strong>
+                <span>Switch between light and dark themes</span>
+              </div>
+              <div className="sr-control">
+                <ThemeSwitch />
+              </div>
+            </div>
+            <div className="settings-row">
+              <div className="sr-text">
+                <strong>Date format</strong>
+                <span>How dates are displayed throughout the admin pages</span>
+              </div>
+              <div className="sr-control">
+                <select
+                  aria-label="Date format"
+                  className="filter-select"
+                  value={dateFormat}
+                  onChange={(event) => {
+                    setDateFormat(event.target.value);
+                    notify("Date format changed");
+                  }}
+                >
+                  {DATE_FORMATS.map((value) => (
+                    <option key={value} value={value}>
+                      {formatDate(localDate(), value)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </section>
+          <section className="card settings-card">
+            <div className="card-head">
+              <h2>Registration</h2>
+              <p>
+                Choose whether visitors can create new user accounts.
+                Administrators can still create users.
+              </p>
+            </div>
+            <label className="admin-registration">
+              <input
+                type="checkbox"
+                checked={registrationOpen}
+                onChange={async (event) => {
+                  try {
+                    await setRegistrationOpen(event.target.checked);
+                    notify("Registration setting updated");
+                  } catch (failure) {
+                    notify(failure.message);
+                  }
+                }}
+              />
+              Allow new user registrations
+            </label>
+            <hr className="admin-divider" />
+            <h2>Connected environment</h2>
+            <p className="report-caption">
+              Account records, roles, and authentication events are managed by
+              the PennyLedger server.
             </p>
-          </div>
-          <label className="admin-registration">
-            <input
-              type="checkbox"
-              checked={registrationOpen}
-              onChange={async (event) => {
-                try {
-                  await setRegistrationOpen(event.target.checked);
-                  notify("Registration setting updated");
-                } catch (failure) { notify(failure.message); }
-              }}
-            />
-            Allow new user registrations
-          </label>
-          <hr className="admin-divider" />
-          <h2>Connected environment</h2>
-          <p className="report-caption">
-            Account records, roles, and authentication events are managed by the PennyLedger server.
-          </p>
-        </section>
+          </section>
         </div>
       )}
       {editing && (
@@ -487,9 +574,11 @@ export default function Admin({ section = "overview" }) {
       )}
       {confirm && (
         <Modal
-          title={confirm.action === "delete"
-            ? "Move account to archive?"
-            : "Restore account?"}
+          title={
+            confirm.action === "delete"
+              ? "Move account to archive?"
+              : "Restore account?"
+          }
           onClose={() => setConfirm(null)}
         >
           <p className="report-caption">
@@ -514,9 +603,11 @@ export default function Admin({ section = "overview" }) {
                   } else {
                     await restoreUser(confirm.user.id);
                   }
-                  notify(confirm.action === "delete"
-                    ? "Account moved to archive"
-                    : "Account restored");
+                  notify(
+                    confirm.action === "delete"
+                      ? "Account moved to archive"
+                      : "Account restored",
+                  );
                   setConfirm(null);
                 } catch (error) {
                   notify(error.message);

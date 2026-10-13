@@ -1,5 +1,5 @@
-import { usePagedResource } from '../lib/use-paged-resource';
-import PagedList from '../components/PagedList';
+import { usePagedResource } from "../lib/use-paged-resource";
+import PagedList from "../components/PagedList";
 import { Link } from "react-router-dom";
 import { useApp } from "../state/AppContext";
 import { PageTitle } from "../components/UI";
@@ -15,8 +15,16 @@ export default function Archive() {
   const archivedReports = reports
     .filter((report) => isArchived(report.archived))
     .sort((a, b) => a.name.localeCompare(b.name));
-  const txList = usePagedResource('/transactions', { archived: 'true' }, archivedTransactions);
-  const reportList = usePagedResource('/report-logs', { archived: 'true' }, archivedReports);
+  const txList = usePagedResource(
+    "/transactions",
+    { archived: "true" },
+    archivedTransactions,
+  );
+  const reportList = usePagedResource(
+    "/report-logs",
+    { archived: "true" },
+    archivedReports,
+  );
   return (
     <>
       <PageTitle
@@ -31,19 +39,25 @@ export default function Archive() {
         <div className="card-head">
           <h2>Archived Transactions</h2>
           <span className="muted-tag">
-            {txList.loading || txList.error ? "?" : txList.total} archived transactions
+            {txList.loading || txList.error ? "?" : txList.total} archived
+            transactions
           </span>
         </div>
-        <PagedList list={txList}><TransactionTable records={txList.items} restoreOnly /></PagedList>
+        <PagedList list={txList}>
+          <TransactionTable records={txList.items} restoreOnly />
+        </PagedList>
       </section>
       <section className="card">
         <div className="card-head">
           <h2>Archived Reports</h2>
           <span className="muted-tag">
-            {reportList.loading || reportList.error ? "?" : reportList.total} archived reports
+            {reportList.loading || reportList.error ? "?" : reportList.total}{" "}
+            archived reports
           </span>
         </div>
-        <PagedList list={reportList}><ReportTable records={reportList.items} /></PagedList>
+        <PagedList list={reportList}>
+          <ReportTable records={reportList.items} />
+        </PagedList>
       </section>
     </>
   );
