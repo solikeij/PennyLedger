@@ -103,7 +103,7 @@ function WalletModal({ wallet, onClose }) {
           }
         }}
       >
-        <fieldset disabled={busy} className="admin-fieldset">
+        <fieldset disabled={busy} className="admin-fieldset wallet-fieldset">
           {deleting ? (
             <>
               <p className="report-caption">
@@ -433,7 +433,7 @@ export default function Dashboard() {
                           </p>
                         </div>
                       </div>
-                      <span className={`tx-amt${tx.amount > 0 ? " pos" : ""}`}>
+                      <span className={`tx-amt${tx.amount > 0 ? " pos" : tx.amount < 0 ? " neg" : ""}`}>
                         {money(tx.amount, true)}
                       </span>
                     </div>

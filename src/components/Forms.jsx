@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { useApp } from "../state/AppContext";
 import { api } from "../lib/api";
 import { localDate, monthlyIncome } from "../lib/format";
+import { projectedMonthlyBudget } from "../lib/monthly-budget";
 import { Field, FormActions, Modal } from "./UI";
 
 function CategoryField({ categories, defaultValue = "" }) {
@@ -146,7 +147,9 @@ function CategoryField({ categories, defaultValue = "" }) {
 }
 
 export function TransactionModal({ transaction, onClose }) {
-  const { createTransaction, updateTransaction, notify, currency } = useApp();
+  const { createTransaction, updateTransaction, notify, currency, budgets = [], money } = useApp();
+  const [draftAmount, setDraftAmount] = useState(transaction ? Math.abs(transaction.amount) : "");
+  const [draftDate, setDraftDate] = useState(transaction?.date || localDate());
   const [categories, setCategories] = useState([]);
   const [methods, setMethods] = useState([]);
   const [types, setTypes] = useState([]);
@@ -160,6 +163,9 @@ export function TransactionModal({ transaction, onClose }) {
   const saving = useRef(false);
   const [error, setError] = useState("");
   const [loadingChoices, setLoadingChoices] = useState(true);
+  const budgetWarning = projectedMonthlyBudget(budgets, {
+    amount: draftAmount, date: draftDate, type, transaction,
+  });
   useEffect(() => {
     // Use database IDs in the request; the old static category names could
     // not satisfy the PHP controller's category_id foreign key.
@@ -320,7 +326,8 @@ export function TransactionModal({ transaction, onClose }) {
           <Field
             label={`Amount (${currency})`}
             name="amount"
-            defaultValue={transaction ? Math.abs(transaction.amount) : ""}
+            value={draftAmount}
+            onChange={(event) => setDraftAmount(event.target.value)}
             type="number"
             min="0.01"
             max="99999999.99"
@@ -331,9 +338,17 @@ export function TransactionModal({ transaction, onClose }) {
             label="Date"
             name="date"
             type="date"
-            defaultValue={transaction?.date || localDate()}
+            value={draftDate}
+            onChange={(event) => setDraftDate(event.target.value)}
             required
           />
+          {budgetWarning && (
+            <p role="status" className="transaction-budget-warning">
+              Budget reminder: this expense would bring spending for {draftDate.slice(0, 7)} to {money(budgetWarning.projected)},
+              exceeding your monthly budget of {money(budgetWarning.limit)} by {money(budgetWarning.excess)}.
+              You can still save this transaction.
+            </p>
+          )}
           {error && (
             <p role="alert" className="form-error">
               {error.message || error}

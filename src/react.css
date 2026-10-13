@@ -722,3 +722,62 @@ button:disabled {
   margin: 8px 0 14px;
   white-space: normal;
 }
+
+/* Reference layout: only the dummy-account cards use this responsive grid. */
+.auth-dummy-box {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  column-gap: 16px;
+  row-gap: 0;
+}
+.auth-dummy-box > h2,
+.auth-dummy-box > p {
+  grid-column: 1 / -1;
+}
+.auth-dummy-box .dummy-account {
+  display: flex;
+  flex-direction: column;
+}
+.auth-dummy-box .dummy-account .btn {
+  align-self: flex-start;
+  margin-top: auto;
+}
+@media (min-width: 1081px) {
+  .auth-wrap > .auth-copy:has(.auth-dummy-box) { max-width: 820px; }
+  .auth-copy:has(.auth-dummy-box) > h1,
+  .auth-copy:has(.auth-dummy-box) > p { max-width: 460px; }
+}
+
+.tx-table .td-amount.amt-neg,
+.tx-amt.neg { color: var(--danger); }
+.tx-table .td-amount.amt-pos,
+.tx-amt.pos { color: var(--success); }
+
+.transaction-budget-warning {
+  padding: 12px 14px;
+  margin: 16px 0;
+  border-left: 3px solid var(--danger);
+  border-radius: 8px;
+  background: var(--danger-50);
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+.wallet-section .empty-state > .btn {
+  margin-top: 20px;
+}
+
+/* Keep wallet action buttons separated and usable at narrow widths. */
+.wallet-fieldset .modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+.wallet-fieldset .modal-actions .btn {
+  flex: 1 1 140px;
+  min-width: 0;
+  margin: 0;
+  padding: 12px 18px;
+  white-space: normal;
+}

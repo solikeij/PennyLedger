@@ -1,3 +1,20 @@
+// Budget spending already includes archived expenses. Replace the original
+// expense when editing instead of counting it twice.
+export function projectedMonthlyBudget(budgets, { amount, date, type, transaction }) {
+  if (type !== "expense" || !date || !Number.isFinite(Number(amount)) || Number(amount) <= 0) return null;
+  const month = date.slice(0, 7);
+  const budget = budgets.find((item) =>
+    (item.isMonthlyPlan || item.category === "Monthly budget") &&
+    item.startDate?.slice(0, 7) === month,
+  );
+  if (!budget) return null;
+  const previous = transaction?.amount < 0 && transaction.date?.startsWith(month)
+    ? Math.round(-transaction.amount * 100) : 0;
+  const projected = Math.round(Number(budget.spent) * 100) - previous + Math.round(Number(amount) * 100);
+  const limit = Math.round(Number(budget.limit) * 100);
+  return projected > limit ? { limit: limit / 100, projected: projected / 100, excess: (projected - limit) / 100 } : null;
+}
+
 export function monthlyBudgetProgress(budgets, transactions) {
   return budgets.map((budget) => {
     if (budget.category !== "Monthly budget")

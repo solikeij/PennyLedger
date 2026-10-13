@@ -43,7 +43,7 @@ export function TransactionTable({ records, restoreOnly = false }) {
                   {tx.paymentMethod || "Not recorded"}
                 </td>
                 <td className="td-date">{date(tx.date)}</td>
-                <td className={`td-amount${tx.amount > 0 ? " amt-pos" : ""}`}>
+                <td className={`td-amount${tx.amount > 0 ? " amt-pos" : tx.amount < 0 ? " amt-neg" : ""}`}>
                   {money(tx.amount, true)}
                 </td>
                 <td className="td-actions">

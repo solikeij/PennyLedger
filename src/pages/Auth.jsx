@@ -123,7 +123,7 @@ export default function Auth({ signup = false, admin = false }) {
                   <code>admin123</code>
                 </dd>
               </dl>
-              <p>Created earlier in this local project database.</p>
+              <p>Included in the fresh-install SQL for local demonstrations.</p>
               <Link className="btn btn-outline btn-sm" to="/admin/login">
                 Admin sign in
               </Link>
@@ -141,8 +141,7 @@ export default function Auth({ signup = false, admin = false }) {
                 </dd>
               </dl>
               <p>
-                Sample credentials only. Your backend team must create and
-                verify this account before it can sign in.
+                Included in the fresh-install SQL as a verified demo user.
               </p>
             </article>
           </section>

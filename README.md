@@ -7,7 +7,7 @@ The app has no built-in demo accounts or mail credentials.
 ## Database setup: choose one path
 
 **Fresh, disposable database:** Import `config/PersonalBudget_db.sql` **once**.
-It creates the original tables, applies the integration schema changes, and
+It creates the final schema directly and
 inserts lookup data. Its first statement is `DROP DATABASE IF EXISTS`; importing
 it again destroys existing accounts and transactions.
 
