@@ -1,4 +1,5 @@
 <?php
+
 // Purpose: Return read-only choices for categories, types, payments, and goal statuses.
 // Used by GET /lookups/{name} to populate React form selections.
 
@@ -10,7 +11,8 @@
 // REVISED from controllers/lookups_controller.php. The UI can load category,
 // type, payment, and goal-status choices with IDs and human-readable names.
 
-if ($method !== 'GET') send_error('Method not allowed', 405);
+if ($method !== 'GET')
+    send_error('Method not allowed', 405);
 
 $queries = [
     // Static query choices prevent a route name from becoming SQL text.
@@ -20,7 +22,8 @@ $queries = [
     'goal-statuses' => "SELECT status_id AS id, status_name AS name, code FROM Goal_Statuses ORDER BY status_id",
 ];
 
-if (!isset($queries[$lookup])) send_error('Lookup not found', 404);
+if (!isset($queries[$lookup]))
+    send_error('Lookup not found', 404);
 if ($lookup === 'categories') {
     $user = require_auth($conn);
     $userId = (int) $user['user_id'];
@@ -44,6 +47,7 @@ if ($lookup === 'categories') {
 // Convert database ID strings to numbers before returning JSON to React.
 foreach ($rows as &$row) {
     $row['id'] = (int) $row['id'];
-    if (isset($row['transactionTypeId'])) $row['transactionTypeId'] = (int) $row['transactionTypeId'];
+    if (isset($row['transactionTypeId']))
+        $row['transactionTypeId'] = (int) $row['transactionTypeId'];
 }
 send_success($rows);

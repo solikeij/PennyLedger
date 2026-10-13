@@ -1,4 +1,5 @@
 <?php
+
 // Purpose: Calculate financial report totals from saved transactions.
 // Used by GET /reports for the signed-in user's React reports page.
 
@@ -11,7 +12,8 @@
 
 $currentUser = require_auth($conn);
 $userId = (int) $currentUser['user_id'];
-if ($method !== 'GET') send_error('Method not allowed', 405);
+if ($method !== 'GET')
+    send_error('Method not allowed', 405);
 
 $type = $_GET['type'] ?? 'summary';
 // Compact daily category totals support all charts without fetching full records.
@@ -24,7 +26,8 @@ if ($type === 'ledger') {
         JOIN TransactionTypes tt ON tt.transaction_type_id = t.transaction_type_id
         WHERE t.user_id = ? GROUP BY t.transaction_date, c.category_id, c.category_name, tt.code
         ORDER BY t.transaction_date DESC");
-    mysqli_stmt_bind_param($stmt, 'i', $userId); mysqli_stmt_execute($stmt);
+    mysqli_stmt_bind_param($stmt, 'i', $userId);
+    mysqli_stmt_execute($stmt);
     $rows = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC);
     foreach ($rows as &$row) {
         $row['amount'] = (float) $row['amount'];
@@ -35,7 +38,8 @@ if ($type === 'ledger') {
 }
 $startDate = !empty($_GET['start_date']) ? require_date($_GET['start_date'], 'start_date') : '1900-01-01';
 $endDate = !empty($_GET['end_date']) ? require_date($_GET['end_date'], 'end_date') : '2999-12-31';
-if ($startDate > $endDate) send_error('Validation failed', 422, ['end_date' => 'Must be on or after start_date']);
+if ($startDate > $endDate)
+    send_error('Validation failed', 422, ['end_date' => 'Must be on or after start_date']);
 
 // Return total income and expense for the requested date range.
 if ($type === 'summary') {
@@ -116,9 +120,12 @@ mysqli_stmt_execute($stmt);
 $rows = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC);
 foreach ($rows as &$row) {
     foreach (['amount', 'income', 'expense', 'limit', 'spent', 'target', 'saved'] as $numberField) {
-        if (isset($row[$numberField])) $row[$numberField] = (float) $row[$numberField];
+        if (isset($row[$numberField]))
+            $row[$numberField] = (float) $row[$numberField];
     }
-    if (isset($row['id'])) $row['id'] = (int) $row['id'];
-    if (isset($row['categoryId'])) $row['categoryId'] = (int) $row['categoryId'];
+    if (isset($row['id']))
+        $row['id'] = (int) $row['id'];
+    if (isset($row['categoryId']))
+        $row['categoryId'] = (int) $row['categoryId'];
 }
 send_success($rows);

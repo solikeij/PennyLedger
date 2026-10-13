@@ -1,6 +1,9 @@
 <?php
-function ensure_physical_money(mysqli $conn, int $userId): void {
-    if (!isset($GLOBALS['managed_write'])) mysqli_begin_transaction($conn);
+
+function ensure_physical_money(mysqli $conn, int $userId): void
+{
+    if (!isset($GLOBALS['managed_write']))
+        mysqli_begin_transaction($conn);
     try {
         $lock = mysqli_prepare($conn, 'SELECT user_id FROM Users WHERE user_id = ? FOR UPDATE');
         mysqli_stmt_bind_param($lock, 'i', $userId);
@@ -16,6 +19,10 @@ function ensure_physical_money(mysqli $conn, int $userId): void {
             mysqli_stmt_bind_param($insert, 'ii', $userId, $paymentId);
             mysqli_stmt_execute($insert);
         }
-        if (!isset($GLOBALS['managed_write'])) mysqli_commit($conn);
-    } catch (Throwable $error) { mysqli_rollback($conn); throw $error; }
+        if (!isset($GLOBALS['managed_write']))
+            mysqli_commit($conn);
+    } catch (Throwable $error) {
+        mysqli_rollback($conn);
+        throw $error;
+    }
 }

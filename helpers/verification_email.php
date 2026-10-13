@@ -1,4 +1,5 @@
 <?php
+
 // Branded verification email: inline styles, embedded images and plain-text fallback.
 function verification_email_html(string $code, string $name = '', ?DateTimeImmutable $sentAt = null): string
 {

@@ -1,4 +1,5 @@
 <?php
+
 // Purpose: Read and manage the signed-in user's savings goals.
 // Used by /goals; saved totals come from contribution records.
 
@@ -39,20 +40,24 @@ function goal_row(array $row): array
 // Read one goal or the full goal list for this user.
 if ($method === 'GET') {
     $sql = goal_select_sql() . ' WHERE g.user_id = ?';
-    if ($id) $sql .= ' AND g.goal_id = ?';
+    if ($id)
+        $sql .= ' AND g.goal_id = ?';
     $sql .= ' GROUP BY g.goal_id, gs.code ORDER BY g.target_date ASC';
     $stmt = mysqli_prepare($conn, $sql);
-    if ($id) mysqli_stmt_bind_param($stmt, 'ii', $userId, $id);
+    if ($id)
+        mysqli_stmt_bind_param($stmt, 'ii', $userId, $id);
     else mysqli_stmt_bind_param($stmt, 'i', $userId);
     mysqli_stmt_execute($stmt);
     $rows = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC);
-    if ($id && $rows === []) send_error('Goal not found', 404);
+    if ($id && $rows === [])
+        send_error('Goal not found', 404);
     send_success($id ? goal_row($rows[0]) : array_map('goal_row', $rows));
 }
 
 // Validate the goal fields before creating or updating a record.
 if ($method === 'POST' || $method === 'PUT') {
-    if ($method === 'PUT' && !$id) send_error('Goal ID required', 400);
+    if ($method === 'PUT' && !$id)
+        send_error('Goal ID required', 400);
     $input = get_json_input();
     require_fields($input, ['goal_name', 'target_amount', 'target_date', 'status_id']);
     $name = require_string($input['goal_name'], 'goal_name', 100);
@@ -63,7 +68,8 @@ if ($method === 'POST' || $method === 'PUT') {
     $statusLookup = mysqli_prepare($conn, 'SELECT status_id FROM Goal_Statuses WHERE status_id = ?');
     mysqli_stmt_bind_param($statusLookup, 'i', $statusId);
     mysqli_stmt_execute($statusLookup);
-    if (!mysqli_fetch_assoc(mysqli_stmt_get_result($statusLookup))) send_error('Goal status not found', 404);
+    if (!mysqli_fetch_assoc(mysqli_stmt_get_result($statusLookup)))
+        send_error('Goal status not found', 404);
 
     if ($method === 'POST') {
         $stmt = mysqli_prepare($conn, "
@@ -90,16 +96,19 @@ if ($method === 'POST' || $method === 'PUT') {
     mysqli_stmt_bind_param($read, 'ii', $userId, $id);
     mysqli_stmt_execute($read);
     $row = mysqli_fetch_assoc(mysqli_stmt_get_result($read));
-    if (!$row) send_error('Goal not found', 404);
+    if (!$row)
+        send_error('Goal not found', 404);
     send_success(goal_row($row), $message, $httpStatus);
 }
 
 // Delete only a goal owned by the signed-in user.
 if ($method === 'DELETE') {
-    if (!$id) send_error('Goal ID required', 400);
+    if (!$id)
+        send_error('Goal ID required', 400);
     // Contributions have a foreign key to the goal. Delete both inside one
     // transaction so the goal and its saved total cannot become inconsistent.
-    if (!isset($GLOBALS['managed_write'])) mysqli_begin_transaction($conn);
+    if (!isset($GLOBALS['managed_write']))
+        mysqli_begin_transaction($conn);
     try {
         $contributions = mysqli_prepare($conn, "
             DELETE gc FROM Goal_Contribution gc
@@ -116,7 +125,8 @@ if ($method === 'DELETE') {
             mysqli_rollback($conn);
             send_error('Goal not found', 404);
         }
-        if (!isset($GLOBALS['managed_write'])) mysqli_commit($conn);
+        if (!isset($GLOBALS['managed_write']))
+            mysqli_commit($conn);
     } catch (Throwable $exception) {
         mysqli_rollback($conn);
         throw $exception;

@@ -1,4 +1,5 @@
 <?php
+
 // Purpose: Send HTML and plain-text emails using SMTP settings.
 // Used by auth_controller.php; delivery errors are logged on the server.
 

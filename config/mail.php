@@ -1,4 +1,5 @@
 <?php
+
 // Purpose: Read SMTP settings from the server environment.
 // Used by helpers/mailer.php; keep real mail passwords out of source code.
 

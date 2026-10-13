@@ -763,6 +763,16 @@ button:disabled {
   line-height: 1.6;
 }
 
+.profile-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+.profile-form-actions > .btn {
+  margin: 0;
+}
+
 .wallet-section .empty-state > .btn {
   margin-top: 20px;
 }

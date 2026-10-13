@@ -231,24 +231,26 @@ export default function Settings() {
               <p className="report-caption">
                 Profile details and photo are saved when you click Save Changes.
               </p>
-              <button
-                type="button"
-                className="btn btn-outline btn-sm"
-                onClick={(event) => {
-                  event.currentTarget.form.reset();
-                  setPendingPhoto(null);
-                  setRemovePhoto(false);
-                  if (photoInput.current) photoInput.current.value = "";
-                }}
-              >
-                Discard Changes
-              </button>
-              <button
-                className="btn btn-primary btn-sm settings-save"
-                type="submit"
-              >
-                {profileBusy ? "Saving…" : "Save Changes"}
-              </button>
+              <div className="profile-form-actions">
+                <button
+                  type="button"
+                  className="btn btn-outline btn-sm"
+                  onClick={(event) => {
+                    event.currentTarget.form.reset();
+                    setPendingPhoto(null);
+                    setRemovePhoto(false);
+                    if (photoInput.current) photoInput.current.value = "";
+                  }}
+                >
+                  Discard Changes
+                </button>
+                <button
+                  className="btn btn-primary btn-sm settings-save"
+                  type="submit"
+                >
+                  {profileBusy ? "Saving…" : "Save Changes"}
+                </button>
+              </div>
             </fieldset>
           </ErrorForm>
         </section>

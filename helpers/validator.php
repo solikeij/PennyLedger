@@ -1,4 +1,5 @@
 <?php
+
 // Purpose: Check required fields and common value formats in API input.
 // Used by controllers to return field-specific validation errors.
 
@@ -54,7 +55,8 @@ function require_enum(mixed $value, string $field, array $allowed): string
 
 function require_string(mixed $value, string $field, int $maxLength): string
 {
-    if (!is_string($value)) send_error('Validation failed', 422, [$field => 'Must be text']);
+    if (!is_string($value))
+        send_error('Validation failed', 422, [$field => 'Must be text']);
     $value = trim($value);
     if ($value === '' || mb_strlen($value) > $maxLength) {
         send_error('Validation failed', 422, [

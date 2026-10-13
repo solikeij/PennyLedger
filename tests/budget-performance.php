@@ -1,10 +1,17 @@
 <?php
+
 require __DIR__ . '/../helpers/budget_performance.php';
-function check($condition, $message) { if (!$condition) throw new RuntimeException($message); }
-function budget($id, $category, $limit, $name = 'Food', $start = '2026-10-01', $end = '2026-10-31') {
+function check($condition, $message)
+{
+    if (!$condition)
+        throw new RuntimeException($message);
+}
+function budget($id, $category, $limit, $name = 'Food', $start = '2026-10-01', $end = '2026-10-31')
+{
     return ['budget_id' => $id, 'category_id' => $category, 'budget_amount' => $limit, 'category_name' => $name, 'budget_period' => 'monthly', 'start_date' => $start, 'end_date' => $end];
 }
-function tx($id, $category, $amount, $date = '2026-10-12', $archived = false) {
+function tx($id, $category, $amount, $date = '2026-10-12', $archived = false)
+{
     return ['transaction_id' => $id, 'category_id' => $category, 'amount' => $amount, 'transaction_date' => $date, 'description' => 'Expense', 'category_name' => 'Food', 'archived' => $archived];
 }
 $report = build_budget_performance([budget(1, 1, 100), budget(2, 2, 100), budget(3, 3, 100), budget(4, 4, 100)], [tx(1, 1, 79.99), tx(2, 2, 80), tx(3, 3, 100), tx(4, 4, 100.01, '2026-10-12', true), tx(5, 9, 20)], '2026-10-01', '2026-10-31');

@@ -1,4 +1,5 @@
 <?php
+
 // Purpose: Entry point for PHP API requests from the React application.
 // Handles CORS, loads shared code, and routes each URL to a controller.
 
@@ -17,7 +18,6 @@ header('Vary: Origin');
 header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, Idempotency-Key');
 header('Content-Type: application/json; charset=utf-8');
-
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
@@ -52,7 +52,8 @@ switch ($resource) {
         break;
     case 'write-requests':
         $user = require_auth($conn);
-        if ($method !== 'GET') send_error('Method not allowed', 405);
+        if ($method !== 'GET')
+            send_error('Method not allowed', 405);
         $key = $segments[1] ?? '';
         $stmt = mysqli_prepare($conn, 'SELECT status_code, response_json FROM Write_Requests WHERE user_id = ? AND request_key = ?');
         mysqli_stmt_bind_param($stmt, 'is', $user['user_id'], $key);

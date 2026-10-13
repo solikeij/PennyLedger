@@ -1,4 +1,5 @@
 <?php
+
 // Purpose (legacy): Create and manage category choices.
 // Status: Not routed by public/index.php; React reads /lookups/categories.
 
@@ -58,7 +59,8 @@ switch ($method) {
     case 'PUT':
         // Someone wants to UPDATE an existing category
 
-        if (!$id) send_error('Category ID required', 400); // need to know which one
+        if (!$id)
+            send_error('Category ID required', 400); // need to know which one
 
         $input = get_json_input();
 
@@ -76,7 +78,8 @@ switch ($method) {
     case 'DELETE':
         // Someone wants to REMOVE a category
 
-        if (!$id) send_error('Category ID required', 400);
+        if (!$id)
+            send_error('Category ID required', 400);
 
         //  DELETE now reads a body and requires login
         $input = get_json_input();

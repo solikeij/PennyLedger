@@ -1,4 +1,5 @@
 <?php
+
 // Purpose: Read, create, update, and delete budgets.
 // Used by /budgets; records are limited to the signed-in user.
 
@@ -45,20 +46,24 @@ function budget_row(array $row): array
 // Read one budget or all budgets owned by this user.
 if ($method === 'GET') {
     $sql = budget_select_sql() . ' WHERE b.user_id = ?';
-    if ($id) $sql .= ' AND b.budget_id = ?';
+    if ($id)
+        $sql .= ' AND b.budget_id = ?';
     $sql .= ' GROUP BY b.budget_id, c.category_name ORDER BY b.start_date DESC';
     $stmt = mysqli_prepare($conn, $sql);
-    if ($id) mysqli_stmt_bind_param($stmt, 'ii', $userId, $id);
+    if ($id)
+        mysqli_stmt_bind_param($stmt, 'ii', $userId, $id);
     else mysqli_stmt_bind_param($stmt, 'i', $userId);
     mysqli_stmt_execute($stmt);
     $rows = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC);
-    if ($id && $rows === []) send_error('Budget not found', 404);
+    if ($id && $rows === [])
+        send_error('Budget not found', 404);
     send_success($id ? budget_row($rows[0]) : array_map('budget_row', $rows));
 }
 
 // Validate the dates and category before saving a budget.
 if ($method === 'POST' || $method === 'PUT') {
-    if ($method === 'PUT' && !$id) send_error('Budget ID required', 400);
+    if ($method === 'PUT' && !$id)
+        send_error('Budget ID required', 400);
     $input = get_json_input();
     require_fields($input, ['budget_amount', 'budget_period', 'start_date', 'end_date']);
     $categoryId = (int) ($input['category_id'] ?? 0);
@@ -66,12 +71,14 @@ if ($method === 'POST' || $method === 'PUT') {
     $period = require_enum($input['budget_period'], 'budget_period', ['daily', 'weekly', 'monthly']);
     $startDate = require_date($input['start_date'], 'start_date');
     $endDate = require_date($input['end_date'], 'end_date');
-    if ($startDate > $endDate) send_error('Validation failed', 422, ['end_date' => 'Must be on or after start_date']);
+    if ($startDate > $endDate)
+        send_error('Validation failed', 422, ['end_date' => 'Must be on or after start_date']);
 
     if (isset($input['category_name'])) {
         $categoryName = require_string($input['category_name'], 'category_name', 100);
         $type = mysqli_fetch_assoc(mysqli_query($conn, "SELECT transaction_type_id FROM TransactionTypes WHERE code = 'expense' LIMIT 1"));
-        if (!$type) send_error('Expense type is not configured', 422);
+        if (!$type)
+            send_error('Expense type is not configured', 422);
         $typeId = (int) $type['transaction_type_id'];
         $find = mysqli_prepare($conn, 'SELECT category_id FROM Categories WHERE category_name = ? AND transaction_type_id = ? LIMIT 1');
         mysqli_stmt_bind_param($find, 'si', $categoryName, $typeId);
@@ -102,9 +109,11 @@ if ($method === 'POST' || $method === 'PUT') {
     $overlapSql = "SELECT budget_id FROM Budgets
                    WHERE user_id = ? AND category_id = ?
                      AND start_date <= ? AND end_date >= ?";
-    if ($method === 'PUT') $overlapSql .= ' AND budget_id <> ?';
+    if ($method === 'PUT')
+        $overlapSql .= ' AND budget_id <> ?';
     $overlap = mysqli_prepare($conn, $overlapSql);
-    if ($method === 'PUT') mysqli_stmt_bind_param($overlap, 'iissi', $userId, $categoryId, $endDate, $startDate, $id);
+    if ($method === 'PUT')
+        mysqli_stmt_bind_param($overlap, 'iissi', $userId, $categoryId, $endDate, $startDate, $id);
     else mysqli_stmt_bind_param($overlap, 'iiss', $userId, $categoryId, $endDate, $startDate);
     mysqli_stmt_execute($overlap);
     if (mysqli_fetch_assoc(mysqli_stmt_get_result($overlap))) {
@@ -137,17 +146,20 @@ if ($method === 'POST' || $method === 'PUT') {
     mysqli_stmt_bind_param($read, 'ii', $userId, $id);
     mysqli_stmt_execute($read);
     $row = mysqli_fetch_assoc(mysqli_stmt_get_result($read));
-    if (!$row) send_error('Budget not found', 404);
+    if (!$row)
+        send_error('Budget not found', 404);
     send_success(budget_row($row), $message, $status);
 }
 
 // Delete only a budget belonging to the signed-in user.
 if ($method === 'DELETE') {
-    if (!$id) send_error('Budget ID required', 400);
+    if (!$id)
+        send_error('Budget ID required', 400);
     $stmt = mysqli_prepare($conn, 'DELETE FROM Budgets WHERE budget_id = ? AND user_id = ?');
     mysqli_stmt_bind_param($stmt, 'ii', $id, $userId);
     mysqli_stmt_execute($stmt);
-    if (mysqli_stmt_affected_rows($stmt) === 0) send_error('Budget not found', 404);
+    if (mysqli_stmt_affected_rows($stmt) === 0)
+        send_error('Budget not found', 404);
     send_success(null, 'Budget deleted');
 }
 

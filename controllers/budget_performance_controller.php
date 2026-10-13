@@ -1,7 +1,13 @@
 <?php
+
+// Editor-only declarations of route inputs supplied by public/index.php.
+/** @var mysqli $conn */
+/** @var string $method */
+
 // GET /reports/budget-performance?month=10&year=2026; identity comes from bearer auth.
 $currentUser = require_auth($conn);
-if ($method !== 'GET') send_error('Method not allowed', 405);
+if ($method !== 'GET')
+    send_error('Method not allowed', 405);
 $errors = [];
 foreach (['month' => [1, 12], 'year' => [1900, 9998]] as $field => [$min, $max]) {
     $raw = $_GET[$field] ?? null;
@@ -9,7 +15,8 @@ foreach (['month' => [1, 12], 'year' => [1900, 9998]] as $field => [$min, $max])
         $errors[$field] = "Enter a whole number between {$min} and {$max}";
     }
 }
-if ($errors) send_error('Choose a valid report month and year', 422, $errors);
+if ($errors)
+    send_error('Choose a valid report month and year', 422, $errors);
 $start = sprintf('%04d-%02d-01', (int) $_GET['year'], (int) $_GET['month']);
 $end = (new DateTimeImmutable($start))->format('Y-m-t');
 $userId = (int) $currentUser['user_id'];

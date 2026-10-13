@@ -1,4 +1,5 @@
 <?php
+
 // Purpose: Create, read, update, delete, archive, and restore transactions.
 // Used by /transactions; token identity limits access to the user's own data.
 
@@ -52,7 +53,8 @@ if ($method === 'GET') {
         mysqli_stmt_bind_param($stmt, 'ii', $id, $userId);
         mysqli_stmt_execute($stmt);
         $row = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
-        if (!$row) send_error('Transaction not found', 404);
+        if (!$row)
+            send_error('Transaction not found', 404);
         send_success(transaction_row($row));
     }
 
@@ -99,17 +101,22 @@ if ($method === 'GET') {
     }
 
     if (!empty($_GET['category'])) {
-        $sql .= ' AND c.category_name = ?'; $types .= 's'; $params[] = $_GET['category'];
+        $sql .= ' AND c.category_name = ?';
+        $types .= 's';
+        $params[] = $_GET['category'];
     }
     $countSql = 'SELECT COUNT(*) AS total FROM (' . $sql . ') matches';
     $count = mysqli_prepare($conn, $countSql);
-    mysqli_stmt_bind_param($count, $types, ...$params); mysqli_stmt_execute($count);
+    mysqli_stmt_bind_param($count, $types, ...$params);
+    mysqli_stmt_execute($count);
     $total = (int) mysqli_fetch_assoc(mysqli_stmt_get_result($count))['total'];
     $page = max(1, (int) ($_GET['page'] ?? 1));
     $perPage = min(100, max(1, (int) ($_GET['per_page'] ?? 25)));
     $page = min($page, max(1, (int) ceil($total / $perPage)));
     $sql .= ' ORDER BY t.transaction_date DESC, t.transaction_id DESC LIMIT ? OFFSET ?';
-    $types .= 'ii'; $params[] = $perPage; $params[] = ($page - 1) * $perPage;
+    $types .= 'ii';
+    $params[] = $perPage;
+    $params[] = ($page - 1) * $perPage;
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, $types, ...$params);
     mysqli_stmt_execute($stmt);
@@ -119,16 +126,22 @@ if ($method === 'GET') {
 
 // Validate fields and lookup IDs before creating or updating a transaction.
 if ($method === 'POST' || $method === 'PUT') {
-    if ($method === 'PUT' && !$id) send_error('Transaction ID required', 400);
+    if ($method === 'PUT' && !$id)
+        send_error('Transaction ID required', 400);
     if ($method === 'PUT') {
         $owned = mysqli_prepare($conn, 'SELECT transaction_id FROM Transactions WHERE transaction_id = ? AND user_id = ?');
-        mysqli_stmt_bind_param($owned, 'ii', $id, $userId); mysqli_stmt_execute($owned);
-        if (!mysqli_fetch_assoc(mysqli_stmt_get_result($owned))) send_error('Transaction not found', 404);
+        mysqli_stmt_bind_param($owned, 'ii', $id, $userId);
+        mysqli_stmt_execute($owned);
+        if (!mysqli_fetch_assoc(mysqli_stmt_get_result($owned)))
+            send_error('Transaction not found', 404);
     }
     $input = get_json_input();
     require_fields($input, [
-        'transaction_type_id', 'amount', 'description',
-        'transaction_date', 'payment_method_id',
+        'transaction_type_id',
+        'amount',
+        'description',
+        'transaction_date',
+        'payment_method_id',
     ]);
 
     $categoryId = isset($input['category_id']) ? require_positive_id($input['category_id'], 'category_id') : 0;
@@ -137,12 +150,16 @@ if ($method === 'POST' || $method === 'PUT') {
     $owner = mysqli_prepare($conn, 'SELECT wallet_id FROM Wallets WHERE payment_method_id = ? AND user_id = ? AND deleted_at IS NULL');
     mysqli_stmt_bind_param($owner, 'ii', $paymentMethodId, $userId);
     mysqli_stmt_execute($owner);
-    if (!mysqli_fetch_assoc(mysqli_stmt_get_result($owner))) send_error('Choose an active wallet you own', 422, ['payment_method_id' => 'Choose an active wallet you own']);
+    if (!mysqli_fetch_assoc(mysqli_stmt_get_result($owner)))
+        send_error('Choose an active wallet you own', 422, ['payment_method_id' => 'Choose an active wallet you own']);
     $typeCheck = mysqli_prepare($conn, "SELECT transaction_type_id FROM TransactionTypes WHERE transaction_type_id = ? AND code IN ('income', 'expense')");
-    mysqli_stmt_bind_param($typeCheck, 'i', $typeId); mysqli_stmt_execute($typeCheck);
-    if (!mysqli_fetch_assoc(mysqli_stmt_get_result($typeCheck))) send_error('Choose income or expense', 422, ['transaction_type_id' => 'Choose income or expense']);
+    mysqli_stmt_bind_param($typeCheck, 'i', $typeId);
+    mysqli_stmt_execute($typeCheck);
+    if (!mysqli_fetch_assoc(mysqli_stmt_get_result($typeCheck)))
+        send_error('Choose income or expense', 422, ['transaction_type_id' => 'Choose income or expense']);
     $amount = require_positive_number($input['amount'], 'amount');
-    if (!is_finite($amount) || $amount <= 0 || $amount > 99999999.99) send_error('Enter an amount between 0.01 and 99,999,999.99', 422, ['amount' => 'Invalid transaction amount']);
+    if (!is_finite($amount) || $amount <= 0 || $amount > 99999999.99)
+        send_error('Enter an amount between 0.01 and 99,999,999.99', 422, ['amount' => 'Invalid transaction amount']);
     $description = require_string($input['description'], 'description', 150);
     $transactionDate = require_date($input['transaction_date'], 'transaction_date');
 
@@ -151,7 +168,8 @@ if ($method === 'POST' || $method === 'PUT') {
         $valid = mysqli_prepare($conn, 'SELECT transaction_type_id FROM TransactionTypes WHERE transaction_type_id = ? AND EXISTS (SELECT 1 FROM Payment_Methods WHERE payment_method_id = ?)');
         mysqli_stmt_bind_param($valid, 'ii', $typeId, $paymentMethodId);
         mysqli_stmt_execute($valid);
-        if (!mysqli_fetch_assoc(mysqli_stmt_get_result($valid))) send_error('Type or payment method is invalid', 422);
+        if (!mysqli_fetch_assoc(mysqli_stmt_get_result($valid)))
+            send_error('Type or payment method is invalid', 422);
         $category = mysqli_prepare($conn, 'SELECT category_id FROM Categories WHERE category_name = ? AND transaction_type_id = ? LIMIT 1');
         mysqli_stmt_bind_param($category, 'si', $categoryName, $typeId);
         mysqli_stmt_execute($category);
@@ -188,8 +206,15 @@ if ($method === 'POST' || $method === 'PUT') {
             VALUES (?, ?, ?, ?, ?, ?, ?, 0, NOW())
         ");
         mysqli_stmt_bind_param(
-            $stmt, 'iiidssi', $userId, $categoryId, $typeId, $amount,
-            $description, $transactionDate, $paymentMethodId
+            $stmt,
+            'iiidssi',
+            $userId,
+            $categoryId,
+            $typeId,
+            $amount,
+            $description,
+            $transactionDate,
+            $paymentMethodId
         );
         mysqli_stmt_execute($stmt);
         $id = mysqli_insert_id($conn);
@@ -202,8 +227,16 @@ if ($method === 'POST' || $method === 'PUT') {
             WHERE transaction_id = ? AND user_id = ?
         ");
         mysqli_stmt_bind_param(
-            $stmt, 'iidssiii', $categoryId, $typeId, $amount, $description,
-            $transactionDate, $paymentMethodId, $id, $userId
+            $stmt,
+            'iidssiii',
+            $categoryId,
+            $typeId,
+            $amount,
+            $description,
+            $transactionDate,
+            $paymentMethodId,
+            $id,
+            $userId
         );
         mysqli_stmt_execute($stmt);
         // MySQL also returns zero when a valid PUT leaves values unchanged.
@@ -211,7 +244,8 @@ if ($method === 'POST' || $method === 'PUT') {
             $exists = mysqli_prepare($conn, 'SELECT transaction_id FROM Transactions WHERE transaction_id = ? AND user_id = ?');
             mysqli_stmt_bind_param($exists, 'ii', $id, $userId);
             mysqli_stmt_execute($exists);
-            if (!mysqli_fetch_assoc(mysqli_stmt_get_result($exists))) send_error('Transaction not found', 404);
+            if (!mysqli_fetch_assoc(mysqli_stmt_get_result($exists)))
+                send_error('Transaction not found', 404);
         }
         $status = 200;
         $message = 'Transaction updated';
@@ -233,17 +267,20 @@ if ($method === 'PATCH' && $id && in_array($action, ['archive', 'restore'], true
     ");
     mysqli_stmt_bind_param($stmt, 'iiii', $archived, $archived, $id, $userId);
     mysqli_stmt_execute($stmt);
-    if (mysqli_stmt_affected_rows($stmt) === 0) send_error('Transaction not found or already in that state', 404);
+    if (mysqli_stmt_affected_rows($stmt) === 0)
+        send_error('Transaction not found or already in that state', 404);
     send_success(['id' => $id, 'archived' => (bool) $archived], ucfirst($action) . 'd transaction');
 }
 
 // Permanently delete only the current user's transaction.
 if ($method === 'DELETE') {
-    if (!$id) send_error('Transaction ID required', 400);
+    if (!$id)
+        send_error('Transaction ID required', 400);
     $stmt = mysqli_prepare($conn, 'DELETE FROM Transactions WHERE transaction_id = ? AND user_id = ?');
     mysqli_stmt_bind_param($stmt, 'ii', $id, $userId);
     mysqli_stmt_execute($stmt);
-    if (mysqli_stmt_affected_rows($stmt) === 0) send_error('Transaction not found', 404);
+    if (mysqli_stmt_affected_rows($stmt) === 0)
+        send_error('Transaction not found', 404);
     send_success(null, 'Transaction permanently deleted');
 }
 

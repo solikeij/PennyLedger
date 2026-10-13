@@ -1,10 +1,10 @@
 <?php
+
 // Purpose: Create the initial administrator account in the database.
 // Run from the command line with account details; saving the file alone does nothing.
 
 // NEW command-line bootstrap script for the first administrator. Run it only
 // on the server; web requests are rejected below.
-
 
 if (PHP_SAPI !== 'cli') {
     http_response_code(404);

@@ -1,6 +1,8 @@
 <?php
+
 // All account removal paths share the same dependent-record cleanup.
-function verify_account_password(mysqli $conn, int $userId, array $input): void {
+function verify_account_password(mysqli $conn, int $userId, array $input): void
+{
     require_fields($input, ['password']);
     $stmt = mysqli_prepare($conn, 'SELECT password FROM Users WHERE user_id = ?');
     mysqli_stmt_bind_param($stmt, 'i', $userId);
@@ -11,38 +13,48 @@ function verify_account_password(mysqli $conn, int $userId, array $input): void 
     }
 }
 
-function queue_account_photo(mysqli $conn, ?string $path): void {
-    if (!$path) return;
+function queue_account_photo(mysqli $conn, ?string $path): void
+{
+    if (!$path)
+        return;
     // Only server-generated profile image filenames can enter the cleanup queue.
-    if (!preg_match('~^/?uploads/profile/[a-f0-9]{32}\.(jpg|png|webp)$~D', $path)) return;
+    if (!preg_match('~^/?uploads/profile/[a-f0-9]{32}\.(jpg|png|webp)$~D', $path))
+        return;
     $stmt = mysqli_prepare($conn, 'INSERT IGNORE INTO File_Cleanup (path) VALUES (?)');
     mysqli_stmt_bind_param($stmt, 's', $path);
     mysqli_stmt_execute($stmt);
 }
 
-function cleanup_account_photos(mysqli $conn): void {
+function cleanup_account_photos(mysqli $conn): void
+{
     // The queue survives a filesystem failure and is retried on later requests.
     try {
         $rows = mysqli_query($conn, 'SELECT path FROM File_Cleanup LIMIT 20');
         $root = realpath(__DIR__ . '/../public/uploads/profile');
         foreach ($rows as $row) {
             $path = $row['path'];
-            if (!preg_match('~^/?uploads/profile/[a-f0-9]{32}\.(jpg|png|webp)$~D', $path)) continue;
+            if (!preg_match('~^/?uploads/profile/[a-f0-9]{32}\.(jpg|png|webp)$~D', $path))
+                continue;
             $file = $root ? $root . DIRECTORY_SEPARATOR . basename($path) : null;
-            if ($file && is_file($file) && !@unlink($file)) continue;
+            if ($file && is_file($file) && !@unlink($file))
+                continue;
             $stmt = mysqli_prepare($conn, 'DELETE FROM File_Cleanup WHERE path = ?');
             mysqli_stmt_bind_param($stmt, 's', $path);
             mysqli_stmt_execute($stmt);
         }
-    } catch (Throwable $failure) { error_log('Profile photo cleanup: ' . $failure->getMessage()); }
+    } catch (Throwable $failure) {
+        error_log('Profile photo cleanup: ' . $failure->getMessage());
+    }
 }
 
-function permanently_delete_account(mysqli $conn, int $userId): void {
+function permanently_delete_account(mysqli $conn, int $userId): void
+{
     $stmt = mysqli_prepare($conn, 'SELECT photo_path FROM Users WHERE user_id = ? FOR UPDATE');
     mysqli_stmt_bind_param($stmt, 'i', $userId);
     mysqli_stmt_execute($stmt);
     $row = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
-    if (!$row) send_error('Account not found', 404);
+    if (!$row)
+        send_error('Account not found', 404);
     queue_account_photo($conn, $row['photo_path']);
     $payments = mysqli_prepare($conn, 'SELECT payment_method_id FROM Wallets WHERE user_id = ?');
     mysqli_stmt_bind_param($payments, 'i', $userId);
@@ -52,7 +64,8 @@ function permanently_delete_account(mysqli $conn, int $userId): void {
     $optional = mysqli_query($conn, "SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND LOWER(TABLE_NAME) = 'pending_email_changes'");
     if (mysqli_num_rows($optional)) {
         $pending = mysqli_prepare($conn, 'DELETE FROM Pending_Email_Changes WHERE user_id = ?');
-        mysqli_stmt_bind_param($pending, 'i', $userId); mysqli_stmt_execute($pending);
+        mysqli_stmt_bind_param($pending, 'i', $userId);
+        mysqli_stmt_execute($pending);
     }
     $queries = [
         'DELETE gc FROM Goal_Contribution gc JOIN Financial_Goals g ON g.goal_id = gc.goal_id WHERE g.user_id = ?',

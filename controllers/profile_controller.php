@@ -1,4 +1,5 @@
 <?php
+
 // Purpose: Read and change the signed-in user's profile and account details.
 // Used by /profile routes for password, income estimate, and photo changes too.
 
@@ -41,7 +42,8 @@ function profile_response(mysqli $conn, int $userId): array
 // The base route reads, updates, or closes the current account.
 if ($profileAction === '') {
     // /profile manages the currently signed-in account only.
-    if ($method === 'GET') send_success(profile_response($conn, $userId));
+    if ($method === 'GET')
+        send_success(profile_response($conn, $userId));
 
     if ($method === 'PUT') {
         $input = get_json_input();
@@ -49,16 +51,19 @@ if ($profileAction === '') {
         $firstName = require_string($input['first_name'], 'first_name', 100);
         $lastName = require_string($input['last_name'], 'last_name', 100);
         $email = filter_var(trim($input['email']), FILTER_VALIDATE_EMAIL);
-        if (!$email) send_error('Validation failed', 422, ['email' => 'Enter a valid email address']);
+        if (!$email)
+            send_error('Validation failed', 422, ['email' => 'Enter a valid email address']);
         $phone = isset($input['phone']) ? trim($input['phone']) : '';
-        if (mb_strlen($phone) > 30) send_error('Validation failed', 422, ['phone' => 'Maximum 30 characters']);
+        if (mb_strlen($phone) > 30)
+            send_error('Validation failed', 422, ['phone' => 'Maximum 30 characters']);
 
         // Users.email remains UNIQUE even for soft-deleted accounts. Check
         // every row so a reserved email gets a clear conflict response.
         $duplicate = mysqli_prepare($conn, 'SELECT user_id FROM Users WHERE email = ? AND user_id <> ?');
         mysqli_stmt_bind_param($duplicate, 'si', $email, $userId);
         mysqli_stmt_execute($duplicate);
-        if (mysqli_fetch_assoc(mysqli_stmt_get_result($duplicate))) send_error('Email is already in use', 409, ['email' => 'This email is already registered']);
+        if (mysqli_fetch_assoc(mysqli_stmt_get_result($duplicate)))
+            send_error('Email is already in use', 409, ['email' => 'This email is already registered']);
 
         $stmt = mysqli_prepare($conn, 'UPDATE Users SET first_name = ?, last_name = ?, email = ?, phone = ? WHERE user_id = ?');
         mysqli_stmt_bind_param($stmt, 'ssssi', $firstName, $lastName, $email, $phone, $userId);
@@ -130,10 +135,12 @@ if ($profileAction === 'photo' && $method === 'POST') {
         send_error('A photo file is required', 422);
     }
     $file = $_FILES['photo'];
-    if ($file['size'] > 1_000_000) send_error('Photo must be smaller than 1 MB', 422);
+    if ($file['size'] > 1_000_000)
+        send_error('Photo must be smaller than 1 MB', 422);
     $mime = (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']);
     $extensions = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
-    if (!isset($extensions[$mime])) send_error('Use a JPG, PNG, or WebP image', 422);
+    if (!isset($extensions[$mime]))
+        send_error('Use a JPG, PNG, or WebP image', 422);
 
     $uploadDirectory = dirname(__DIR__) . '/public/uploads/profile';
     if (!is_dir($uploadDirectory) && !mkdir($uploadDirectory, 0755, true)) {

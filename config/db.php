@@ -1,4 +1,5 @@
 <?php
+
 // Purpose: Open the MySQL connection shared by the API controllers.
 // Used by public/index.php and the CLI admin script; this file creates $conn.
 

@@ -1,4 +1,5 @@
 <?php
+
 // Purpose: Handle /admin requests for users, activity logs, and settings.
 // Used by public/index.php; every operation requires an administrator token.
 
@@ -23,17 +24,20 @@ if ($adminAction === 'users') {
         $lock = mysqli_prepare($conn, 'SELECT GET_LOCK(?, 10) AS acquired');
         mysqli_stmt_bind_param($lock, 's', $lockName);
         mysqli_stmt_execute($lock);
-        if ((int) mysqli_fetch_assoc(mysqli_stmt_get_result($lock))['acquired'] !== 1) send_error('Account is busy; retry shortly', 409);
+        if ((int) mysqli_fetch_assoc(mysqli_stmt_get_result($lock))['acquired'] !== 1)
+            send_error('Account is busy; retry shortly', 409);
         register_shutdown_function(function () use ($conn, $lockName) {
             $release = mysqli_prepare($conn, 'SELECT RELEASE_LOCK(?)');
-            mysqli_stmt_bind_param($release, 's', $lockName); mysqli_stmt_execute($release);
+            mysqli_stmt_bind_param($release, 's', $lockName);
+            mysqli_stmt_execute($release);
         });
         mysqli_begin_transaction($conn);
         $GLOBALS['managed_write'] = $adminId;
         $check = mysqli_prepare($conn, "SELECT user_id FROM Users WHERE user_id = ? AND role = 'user' AND deleted_at IS NOT NULL FOR UPDATE");
         mysqli_stmt_bind_param($check, 'i', $targetId);
         mysqli_stmt_execute($check);
-        if (!mysqli_fetch_assoc(mysqli_stmt_get_result($check))) send_error('Archive this user before permanently deleting the account', 409);
+        if (!mysqli_fetch_assoc(mysqli_stmt_get_result($check)))
+            send_error('Archive this user before permanently deleting the account', 409);
         permanently_delete_account($conn, $targetId);
         send_success(null, "Account {$targetId} permanently deleted");
     }
@@ -41,7 +45,8 @@ if ($adminAction === 'users') {
         // The admin table needs search, status filtering, and bounded pages.
         $search = '%' . trim($_GET['q'] ?? '') . '%';
         $status = $_GET['status'] ?? '';
-        if ($status !== '') require_enum($status, 'status', ['active', 'inactive', 'suspended', 'deleted']);
+        if ($status !== '')
+            require_enum($status, 'status', ['active', 'inactive', 'suspended', 'deleted']);
         $page = max(1, (int) ($_GET['page'] ?? 1));
         $perPage = min(100, max(1, (int) ($_GET['per_page'] ?? 20)));
         $offset = ($page - 1) * $perPage;
@@ -87,8 +92,10 @@ if ($adminAction === 'users') {
         $firstName = require_string($input['first_name'], 'first_name', 100);
         $lastName = require_string($input['last_name'], 'last_name', 100);
         $email = filter_var(trim($input['email']), FILTER_VALIDATE_EMAIL);
-        if (!$email) send_error('Validation failed', 422, ['email' => 'Enter a valid email address']);
-        if (strlen($input['password']) < 8) send_error('Validation failed', 422, ['password' => 'Use at least 8 characters']);
+        if (!$email)
+            send_error('Validation failed', 422, ['email' => 'Enter a valid email address']);
+        if (strlen($input['password']) < 8)
+            send_error('Validation failed', 422, ['password' => 'Use at least 8 characters']);
         $hash = password_hash($input['password'], PASSWORD_DEFAULT);
         try {
             $stmt = mysqli_prepare($conn, "
@@ -98,7 +105,8 @@ if ($adminAction === 'users') {
             mysqli_stmt_bind_param($stmt, 'ssss', $firstName, $lastName, $email, $hash);
             mysqli_stmt_execute($stmt);
         } catch (mysqli_sql_exception $exception) {
-            if ($exception->getCode() === 1062) send_error('Email is already registered', 409);
+            if ($exception->getCode() === 1062)
+                send_error('Email is already registered', 409);
             throw $exception;
         }
         $newId = mysqli_insert_id($conn);
@@ -112,10 +120,12 @@ if ($adminAction === 'users') {
         $firstName = require_string($input['first_name'], 'first_name', 100);
         $lastName = require_string($input['last_name'], 'last_name', 100);
         $email = filter_var(trim($input['email']), FILTER_VALIDATE_EMAIL);
-        if (!$email) send_error('Validation failed', 422, ['email' => 'Enter a valid email address']);
+        if (!$email)
+            send_error('Validation failed', 422, ['email' => 'Enter a valid email address']);
 
         if (!empty($input['password'])) {
-            if (strlen($input['password']) < 8) send_error('Validation failed', 422, ['password' => 'Use at least 8 characters']);
+            if (strlen($input['password']) < 8)
+                send_error('Validation failed', 422, ['password' => 'Use at least 8 characters']);
             $hash = password_hash($input['password'], PASSWORD_DEFAULT);
             $stmt = mysqli_prepare($conn, "UPDATE Users SET first_name = ?, last_name = ?, email = ?, password = ? WHERE user_id = ? AND role = 'user' AND deleted_at IS NULL");
             mysqli_stmt_bind_param($stmt, 'ssssi', $firstName, $lastName, $email, $hash, $targetId);
@@ -130,7 +140,8 @@ if ($adminAction === 'users') {
             $exists = mysqli_prepare($conn, "SELECT user_id FROM Users WHERE user_id = ? AND role = 'user' AND deleted_at IS NULL");
             mysqli_stmt_bind_param($exists, 'i', $targetId);
             mysqli_stmt_execute($exists);
-            if (!mysqli_fetch_assoc(mysqli_stmt_get_result($exists))) send_error('User not found', 404);
+            if (!mysqli_fetch_assoc(mysqli_stmt_get_result($exists)))
+                send_error('User not found', 404);
         }
         send_success(['id' => $targetId], 'User updated');
     }
@@ -144,7 +155,8 @@ if ($adminAction === 'users') {
         $stmt = mysqli_prepare($conn, "UPDATE Users SET status = ? WHERE user_id = ? AND role = 'user' AND deleted_at IS NULL");
         mysqli_stmt_bind_param($stmt, 'si', $status, $targetId);
         mysqli_stmt_execute($stmt);
-        if (mysqli_stmt_affected_rows($stmt) === 0) send_error('User not found or already in that state', 404);
+        if (mysqli_stmt_affected_rows($stmt) === 0)
+            send_error('User not found or already in that state', 404);
         if ($status !== 'active') {
             $tokens = mysqli_prepare($conn, 'DELETE FROM Tokens WHERE user_id = ?');
             mysqli_stmt_bind_param($tokens, 'i', $targetId);
@@ -157,7 +169,8 @@ if ($adminAction === 'users') {
         $stmt = mysqli_prepare($conn, "UPDATE Users SET status = 'deleted', deleted_at = NOW() WHERE user_id = ? AND role = 'user' AND deleted_at IS NULL");
         mysqli_stmt_bind_param($stmt, 'i', $targetId);
         mysqli_stmt_execute($stmt);
-        if (mysqli_stmt_affected_rows($stmt) === 0) send_error('User not found or already deleted', 404);
+        if (mysqli_stmt_affected_rows($stmt) === 0)
+            send_error('User not found or already deleted', 404);
 
         $tokens = mysqli_prepare($conn, 'DELETE FROM Tokens WHERE user_id = ?');
         mysqli_stmt_bind_param($tokens, 'i', $targetId);
@@ -169,13 +182,15 @@ if ($adminAction === 'users') {
         $stmt = mysqli_prepare($conn, "UPDATE Users SET status = 'active', deleted_at = NULL WHERE user_id = ? AND role = 'user' AND deleted_at IS NOT NULL");
         mysqli_stmt_bind_param($stmt, 'i', $targetId);
         mysqli_stmt_execute($stmt);
-        if (mysqli_stmt_affected_rows($stmt) === 0) send_error('Archived user not found', 404);
+        if (mysqli_stmt_affected_rows($stmt) === 0)
+            send_error('Archived user not found', 404);
         send_success(['id' => $targetId, 'status' => 'active'], 'Account restored');
     }
 }
 
 // Retire the global activity endpoint, including all subpaths and methods.
-if ($adminAction === 'activity-logs') send_error('User activity is private', 403);
+if ($adminAction === 'activity-logs')
+    send_error('User activity is private', 403);
 if ($adminAction === 'auth-events' && $method === 'GET' && !$targetId && !$adminSubaction) {
     $page = max(1, (int) ($_GET['page'] ?? 1));
     $perPage = min(200, max(1, (int) ($_GET['per_page'] ?? 50)));
@@ -195,7 +210,8 @@ if ($adminAction === 'settings') {
     if ($method === 'GET') {
         $rows = mysqli_fetch_all(mysqli_query($conn, 'SELECT setting_key, setting_value FROM App_Settings'), MYSQLI_ASSOC);
         $settings = [];
-        foreach ($rows as $row) $settings[$row['setting_key']] = $row['setting_value'];
+        foreach ($rows as $row)
+            $settings[$row['setting_key']] = $row['setting_value'];
         send_success(['registrationOpen' => ($settings['registration_open'] ?? '1') === '1']);
     }
     if ($method === 'PUT') {

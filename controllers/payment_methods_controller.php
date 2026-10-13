@@ -1,4 +1,5 @@
 <?php
+
 // Purpose (legacy): Create and manage payment-method labels.
 // Status: Not routed by public/index.php; React reads /lookups/payment-methods.
 
@@ -91,7 +92,8 @@ switch ($method) {
     case 'PUT':
         // ---- Updating an existing payment method - must be logged in ----
 
-        if (!$id) send_error('Payment method ID required', 400);
+        if (!$id)
+            send_error('Payment method ID required', 400);
         // Can't update without knowing WHICH one - stop here if no ID.
 
         $input = get_json_input();
@@ -111,7 +113,8 @@ switch ($method) {
     case 'DELETE':
         // ---- Deleting a payment method - must be logged in ----
 
-        if (!$id) send_error('Payment method ID required', 400);
+        if (!$id)
+            send_error('Payment method ID required', 400);
 
         $input = get_json_input();
         // Even though DELETE has no other data to send, we still need

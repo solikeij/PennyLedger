@@ -1,4 +1,5 @@
 <?php
+
 // Purpose: List, add, and delete savings-goal contributions.
 // Used by /goal-contributions; checks that the signed-in user owns the goal.
 
@@ -51,7 +52,8 @@ if ($method === 'POST') {
     $goal = mysqli_prepare($conn, 'SELECT goal_id FROM Financial_Goals WHERE goal_id = ? AND user_id = ?');
     mysqli_stmt_bind_param($goal, 'ii', $goalId, $userId);
     mysqli_stmt_execute($goal);
-    if (!mysqli_fetch_assoc(mysqli_stmt_get_result($goal))) send_error('Goal not found', 404);
+    if (!mysqli_fetch_assoc(mysqli_stmt_get_result($goal)))
+        send_error('Goal not found', 404);
 
     $stmt = mysqli_prepare($conn, "
         INSERT INTO Goal_Contribution (goal_id, amount, contribution_date, description)
@@ -70,7 +72,8 @@ if ($method === 'POST') {
 
 // Remove a contribution only when its goal belongs to this user.
 if ($method === 'DELETE') {
-    if (!$id) send_error('Contribution ID required', 400);
+    if (!$id)
+        send_error('Contribution ID required', 400);
     $stmt = mysqli_prepare($conn, "
         DELETE gc FROM Goal_Contribution gc
         JOIN Financial_Goals g ON g.goal_id = gc.goal_id
@@ -78,7 +81,8 @@ if ($method === 'DELETE') {
     ");
     mysqli_stmt_bind_param($stmt, 'ii', $id, $userId);
     mysqli_stmt_execute($stmt);
-    if (mysqli_stmt_affected_rows($stmt) === 0) send_error('Contribution not found', 404);
+    if (mysqli_stmt_affected_rows($stmt) === 0)
+        send_error('Contribution not found', 404);
     send_success(null, 'Contribution deleted');
 }
 
