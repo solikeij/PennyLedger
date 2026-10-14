@@ -47,7 +47,9 @@ it("prefills month-based budget editing and saves the changed monthly limit", as
     screen.getByRole("button", { name: "Edit Groceries budget" }),
   );
   expect(screen.getByLabelText("Month")).toHaveValue(localDate().slice(0, 7));
-  expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+  expect(
+    within(screen.getByRole("dialog")).queryByRole("combobox"),
+  ).not.toBeInTheDocument();
   fireEvent.change(screen.getByLabelText("Monthly limit (PHP)"), {
     target: { value: "650" },
   });

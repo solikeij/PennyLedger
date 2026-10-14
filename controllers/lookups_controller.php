@@ -36,7 +36,7 @@ if ($lookup === 'categories') {
 } elseif ($lookup === 'payment-methods') {
     $user = require_auth($conn);
     $userId = (int) $user['user_id'];
-    $stmt = mysqli_prepare($conn, 'SELECT w.payment_method_id AS id, w.name FROM Wallets w WHERE w.user_id = ? AND w.deleted_at IS NULL ORDER BY w.is_default DESC, w.name');
+    $stmt = mysqli_prepare($conn, 'SELECT w.payment_method_id AS id, w.name, w.expense_type AS expenseType FROM Wallets w WHERE w.user_id = ? AND w.deleted_at IS NULL ORDER BY w.is_default DESC, w.name');
     mysqli_stmt_bind_param($stmt, 'i', $userId);
     mysqli_stmt_execute($stmt);
     $rows = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC);

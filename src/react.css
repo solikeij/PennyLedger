@@ -60,6 +60,9 @@ select option {
   padding-right: 48px;
 }
 .category-options {
+  max-height: min(240px, 50dvh);
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted-2) var(--card);
   z-index: 1000;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -76,6 +79,20 @@ select option {
   padding: 12px;
   overflow-wrap: anywhere;
 }
+.collection-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 16px;
+}
+.collection-toolbar .field { flex: 1 1 150px; min-width: 0; margin: 0; }
+.collection-toolbar .collection-search { flex: 2 1 220px; }
+.collection-toolbar label { font-size: 0.82rem; color: var(--ink-soft); }
+.collection-toolbar input, .collection-toolbar select { display: block; width: 100%; margin-top: 6px; }
+.collection-browser .goal-card, .collection-browser .budget-card { min-width: 0; overflow-wrap: anywhere; }
+.collection-browser .gc-top > div:not(.gc-icon) { min-width: 0; }
+.filter-bar > .category-combobox { flex: 1 1 180px; min-width: 0; margin: 0; }
 .category-options [role="option"] {
   cursor: pointer;
 }
@@ -167,12 +184,85 @@ select option {
   line-height: 1.4;
   overflow-wrap: anywhere;
 }
-.wallet-card .wallet-edit {
-  grid-column: 2;
-  grid-row: 1;
-  align-self: start;
-  padding: 5px 12px;
+.wallet-card-actions {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
 }
+.wallet-type-tag {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.wallet-slider {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 4px;
+  padding: 6px 4px 14px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted-2) transparent;
+}
+.wallet-slider .wallet-slide {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 min(280px, 85%);
+  min-height: 190px;
+  scroll-snap-align: start;
+  padding: 16px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.wallet-slide.is-open {
+  border-color: var(--blue);
+  box-shadow: var(--shadow-md);
+}
+.wallet-card-toggle {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 4px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+.wallet-name {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+.wallet-hint, .wallet-manage-hint, .wallet-count {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+.wallet-hint { margin-top: 6px; }
+.wallet-slider-controls { display: flex; gap: 8px; }
+.wallet-slider-controls .btn { min-width: 40px; }
+.wallet-action-slot { min-height: 46px; }
+.wallet-card-actions[hidden] { display: none; }
+.wallet-slider:focus-visible,
+.wallet-card-toggle:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .wallet-slider .wallet-slide { transition: none; }
+}
+.bp-summary small.bp-red { color: var(--bp-red); }
 .wallet-card .report-caption {
   grid-column: 1 / -1;
   grid-row: 2;
@@ -752,6 +842,96 @@ button:disabled {
 .tx-amt.neg { color: var(--danger); }
 .tx-table .td-amount.amt-pos,
 .tx-amt.pos { color: var(--success); }
+
+.transaction-bulk-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.transaction-bulk-actions > span { margin-right: auto; color: var(--muted); }
+.tx-table .tx-selection { width: 44px; text-align: center; }
+.tx-selection input { width: 18px; height: 18px; accent-color: var(--blue); cursor: pointer; }
+.tx-table .tx-selected { background: var(--blue-50); }
+
+.dashboard-stat-grid .stat-value.amt-pos { color: var(--success); }
+.dashboard-stat-grid .stat-value.amt-neg { color: var(--danger); }
+
+.dashboard-stat-grid .stat-top {
+  --stat-indicator: var(--blue);
+  --stat-indicator-bg: var(--blue-50);
+}
+.dashboard-stat-grid .stat-top.amt-pos {
+  --stat-indicator: var(--success);
+  --stat-indicator-bg: var(--success-50);
+}
+.dashboard-stat-grid .stat-top.amt-neg {
+  --stat-indicator: var(--danger);
+  --stat-indicator-bg: var(--danger-50);
+}
+.dashboard-stat-grid .stat-dot { background: var(--stat-indicator-bg); }
+.dashboard-stat-grid .stat-dot i { background: var(--stat-indicator); }
+.dashboard-stat-grid .stat-top:is(.amt-pos, .amt-neg) .stat-delta {
+  color: var(--stat-indicator);
+  background: var(--stat-indicator-bg);
+}
+
+/* Reports use light surfaces and a blue selection when the app is in light mode. */
+html:not([data-theme="dark"]) .report-card,
+html:not([data-theme="dark"]) .snapshot-dashboard,
+html:not([data-theme="dark"]) .report-action-toolbar {
+  background: var(--card);
+  color: var(--ink);
+  border-color: var(--line);
+}
+html:not([data-theme="dark"]) .report-card .report-type,
+html:not([data-theme="dark"]) .report-card .field select,
+html:not([data-theme="dark"]) .snapshot-panel,
+html:not([data-theme="dark"]) .snapshot-donut > div,
+html:not([data-theme="dark"]) .snapshot-comparison article {
+  background: var(--app-bg);
+  color: var(--ink);
+  border-color: var(--line);
+  color-scheme: light;
+}
+html:not([data-theme="dark"]) .report-card .report-type.active {
+  background: var(--blue-50);
+  border-color: var(--blue);
+}
+.report-type:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+html:not([data-theme="dark"]) .report-card .card-head h2,
+html:not([data-theme="dark"]) .report-card .field label,
+html:not([data-theme="dark"]) .snapshot-dashboard h3,
+html:not([data-theme="dark"]) .snapshot-panel h4,
+html:not([data-theme="dark"]) .report-action-toolbar .btn {
+  color: var(--ink);
+  border-color: var(--line);
+}
+html:not([data-theme="dark"]) .report-card .report-caption,
+html:not([data-theme="dark"]) .report-card .report-type span,
+html:not([data-theme="dark"]) .snapshot-panel p,
+html:not([data-theme="dark"]) .snapshot-totals span,
+html:not([data-theme="dark"]) .snapshot-net span,
+html:not([data-theme="dark"]) .snapshot-trend-values,
+html:not([data-theme="dark"]) .snapshot-comparison small {
+  color: var(--ink-soft);
+}
+html:not([data-theme="dark"]) .snapshot-green { color: var(--success); }
+html:not([data-theme="dark"]) .snapshot-red { color: var(--danger); }
+html:not([data-theme="dark"]) .snapshot-warning { color: #8a5d08; }
+html:not([data-theme="dark"]) .snapshot-badge {
+  background: var(--success-50);
+  border-color: var(--line);
+}
+html:not([data-theme="dark"]) .snapshot-badge.snapshot-red { background: var(--danger-50); }
+html:not([data-theme="dark"]) .snapshot-badge.snapshot-warning { background: #fff3d6; }
+html:not([data-theme="dark"]) .snapshot-budget { border-color: var(--line); }
+html:not([data-theme="dark"]) .snapshot-meter,
+html:not([data-theme="dark"]) .snapshot-category-bar { background: var(--line); }
 
 .transaction-budget-warning {
   padding: 12px 14px;

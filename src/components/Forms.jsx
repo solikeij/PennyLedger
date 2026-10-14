@@ -1,152 +1,12 @@
 import ErrorForm, { FieldError } from "./ErrorForm";
-import FloatingOptions from "./FloatingOptions";
-import { useEffect, useId, useRef, useState } from "react";
+import CategoryField from "./CategoryField";
+import { useEffect, useRef, useState } from "react";
 import { useApp } from "../state/AppContext";
 import { api } from "../lib/api";
 import { localDate, monthlyIncome } from "../lib/format";
 import { projectedMonthlyBudget } from "../lib/monthly-budget";
+import { walletLabel } from "../lib/wallet-label";
 import { Field, FormActions, Modal } from "./UI";
-
-// Let transaction forms choose a saved category or enter a new name.
-function CategoryField({ categories, defaultValue = "" }) {
-  const [value, setValue] = useState(defaultValue);
-  const [open, setOpen] = useState(false);
-  const [active, setActive] = useState(-1);
-  const id = useId();
-  const input = useRef(null);
-  const anchor = useRef(null);
-  useEffect(() => {
-    if (open && active >= 0)
-      document
-        .getElementById(`${id}-${active}`)
-        ?.scrollIntoView({ block: "nearest" });
-  }, [open, active, id]);
-  // Apply a category choice and return focus to the input.
-  function choose(name) {
-    setValue(name);
-    setOpen(false);
-    setActive(-1);
-    input.current?.focus();
-  }
-  return (
-    <div
-      ref={anchor}
-      className="field category-combobox"
-      onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);
-      }}
-    >
-      <label htmlFor={id}>Category</label>
-      <FieldError name="category" />
-      <div className="input-wrap">
-        <input
-          id={id}
-          ref={input}
-          name="category"
-          role="combobox"
-          aria-expanded={open}
-          aria-controls={`${id}-options`}
-          aria-autocomplete="list"
-          aria-activedescendant={
-            open && active >= 0 ? `${id}-${active}` : undefined
-          }
-          placeholder="Type or choose a category"
-          autoComplete="off"
-          required
-          maxLength={100}
-          value={value}
-          onClick={() => setOpen(true)}
-          onChange={(event) => {
-            setValue(event.target.value);
-            setActive(-1);
-            setOpen(true);
-          }}
-          onKeyDown={(event) => {
-            if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-              event.preventDefault();
-              setOpen(true);
-              setActive((index) =>
-                categories.length
-                  ? index < 0
-                    ? event.key === "ArrowDown"
-                      ? 0
-                      : categories.length - 1
-                    : (index +
-                        (event.key === "ArrowDown"
-                          ? 1
-                          : categories.length - 1)) %
-                      categories.length
-                  : -1,
-              );
-            } else if (event.key === "Enter" && open && active >= 0) {
-              event.preventDefault();
-              choose(categories[active].name);
-            } else if (event.key === "Escape" && open) {
-              event.preventDefault();
-              event.stopPropagation();
-              setOpen(false);
-            }
-          }}
-        />
-        <button
-          type="button"
-          className="category-toggle"
-          aria-label="Choose a saved category"
-          aria-expanded={open}
-          aria-controls={`${id}-options`}
-          onMouseDown={(event) => event.preventDefault()}
-          onClick={() => {
-            setOpen((previous) => !previous);
-            setActive(-1);
-            input.current?.focus();
-          }}
-        >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            aria-hidden="true"
-          >
-            <path d="m6 9 6 6 6-6" />
-          </svg>
-        </button>
-      </div>
-      {open && (
-        <FloatingOptions
-          anchor={anchor}
-          onClose={() => setOpen(false)}
-          id={`${id}-options`}
-          role="listbox"
-          aria-label="Saved categories"
-          className="category-options"
-        >
-          {categories.map((item, index) => (
-            <li
-              key={item.id}
-              id={`${id}-${index}`}
-              role="option"
-              aria-selected={value === item.name}
-              data-active={active === index}
-              onPointerDown={(event) => event.preventDefault()}
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={() => choose(item.name)}
-            >
-              {item.name}
-            </li>
-          ))}
-          {!categories.length && (
-            <li role="presentation">
-              No saved categories yet. Type a new one above.
-            </li>
-          )}
-        </FloatingOptions>
-      )}
-    </div>
-  );
-}
 
 // Add or edit a transaction with validation and a monthly-budget reminder.
 export function TransactionModal({ transaction, onClose }) {
@@ -162,6 +22,17 @@ export function TransactionModal({ transaction, onClose }) {
   const [type, setType] = useState(
     transaction ? (transaction.amount > 0 ? "income" : "expense") : "expense",
   );
+  const [draftCategories, setDraftCategories] = useState({
+    expense: transaction?.amount < 0 ? transaction.category : "",
+    income: transaction?.amount > 0 ? transaction.category : "",
+  });
+  const selectedMethodId = paymentMethod || methods[0]?.id || "";
+  const selectedMethod = methods.find((item) => item.id === Number(selectedMethodId));
+  const requiredCategory = type === "expense" && selectedMethod?.expenseType !== "Other"
+    ? selectedMethod?.expenseType || ""
+    : "";
+  const category = draftCategories[type];
+  const categoryConflict = requiredCategory && category !== requiredCategory;
   const [busy, setBusy] = useState(false);
   const saving = useRef(false);
   const [error, setError] = useState("");
@@ -181,6 +52,10 @@ export function TransactionModal({ transaction, onClose }) {
         setCategories(cats);
         setMethods(payments);
         setTypes(transactionTypes);
+        // Default new expenses to the first wallet's category; preserve existing records.
+        if (!transaction && payments[0]?.expenseType && payments[0].expenseType !== "Other") {
+          setDraftCategories((previous) => ({ ...previous, expense: payments[0].expenseType }));
+        }
       })
       .catch((failure) => setError(failure))
       .finally(() => setLoadingChoices(false));
@@ -193,6 +68,8 @@ export function TransactionModal({ transaction, onClose }) {
     setError("");
     const form = new FormData(event.currentTarget);
     const category = form.get("category").trim();
+    if (categoryConflict)
+      return setError(`This wallet only accepts ${requiredCategory} expenses. Use that category or choose another wallet.`);
     if (!category) return setError("Enter a category name.");
     if (/\p{N}/u.test(category))
       return setError("Category cannot contain numbers.");
@@ -250,7 +127,7 @@ export function TransactionModal({ transaction, onClose }) {
       }}
     >
       <ErrorForm failure={error} onSubmit={submit}>
-        <fieldset disabled={busy} className="transaction-fieldset">
+        <fieldset disabled={busy || loadingChoices} className="transaction-fieldset">
           <Field
             label="Description"
             name="description"
@@ -266,7 +143,13 @@ export function TransactionModal({ transaction, onClose }) {
               <select
                 id="tx-type"
                 value={type}
-                onChange={(event) => setType(event.target.value)}
+                onChange={(event) => {
+                  const nextType = event.target.value;
+                  setType(nextType);
+                  if (nextType === "expense" && selectedMethod?.expenseType && selectedMethod.expenseType !== "Other") {
+                    setDraftCategories((previous) => ({ ...previous, expense: selectedMethod.expenseType }));
+                  }
+                }}
               >
                 <option value="expense">Expense</option>
                 <option value="income">Income</option>
@@ -284,11 +167,34 @@ export function TransactionModal({ transaction, onClose }) {
               </svg>
             </div>
           </div>
-          <CategoryField
-            key={type}
-            defaultValue={transaction?.category || ""}
-            categories={categories.filter((item) => item.type === type)}
-          />
+          {requiredCategory ? (
+            <>
+              <Field label="Category" name="category" value={category} readOnly />
+              <p className="report-caption" role="status">
+                {walletLabel(selectedMethod, methods).label} only accepts {requiredCategory} expenses.
+                Choose a wallet with expense type Other to use any expense category.
+              </p>
+              {categoryConflict && (
+                <div className="data-notice" role="alert">
+                  <p>This transaction is currently categorized as {category}. Choose another wallet to keep it, or change the category below.</p>
+                  <button
+                    type="button"
+                    className="btn btn-outline btn-sm"
+                    onClick={() => setDraftCategories((previous) => ({ ...previous, expense: requiredCategory }))}
+                  >
+                    Use {requiredCategory} category
+                  </button>
+                </div>
+              )}
+            </>
+          ) : (
+            <CategoryField
+              key={type}
+              value={category}
+              onChange={(value) => setDraftCategories((previous) => ({ ...previous, [type]: value }))}
+              categories={categories.filter((item) => item.type === type)}
+            />
+          )}
           <div className="field">
             <label htmlFor="tx-payment">Payment method</label>
             <FieldError name="payment_method" />
@@ -296,8 +202,14 @@ export function TransactionModal({ transaction, onClose }) {
               <select
                 name="payment_method"
                 id="tx-payment"
-                value={paymentMethod || methods[0]?.id || ""}
-                onChange={(event) => setPaymentMethod(event.target.value)}
+                value={selectedMethodId}
+                onChange={(event) => {
+                  const method = methods.find((item) => item.id === Number(event.target.value));
+                  setPaymentMethod(event.target.value);
+                  if (type === "expense" && method?.expenseType && method.expenseType !== "Other") {
+                    setDraftCategories((previous) => ({ ...previous, expense: method.expenseType }));
+                  }
+                }}
                 required
                 disabled={loadingChoices || !methods.length}
               >
@@ -310,7 +222,7 @@ export function TransactionModal({ transaction, onClose }) {
                 )}
                 {methods.map((item) => (
                   <option key={item.id} value={item.id}>
-                    {item.name}
+                    {walletLabel(item, methods).label}
                   </option>
                 ))}
               </select>

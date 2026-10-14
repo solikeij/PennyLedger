@@ -21,15 +21,26 @@ import {
 } from "../components/Forms";
 import { progress, localDate } from "../lib/format";
 import { ledgerTotals } from "../lib/ledger-totals";
+import { walletLabel } from "../lib/wallet-label";
 import SpendingInsights from "../components/SpendingInsights";
+import WalletCarousel from "../components/WalletCarousel";
+import CategoryField from "../components/CategoryField";
 
 // Add, edit, or delete a named wallet and its expense type.
-function WalletModal({ wallet, onClose }) {
+function WalletModal({
+  wallet,
+  displayName = wallet?.name,
+  startDeleting = false,
+  onClose,
+}) {
   const { createWallet, updateWallet, deleteWallet, notify } = useApp();
   const [expenseTypes, setExpenseTypes] = useState([
     ...new Set(["Other", ...(wallet?.expenseType ? [wallet.expenseType] : [])]),
   ]);
   const [lookupError, setLookupError] = useState("");
+  const [expenseType, setExpenseType] = useState(
+    wallet?.expenseType || "Other",
+  );
   useEffect(() => {
     let alive = true;
     api("/lookups/categories")
@@ -55,7 +66,7 @@ function WalletModal({ wallet, onClose }) {
       alive = false;
     };
   }, [wallet?.expenseType]);
-  const [deleting, setDeleting] = useState(false);
+  const [deleting, setDeleting] = useState(startDeleting);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   return (
@@ -108,7 +119,7 @@ function WalletModal({ wallet, onClose }) {
           {deleting ? (
             <>
               <p className="report-caption">
-                Delete {wallet.name}? Existing transactions will be kept.
+                Delete {displayName}? Existing transactions will be kept.
               </p>
               <PasswordField
                 label="Confirm your password"
@@ -129,19 +140,27 @@ function WalletModal({ wallet, onClose }) {
                 required
               />
               <div className="field">
-                <label htmlFor="wallet-expense-type">Expense type</label>
-                <select
-                  id="wallet-expense-type"
+                <CategoryField
+                  label="Expense type"
                   name="expense_type"
-                  defaultValue={wallet?.expenseType || "Other"}
-                  required
-                >
-                  {expenseTypes.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </select>
+                  allowCustom={false}
+                  toggleLabel="Choose expense type"
+                  value={expenseType}
+                  onChange={setExpenseType}
+                  categories={expenseTypes.map((type) => ({
+                    id: type,
+                    value: type,
+                    name:
+                      type === "Other" ? "Other (any expense category)" : type,
+                  }))}
+                />
+                <p className="report-caption">
+                  A specific expense type limits this wallet to that category.
+                  Choose Other for a wallet used across categories, such as
+                  GCash. Income can use any income category. Changing the type
+                  must also match existing expenses, including archived
+                  transactions.
+                </p>
                 {lookupError && (
                   <p role="status" className="report-caption">
                     {lookupError}
@@ -201,8 +220,15 @@ export default function Dashboard() {
   const [modal, setModal] = useState(null);
   const [walletModal, setWalletModal] = useState(false);
   const [editingWallet, setEditingWallet] = useState(null);
+  const [deletingWallet, setDeletingWallet] = useState(null);
   const [editingBudget, setEditingBudget] = useState(null);
   const [contributingGoal, setContributingGoal] = useState(null);
+  const walletNames = new Map(
+    wallets.map((wallet) => [
+      wallet.paymentMethodId,
+      walletLabel(wallet, wallets).label,
+    ]),
+  );
   // Every saved transaction contributes to the totals; the old demo-only
   // calculation ignored records loaded from MySQL.
   const {
@@ -246,17 +272,19 @@ export default function Dashboard() {
   const stats = [
     [
       "Monthly Income",
-      money(income),
+      `+${money(income)}`,
       "",
       "flat",
       `Recorded this month; expected monthly income: ${money(expectedIncome || 0)}`,
+      "amt-pos",
     ],
     [
       "Monthly Expenses",
-      money(expenses),
+      `-${money(expenses)}`,
       "",
       "flat",
       "Expense transactions recorded this month",
+      "amt-neg",
     ],
     [
       "Total Budgeted",
@@ -271,6 +299,7 @@ export default function Dashboard() {
       overBudget || remaining < 0 ? "Over budget" : "On track",
       overBudget || remaining < 0 ? "down" : "flat",
       "This month’s budget limit minus recorded spending",
+      remaining < 0 ? "amt-neg" : "",
     ],
   ];
   return (
@@ -311,57 +340,50 @@ export default function Dashboard() {
         </div>
       </div>
       <div className="stat-grid dashboard-stat-grid">
-        {stats.map(([label, value, delta, tone, description], index) => (
-          <div
-            className="stat-card"
-            key={label}
-            style={{ animationDelay: `${index * 0.05}s` }}
-          >
-            <div className="stat-top">
-              <div
-                className="stat-dot"
-                style={{ background: "var(--blue-50)" }}
-              >
-                <i style={{ background: "var(--blue)" }} />
-              </div>
-              <span className={`stat-delta ${tone}`}>{delta}</span>
-            </div>
-            <p className="stat-label">{label}</p>
-            <DataSection
-              sections={
-                label.includes("Budget")
-                  ? ["budgets", "analyticsTransactions"]
-                  : ["analyticsTransactions"]
-              }
+        {stats.map(
+          (
+            [label, value, delta, tone, description, amountTone = ""],
+            index,
+          ) => (
+            <div
+              className="stat-card"
+              key={label}
+              style={{ animationDelay: `${index * 0.05}s` }}
             >
-              <p className="stat-value">{value}</p>
-            </DataSection>
-            <p className="report-caption">{description}</p>
-          </div>
-        ))}
+              <div className={`stat-top ${amountTone}`}>
+                <div className="stat-dot">
+                  <i />
+                </div>
+                <span className={`stat-delta ${tone}`}>{delta}</span>
+              </div>
+              <p className="stat-label">{label}</p>
+              <DataSection
+                sections={
+                  label.includes("Budget")
+                    ? ["budgets", "analyticsTransactions"]
+                    : ["analyticsTransactions"]
+                }
+              >
+                <p className={`stat-value ${amountTone}`}>{value}</p>
+              </DataSection>
+              <p className="report-caption">{description}</p>
+            </div>
+          ),
+        )}
       </div>
       <section className="card wallet-section">
         <DataSection sections={["wallets"]}>
-          <div className="card-head">
-            <h2>Wallets</h2>
-          </div>
-          <div className="wallet-grid">
-            {wallets.map((wallet) => (
-              <article className="wallet-card" key={wallet.id}>
-                <button
-                  className="btn btn-outline btn-sm wallet-edit"
-                  aria-label={`Edit ${wallet.name}`}
-                  onClick={() => setEditingWallet(wallet)}
-                >
-                  Edit
-                </button>
-                <h3>{wallet.name}</h3>
-                <span className="report-caption">
-                  Expense type: {wallet.expenseType || "Other"}
-                </span>
-              </article>
-            ))}
-          </div>
+          {wallets.length > 0 ? (
+            <WalletCarousel
+              wallets={wallets}
+              onEdit={setEditingWallet}
+              onDelete={setDeletingWallet}
+            />
+          ) : (
+            <div className="card-head">
+              <h2>Wallets</h2>
+            </div>
+          )}
           {!wallets.length && (
             <div className="empty-state">
               <p>No wallets yet. Add a wallet to organize your transactions.</p>
@@ -384,7 +406,7 @@ export default function Dashboard() {
                 <h2>Budget Progress</h2>
                 <span className="muted-tag">This Month</span>
               </div>
-              {budgets.map((budget) => (
+              {budgets.slice(0, 3).map((budget) => (
                 <div key={budget.id}>
                   <BudgetRow budget={budget} />
                   <button
@@ -396,6 +418,11 @@ export default function Dashboard() {
                   </button>
                 </div>
               ))}
+              {budgets.length > 3 && (
+                <Link to="/budget" className="link">
+                  View all {budgets.length} budgets
+                </Link>
+              )}
             </DataSection>
           </section>
           <section className="card">
@@ -430,12 +457,16 @@ export default function Dashboard() {
                           <p className="tx-name">{tx.description}</p>
                           <p className="tx-meta">
                             {tx.category} ·{" "}
-                            {tx.paymentMethod || "Payment method not recorded"}{" "}
+                            {walletNames.get(tx.paymentMethodId) ||
+                              tx.paymentMethod ||
+                              "Payment method not recorded"}{" "}
                             · {date(tx.date)}
                           </p>
                         </div>
                       </div>
-                      <span className={`tx-amt${tx.amount > 0 ? " pos" : tx.amount < 0 ? " neg" : ""}`}>
+                      <span
+                        className={`tx-amt${tx.amount > 0 ? " pos" : tx.amount < 0 ? " neg" : ""}`}
+                      >
                         {money(tx.amount, true)}
                       </span>
                     </div>
@@ -483,7 +514,7 @@ export default function Dashboard() {
               <div className="card-head">
                 <h2>Financial Goals</h2>
                 <Link to="/goals" className="link">
-                  + Add Goal
+                  View all goals
                 </Link>
               </div>
               {goals.slice(0, 3).map((goal) => (
@@ -530,7 +561,16 @@ export default function Dashboard() {
       {editingWallet && (
         <WalletModal
           wallet={editingWallet}
+          displayName={walletLabel(editingWallet, wallets).label}
           onClose={() => setEditingWallet(null)}
+        />
+      )}
+      {deletingWallet && (
+        <WalletModal
+          wallet={deletingWallet}
+          displayName={walletLabel(deletingWallet, wallets).label}
+          startDeleting
+          onClose={() => setDeletingWallet(null)}
         />
       )}
     </>

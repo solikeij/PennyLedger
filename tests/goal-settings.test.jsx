@@ -52,6 +52,7 @@ beforeEach(() => {
     notify: vi.fn(),
     updateProfile: vi.fn(),
     saveGoal: vi.fn().mockResolvedValue({ id: 4 }),
+    deleteGoal: vi.fn().mockResolvedValue(null),
     addGoalContribution: vi.fn().mockResolvedValue(null),
   };
   mocks.updateIdentity.mockResolvedValue(profile);
@@ -90,6 +91,50 @@ it("edits the goal target separately from contributions", async () => {
     ),
   );
   expect(mocks.app.addGoalContribution).not.toHaveBeenCalled();
+});
+
+it("confirms goal deletion and explains that contributions are removed", async () => {
+  render(<Goals />);
+  fireEvent.click(
+    screen.getByRole("button", { name: "Delete Emergency fund" }),
+  );
+  expect(screen.getByRole("dialog")).toHaveTextContent(
+    "all its contribution records (PHP 100 saved)",
+  );
+  expect(mocks.app.deleteGoal).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+  expect(mocks.app.deleteGoal).not.toHaveBeenCalled();
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Delete Emergency fund" }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Confirm deletion" }));
+  await waitFor(() => expect(mocks.app.deleteGoal).toHaveBeenCalledWith(4));
+  await waitFor(() =>
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+  );
+  expect(mocks.app.notify).toHaveBeenCalledWith("Goal deleted");
+});
+
+it("keeps the goal available and shows a failed deletion so the user can retry", async () => {
+  mocks.app.deleteGoal.mockRejectedValueOnce(new Error("Deletion unavailable"));
+  render(<Goals />);
+  fireEvent.click(
+    screen.getByRole("button", { name: "Delete Emergency fund" }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Confirm deletion" }));
+  expect(await screen.findByRole("alert")).toHaveTextContent(
+    "Deletion unavailable",
+  );
+  expect(
+    screen.getByRole("button", { name: "Delete Emergency fund" }),
+  ).toBeInTheDocument();
+  expect(mocks.app.notify).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "Confirm deletion" }));
+  await waitFor(() =>
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+  );
+  expect(mocks.app.deleteGoal).toHaveBeenCalledTimes(2);
 });
 it("stages photo changes until Save Changes and has no currency selector", async () => {
   mocks.api.mockResolvedValue({ photoUrl: "uploads/test.png" });

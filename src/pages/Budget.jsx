@@ -13,6 +13,8 @@ import { progress } from "../lib/format";
 import { budgetStatus } from "../lib/budget-status";
 import { ledgerTotals } from "../lib/ledger-totals";
 import SpendingInsights from "../components/SpendingInsights";
+import CollectionList from "../components/CollectionList";
+import DataSection from "../components/DataSection";
 
 // Display monthly spending plans and provide budget management actions.
 export default function Budget() {
@@ -69,85 +71,127 @@ export default function Budget() {
         }}
       />
       <h2 className="budget-savings-title">Budget Progress</h2>
-      <div className="budget-grid">
-        {!allBudgets.length && (
-          <p className="report-caption">
-            No budgets yet. Add a spending limit to get started.
-          </p>
-        )}
-        {allBudgets.map((budget) => {
-          const status = budgetStatus(budget);
-          const over = budget.spent > budget.limit;
-          const full = budget.spent === budget.limit;
-          return (
-            <div className="budget-card" key={budget.id}>
-              <div className="bc-top">
-                <h3>{budget.category}</h3>
-                <span
-                  className={`pill ${over ? "pill-red" : full ? "pill-gray" : "pill-green"}`}
-                >
-                  {status.label}
-                </span>
-              </div>
-              <ProgressBar
-                value={progress(budget.spent, budget.limit)}
-                fill={
-                  over
-                    ? "red"
-                    : full
-                      ? "navy"
-                      : budget.category === "Groceries"
-                        ? "green"
-                        : "blue"
-                }
-              />
-              <div className="bc-foot">
-                <span className={over ? "budget-overage" : undefined}>
-                  {money(budget.spent)} spent
-                </span>
-                <span>of {money(budget.limit)} limit</span>
-              </div>
-              <div className="budget-card-actions">
-                <button
-                  className="btn btn-outline btn-sm"
-                  aria-label={`Edit ${budget.category} budget`}
-                  onClick={() => setEditing(budget)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="btn btn-danger btn-sm"
-                  aria-label={`Delete ${budget.category} budget`}
-                  onClick={() => {
-                    setDeleting(budget);
-                    setError("");
-                  }}
-                >
-                  Delete
-                </button>
-              </div>
-              <p className="report-caption">
-                {date(budget.startDate)} – {date(budget.endDate)}
-              </p>
-              {over && (
-                <div className="budget-overage-details">
-                  <p className="budget-overage">
-                    You have exceeded your budget by {money(status.exceeded)}.
-                  </p>
-                  <p className="budget-overage">
-                    Remaining budget: {money(status.remaining)}
-                  </p>
-                  <p>{status.percent.toFixed(1)}% used</p>
-                  <p className="report-caption">
-                    Review your expenses or adjust your budget. You can continue
-                    recording expenses.
-                  </p>
+      <DataSection sections={["budgets", "analyticsTransactions"]}>
+        <CollectionList
+          items={allBudgets}
+          label="budgets"
+          className="budget-grid"
+          searchText={(budget) =>
+            `${budget.category} ${budget.startDate} ${budget.endDate}`
+          }
+          showPageSize={false}
+          emptyText="No budgets yet. Add a spending limit to get started."
+          sortOptions={[
+            {
+              value: "recent",
+              label: "Month: newest first",
+              compare: (a, b) =>
+                b.startDate.localeCompare(a.startDate) || b.id - a.id,
+            },
+            {
+              value: "oldest",
+              label: "Month: oldest first",
+              compare: (a, b) =>
+                a.startDate.localeCompare(b.startDate) || a.id - b.id,
+            },
+            {
+              value: "limit",
+              label: "Largest limit",
+              compare: (a, b) => b.limit - a.limit || a.id - b.id,
+            },
+          ]}
+          filterOptions={[
+            {
+              value: "available",
+              label: "Under budget",
+              matches: (budget) => budget.spent < budget.limit,
+            },
+            {
+              value: "full",
+              label: "At limit",
+              matches: (budget) => budget.spent === budget.limit,
+            },
+            {
+              value: "over",
+              label: "Over budget",
+              matches: (budget) => budget.spent > budget.limit,
+            },
+          ]}
+        >
+          {(budget) => {
+            const status = budgetStatus(budget);
+            const over = budget.spent > budget.limit;
+            const full = budget.spent === budget.limit;
+            return (
+              <div className="budget-card" key={budget.id}>
+                <div className="bc-top">
+                  <h3>{budget.category}</h3>
+                  <span
+                    className={`pill ${over ? "pill-red" : full ? "pill-gray" : "pill-green"}`}
+                  >
+                    {status.label}
+                  </span>
                 </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+                <ProgressBar
+                  value={progress(budget.spent, budget.limit)}
+                  fill={
+                    over
+                      ? "red"
+                      : full
+                        ? "navy"
+                        : budget.category === "Groceries"
+                          ? "green"
+                          : "blue"
+                  }
+                />
+                <div className="bc-foot">
+                  <span className={over ? "budget-overage" : undefined}>
+                    {money(budget.spent)} spent
+                  </span>
+                  <span>of {money(budget.limit)} limit</span>
+                </div>
+                <div className="budget-card-actions">
+                  <button
+                    className="btn btn-outline btn-sm"
+                    aria-label={`Edit ${budget.category} budget`}
+                    onClick={() => setEditing(budget)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="btn btn-danger btn-sm"
+                    aria-label={`Delete ${budget.category} budget`}
+                    onClick={() => {
+                      setDeleting(budget);
+                      setError("");
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
+                <p className="report-caption">
+                  {date(budget.startDate)} – {date(budget.endDate)}
+                </p>
+                {over && (
+                  <div className="budget-overage-details">
+                    <p className="budget-overage">
+                      You have exceeded your budget by {money(status.exceeded)}.
+                    </p>
+                    <p className="budget-overage">
+                      Remaining budget: {money(status.remaining)}
+                    </p>
+                    <p>{status.percent.toFixed(1)}% used</p>
+                    <p className="report-caption">
+                      Review your expenses or adjust your budget. You can
+                      continue recording expenses.
+                    </p>
+                  </div>
+                )}
+              </div>
+            );
+          }}
+        </CollectionList>
+      </DataSection>
       {modal && (
         <BudgetModal
           initialMonth={suggestion?.month}

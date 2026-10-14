@@ -82,6 +82,23 @@ try {
   const statuses = await request('/lookups/goal-statuses');
   const goal = await request('/goals', { method: 'POST', status: 201, body: { goal_name: 'Test goal', target_amount: 1000, target_date: '2026-12-31', status_id: statuses[0].id } });
   await request('/goal-contributions', { method: 'POST', status: 201, body: { goal_id: goal.id, amount: 10, contribution_date: '2026-10-11', description: 'Test contribution' } });
+  // Goal CRUD preserves contributions during edits and removes them only after an owned delete.
+  const goalEdit = { goal_name: 'Updated goal', target_amount: 1500, target_date: '2027-01-31', status_id: statuses[0].id };
+  await request(`/goals/${goal.id}`, { method: 'PUT', body: goalEdit });
+  assert.equal((await request(`/goals/${goal.id}`)).saved, 10);
+  assert.equal((await request(`/goals/${goal.id}`)).target, 1500);
+  await request(`/goals/${goal.id}`, { method: 'PUT', who: 'other', status: 404, body: goalEdit });
+  await request(`/goals/${goal.id}`, { method: 'DELETE', who: 'other', status: 404 });
+  assert.equal((await request(`/goals/${goal.id}`)).saved, 10, 'Another account cannot edit or delete a goal or its savings');
+  const removableGoal = await request('/goals', { method: 'POST', status: 201, body: { ...goalEdit, goal_name: 'Goal to delete' } });
+  const removableContribution = await request('/goal-contributions', { method: 'POST', status: 201, body: { goal_id: removableGoal.id, amount: 25, contribution_date: '2026-10-11', description: 'Removed with goal' } });
+  await request(`/goals/${removableGoal.id}`, { method: 'DELETE' });
+  await request(`/goals/${removableGoal.id}`, { status: 404 });
+  await request(`/goals/${removableGoal.id}`, { method: 'DELETE', status: 404 });
+  await request(`/goal-contributions/${removableContribution.id}`, { method: 'DELETE', status: 404 });
+  assert.equal((await request('/goals')).length, 1, 'The unrelated goal remains');
+  assert.equal((await request('/goal-contributions?goal_id=' + goal.id)).length, 1);
+  assert.ok((await request('/activity-logs?action=DELETE')).items.some(item => item.relatedItem === `goals #${removableGoal.id}`));
   await request(`/wallets/${extra.id}`, { method: 'PUT', body: { name: extra.name, expense_type: 'Food' } });
   await request('/wallet-transfers', { method: 'POST', status: 410, body: { from_wallet_id: extra.id, to_wallet_id: cash.id, amount: 10 } });
   assert.ok((await request('/activity-logs')).total > 0);
@@ -138,7 +155,72 @@ try {
   assert.equal((await request('/admin/users?status=deleted', { who: 'admin' })).total, 0);
   // Email reuse checks deletion of the actual user row, without sending email.
   await request('/admin/users', { method: 'POST', who: 'admin', status: 201, body: { first_name: 'Reused', last_name: 'Email', email: 'user@fixture.invalid', password: 'TestPassword123!' } });
+  // Exercise wallet/category restrictions on a separate account in the disposable database.
+  const categoryRequest = (path, options = {}) => request(path, { ...options, who: 'other' });
+  const generalWallet = await categoryRequest('/wallets', { method: 'POST', status: 201, body: { name: 'General wallet', expense_type: 'Other' } });
+  const generalExpense = { ...validTransaction, payment_method_id: generalWallet.paymentMethodId };
+  const foodRecord = await categoryRequest('/transactions', { method: 'POST', status: 201, body: generalExpense });
+  const travelRecord = await categoryRequest('/transactions', { method: 'POST', status: 201, body: { ...generalExpense, category_name: 'Travel' } });
+  const foodWallet = await categoryRequest('/wallets', { method: 'POST', status: 201, body: { name: 'GCash food', expense_type: 'Food' } });
+  assert.equal((await categoryRequest('/lookups/payment-methods')).find(item => item.id === foodWallet.paymentMethodId).expenseType, 'Food');
+  const foodExpense = { ...generalExpense, payment_method_id: foodWallet.paymentMethodId };
+  const restrictedRecord = await categoryRequest('/transactions', { method: 'POST', status: 201, body: foodExpense });
+  const beforeRejected = await categoryRequest('/activity-logs');
+  const rejectedKey = randomUUID();
+  await categoryRequest('/transactions', { method: 'POST', key: rejectedKey, status: 422, body: { ...foodExpense, category_name: 'Travel' } });
+  assert.equal((await categoryRequest('/write-requests/' + rejectedKey)).confirmed, false);
+  // A rejected new category must be rolled back along with the transaction and audit.
+  await categoryRequest('/transactions', { method: 'POST', status: 422, body: { ...foodExpense, category_name: 'Unmatched category' } });
+  const { category_name: ignoredCategory, ...byCategoryId } = foodExpense;
+  await categoryRequest('/transactions', { method: 'POST', status: 422, body: { ...byCategoryId, category_id: travelRecord.categoryId } });
+  await categoryRequest(`/transactions/${restrictedRecord.id}`, { method: 'PUT', status: 422, body: { ...foodExpense, category_name: 'Travel' } });
+  await categoryRequest(`/transactions/${restrictedRecord.id}`, { method: 'PUT', status: 422, body: { ...byCategoryId, category_id: travelRecord.categoryId } });
+  assert.equal((await categoryRequest(`/transactions/${restrictedRecord.id}`)).category, 'Food', 'Rejected edits preserve the saved category');
+  assert.equal((await categoryRequest('/activity-logs')).total, beforeRejected.total, 'Category conflicts never create activity');
+  assert.equal((await categoryRequest('/transactions')).total, 3, 'Category conflicts never create transactions');
+  await categoryRequest(`/transactions/${restrictedRecord.id}`, { method: 'PUT', body: { ...byCategoryId, category_id: foodRecord.categoryId } });
+  // Matching uses the database category comparison, including case-insensitive saved names.
+  await categoryRequest(`/transactions/${restrictedRecord.id}`, { method: 'PUT', body: { ...foodExpense, category_name: 'food' } });
+  const incomeType = types.find(type => type.code === 'income').id;
+  await categoryRequest('/transactions', { method: 'POST', status: 201, body: { ...foodExpense, transaction_type_id: incomeType, category_name: 'Salary' } });
+  await categoryRequest(`/transactions/${restrictedRecord.id}/archive`, { method: 'PATCH' });
+  await categoryRequest(`/wallets/${foodWallet.id}`, { method: 'PUT', status: 422, body: { name: 'Rejected rename', expense_type: 'Travel' } });
+  assert.equal((await categoryRequest('/wallets')).find(item => item.id === foodWallet.id).name, 'GCash food', 'A rejected type change must not rename the wallet');
+  await categoryRequest(`/wallets/${generalWallet.id}`, { method: 'PUT', status: 422, body: { name: generalWallet.name, expense_type: 'Food' } });
+  await categoryRequest(`/wallets/${foodWallet.id}`, { method: 'PUT', body: { name: foodWallet.name, expense_type: 'Other' } });
+  const unrestrictedTravel = await categoryRequest('/transactions', { method: 'POST', status: 201, body: { ...foodExpense, category_name: 'Travel' } });
+  await categoryRequest(`/wallets/${foodWallet.id}`, { method: 'PUT', status: 422, body: { name: foodWallet.name, expense_type: 'Food' } });
+  // Correct the one conflicting expense, then safely restrict the wallet again.
+  await categoryRequest(`/transactions/${unrestrictedTravel.id}`, { method: 'PUT', body: foodExpense });
+  await categoryRequest(`/wallets/${foodWallet.id}`, { method: 'PUT', body: { name: foodWallet.name, expense_type: 'Food' } });
+  await categoryRequest(`/transactions/${unrestrictedTravel.id}`, { method: 'PUT', status: 422, body: { ...foodExpense, category_name: 'Travel' } });
+  // Moving a transaction to an unrestricted wallet preserves its chosen category.
+  await categoryRequest(`/transactions/${unrestrictedTravel.id}`, { method: 'PUT', body: { ...generalExpense, category_name: 'Travel' } });
   const otherId = fixture.users.other.id;
+  // Bulk mutations validate ownership before changing any row and preserve totals on archive.
+  const adminWallet = await request('/wallets', { who: 'admin', method: 'POST', status: 201, body: { name: 'Admin test wallet', expense_type: 'Other' } });
+  const adminTx = await request('/transactions', { who: 'admin', method: 'POST', status: 201, body: { ...validTransaction, payment_method_id: adminWallet.paymentMethodId } });
+  for (const method of ['PATCH', 'DELETE']) {
+    await categoryRequest('/transactions', { method, status: 404, body: { ids: [foodRecord.id, adminTx.id], action: 'archive' } });
+    assert.equal((await categoryRequest(`/transactions/${foodRecord.id}`)).archived, false, 'Invalid batches do not partially change owned rows');
+    await request(`/transactions/${adminTx.id}`, { who: 'admin' });
+  }
+  for (const ids of [[], ['invalid'], [0], Array(101).fill(foodRecord.id), null]) {
+    await categoryRequest('/transactions', { method: 'DELETE', status: 422, body: { ids } });
+  }
+  await categoryRequest('/transactions', { method: 'PATCH', status: 422, body: { ids: [foodRecord.id], action: 'delete' } });
+  const expenseBeforeBulk = (await categoryRequest('/reports?type=summary')).totalExpense;
+  const archivedBatch = await categoryRequest('/transactions', { method: 'PATCH', body: { ids: [foodRecord.id, foodRecord.id, travelRecord.id], action: 'archive' } });
+  assert.equal(archivedBatch.ids.length, 2);
+  assert.equal((await categoryRequest(`/transactions/${foodRecord.id}`)).archived, true);
+  assert.equal((await categoryRequest(`/transactions/${travelRecord.id}`)).archived, true);
+  assert.equal((await categoryRequest('/reports?type=summary')).totalExpense, expenseBeforeBulk);
+  await categoryRequest('/transactions', { method: 'PATCH', body: { ids: archivedBatch.ids, action: 'restore' } });
+  assert.equal((await categoryRequest(`/transactions/${foodRecord.id}`)).archived, false);
+  await categoryRequest('/transactions', { method: 'DELETE', body: { ids: archivedBatch.ids } });
+  await categoryRequest(`/transactions/${foodRecord.id}`, { status: 404 });
+  await categoryRequest(`/transactions/${travelRecord.id}`, { status: 404 });
+  assert.equal((await categoryRequest('/reports?type=summary')).totalExpense, expenseBeforeBulk - 20);
   await request(`/admin/users/${otherId}/delete`, { method: 'PATCH', who: 'admin' });
   await request(`/admin/users/${otherId}`, { method: 'DELETE', who: 'admin', body: { password: 'wrong' }, status: 403 });
   await request(`/admin/users/${otherId}`, { method: 'DELETE', who: 'admin', body: { password: 'TestPassword123!' } });

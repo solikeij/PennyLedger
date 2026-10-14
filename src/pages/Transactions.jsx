@@ -1,26 +1,136 @@
-import { TransactionModal, IncomeModal } from "../components/Forms";
+import { TransactionModal } from "../components/Forms";
+import ErrorForm from "../components/ErrorForm";
+import CategoryField from "../components/CategoryField";
 import { localDate } from "../lib/format";
+import { walletLabel } from "../lib/wallet-label";
 import { usePagedResource } from "../lib/use-paged-resource";
 import PagedList from "../components/PagedList";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useApp } from "../state/AppContext";
 import { Icon, Modal, PageTitle, Segments } from "../components/UI";
 
 // List transactions with signed amount colors and edit, delete, and archive actions.
 export function TransactionTable({ records, restoreOnly = false }) {
-  const { money, date, archiveTransaction, deleteTransaction, notify } =
-    useApp();
+  const {
+    money,
+    date,
+    archiveTransaction,
+    deleteTransaction,
+    bulkTransactions,
+    notify,
+    wallets = [],
+  } = useApp();
+  const walletNames = new Map(
+    wallets.map((wallet) => [
+      wallet.paymentMethodId,
+      walletLabel(wallet, wallets).label,
+    ]),
+  );
   const [editing, setEditing] = useState(null);
   const [deleting, setDeleting] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [selected, setSelected] = useState([]);
+  const [bulkAction, setBulkAction] = useState(null);
+  const [bulkError, setBulkError] = useState(null);
+  const bulkSaving = useRef(false);
+  const selectAll = useRef(null);
+  const selectedRecords = records.filter((tx) => selected.includes(tx.id));
+  const allSelected =
+    records.length > 0 && selectedRecords.length === records.length;
+  const recordIds = records.map((tx) => tx.id).join(",");
+  useEffect(() => {
+    setSelected((previous) =>
+      previous.filter((id) => records.some((tx) => tx.id === id)),
+    );
+  }, [recordIds]);
+  useEffect(() => {
+    if (selectAll.current)
+      selectAll.current.indeterminate =
+        selectedRecords.length > 0 && !allSelected;
+  }, [selectedRecords.length, allSelected]);
+
+  // Send one atomic request for exactly the selected records shown on this page.
+  async function submitBulk(event) {
+    event.preventDefault();
+    if (bulkSaving.current || bulkError?.uncertain || !selectedRecords.length)
+      return;
+    bulkSaving.current = true;
+    setBusy(true);
+    setBulkError(null);
+    const count = selectedRecords.length;
+    try {
+      await bulkTransactions(
+        selectedRecords.map((tx) => tx.id),
+        bulkAction,
+      );
+      setSelected([]);
+      setBulkAction(null);
+      notify(
+        `${count} transactions ${bulkAction === "delete" ? "deleted" : bulkAction === "archive" ? "archived" : "restored"}`,
+      );
+    } catch (failure) {
+      setBulkError(failure);
+    } finally {
+      bulkSaving.current = false;
+      setBusy(false);
+    }
+  }
   return (
     <>
+      {records.length > 0 && (
+        <div className="transaction-bulk-actions">
+          <span role="status">
+            {selectedRecords.length} selected on this page
+          </span>
+          <button
+            className="btn btn-outline btn-sm"
+            disabled={!selectedRecords.length || busy}
+            onClick={() => {
+              setBulkError(null);
+              setBulkAction(restoreOnly ? "restore" : "archive");
+            }}
+          >
+            {restoreOnly ? "Restore selected" : "Archive selected"}
+          </button>
+          <button
+            className="btn btn-danger btn-sm"
+            disabled={!selectedRecords.length || busy}
+            onClick={() => {
+              setBulkError(null);
+              setBulkAction("delete");
+            }}
+          >
+            Delete selected
+          </button>
+          <button
+            className="btn btn-outline btn-sm"
+            disabled={!selectedRecords.length || busy}
+            onClick={() => setSelected([])}
+          >
+            Clear selection
+          </button>
+        </div>
+      )}
       <div className="table-scroll">
         <table className="tx-table">
           <thead>
             <tr>
+              <th className="tx-selection">
+                <input
+                  ref={selectAll}
+                  type="checkbox"
+                  aria-label="Select all transactions on this page"
+                  disabled={!records.length || busy}
+                  checked={allSelected}
+                  onChange={(event) =>
+                    setSelected(
+                      event.target.checked ? records.map((tx) => tx.id) : [],
+                    )
+                  }
+                />
+              </th>
               <th>Description</th>
               <th>Category</th>
               <th>Payment Method</th>
@@ -31,7 +141,25 @@ export function TransactionTable({ records, restoreOnly = false }) {
           </thead>
           <tbody>
             {records.map((tx) => (
-              <tr key={tx.id}>
+              <tr
+                key={tx.id}
+                className={selected.includes(tx.id) ? "tx-selected" : ""}
+              >
+                <td className="tx-selection">
+                  <input
+                    type="checkbox"
+                    aria-label={`Select ${tx.description} (transaction ${tx.id})`}
+                    checked={selected.includes(tx.id)}
+                    disabled={busy}
+                    onChange={(event) =>
+                      setSelected((previous) =>
+                        event.target.checked
+                          ? [...previous, tx.id]
+                          : previous.filter((id) => id !== tx.id),
+                      )
+                    }
+                  />
+                </td>
                 <td className="td-desc">{tx.description}</td>
                 <td className="td-category">
                   <span
@@ -41,10 +169,14 @@ export function TransactionTable({ records, restoreOnly = false }) {
                   </span>
                 </td>
                 <td className="td-payment">
-                  {tx.paymentMethod || "Not recorded"}
+                  {walletNames.get(tx.paymentMethodId) ||
+                    tx.paymentMethod ||
+                    "Not recorded"}
                 </td>
                 <td className="td-date">{date(tx.date)}</td>
-                <td className={`td-amount${tx.amount > 0 ? " amt-pos" : tx.amount < 0 ? " amt-neg" : ""}`}>
+                <td
+                  className={`td-amount${tx.amount > 0 ? " amt-pos" : tx.amount < 0 ? " amt-neg" : ""}`}
+                >
                   {money(tx.amount, true)}
                 </td>
                 <td className="td-actions">
@@ -93,7 +225,7 @@ export function TransactionTable({ records, restoreOnly = false }) {
             ))}
             {!records.length && (
               <tr>
-                <td className="td-empty" colSpan={6}>
+                <td className="td-empty" colSpan={7}>
                   No transactions found.
                 </td>
               </tr>
@@ -101,6 +233,51 @@ export function TransactionTable({ records, restoreOnly = false }) {
           </tbody>
         </table>
       </div>
+      {bulkAction && (
+        <Modal
+          title={`${bulkAction === "delete" ? "Delete" : bulkAction === "archive" ? "Archive" : "Restore"} selected transactions?`}
+          onClose={() => {
+            if (!bulkSaving.current) setBulkAction(null);
+          }}
+        >
+          <ErrorForm failure={bulkError} onSubmit={submitBulk}>
+            <p>
+              {selectedRecords.length} selected transactions will be{" "}
+              {bulkAction === "delete"
+                ? "permanently deleted. This cannot be undone and will recalculate your financial totals."
+                : bulkAction === "archive"
+                  ? "archived. They will remain included in financial totals and can be restored later."
+                  : "restored to active history."}
+            </p>
+            {bulkError && (
+              <p role="alert" className="form-error">
+                {bulkError.message || bulkError}
+              </p>
+            )}
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="btn btn-outline"
+                disabled={busy}
+                onClick={() => setBulkAction(null)}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className={`btn ${bulkAction === "delete" ? "btn-danger" : "btn-primary"}`}
+                disabled={
+                  busy || !!bulkError?.uncertain || !selectedRecords.length
+                }
+              >
+                {busy
+                  ? "Saving..."
+                  : `Confirm ${bulkAction === "delete" ? "deletion" : bulkAction}`}
+              </button>
+            </div>
+          </ErrorForm>
+        </Modal>
+      )}
       {editing && (
         <TransactionModal
           transaction={editing}
@@ -157,7 +334,7 @@ export function TransactionTable({ records, restoreOnly = false }) {
   );
 }
 
-// Display searchable, filtered transaction history and transaction-entry actions.
+// Display searchable transaction history with selection and management actions.
 export default function Transactions() {
   const {
     transactions,
@@ -165,8 +342,6 @@ export default function Transactions() {
     income: expectedIncome,
     money,
   } = useApp();
-  const [adding, setAdding] = useState(false);
-  const [editingIncome, setEditingIncome] = useState(false);
   const monthlyActual = analyticsTransactions
     .filter(
       (tx) => tx.amount > 0 && tx.date.startsWith(localDate().slice(0, 7)),
@@ -232,20 +407,6 @@ export default function Transactions() {
           <strong>Recorded income this month: {money(monthlyActual)}</strong>
           <p>Expected monthly income: {money(expectedIncome || 0)}</p>
         </div>
-        <div className="quick-actions">
-          <button
-            className="btn btn-outline btn-sm"
-            onClick={() => setEditingIncome(true)}
-          >
-            Edit expected income
-          </button>
-          <button
-            className="btn btn-primary btn-sm"
-            onClick={() => setAdding(true)}
-          >
-            Add Transaction
-          </button>
-        </div>
       </div>
       <div className="filter-bar">
         <div className="search-box">
@@ -257,17 +418,18 @@ export default function Transactions() {
             onChange={(event) => setSearch(event.target.value)}
           />
         </div>
-        <select
-          className="filter-select"
-          aria-label="Filter by category"
+        <CategoryField
+          label="Filter by category"
+          name="category-filter"
+          allowCustom={false}
+          toggleLabel="Choose category filter"
           value={category}
-          onChange={(event) => setCategory(event.target.value)}
-        >
-          <option value="">All Categories</option>
-          {categories.map((category) => (
-            <option key={category}>{category}</option>
-          ))}
-        </select>
+          onChange={setCategory}
+          categories={[
+            { id: "all", value: "", name: "All Categories" },
+            ...categories.map((name) => ({ id: name, name })),
+          ]}
+        />
         <select
           className="filter-select"
           aria-label="Filter by month"
@@ -327,11 +489,13 @@ export default function Transactions() {
       </div>
       <div className="card">
         <PagedList list={list}>
-          <TransactionTable records={list.items} />
+          <TransactionTable
+            key={`${JSON.stringify(filters)}:${list.page}`}
+            records={list.items}
+            restoreOnly={view === "archived"}
+          />
         </PagedList>
       </div>
-      {adding && <TransactionModal onClose={() => setAdding(false)} />}
-      {editingIncome && <IncomeModal onClose={() => setEditingIncome(false)} />}
     </>
   );
 }

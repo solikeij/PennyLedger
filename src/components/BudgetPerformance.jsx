@@ -156,7 +156,7 @@ export default function BudgetPerformance() {
             <article>
               <span>Total spent</span>
               <strong>{money(report.summary.total_spent)}</strong>
-              <small>
+              <small className={report.summary.remaining_balance < 0 ? "bp-red" : ""}>
                 {report.summary.remaining_balance < 0
                   ? `Over allocated limit by ${money(-report.summary.remaining_balance)}`
                   : `${money(report.summary.remaining_balance)} remaining`}

@@ -52,6 +52,16 @@ if ($method === 'POST' || $method === 'PUT') {
             send_error('Validation failed', 422, ['expense_type' => 'Choose a saved expense category or Other']);
     }
     if ($method === 'PUT') {
+        // Include archived expenses: changing a wallet must not contradict its history.
+        if ($expenseType !== 'Other') {
+            $conflicts = mysqli_prepare($conn, "SELECT t.transaction_id FROM Transactions t JOIN Categories c ON c.category_id = t.category_id JOIN TransactionTypes tt ON tt.transaction_type_id = t.transaction_type_id WHERE t.user_id = ? AND t.payment_method_id = ? AND tt.code = 'expense' AND c.category_name <> ? LIMIT 1");
+            mysqli_stmt_bind_param($conflicts, 'iis', $userId, $wallet['payment_method_id'], $expenseType);
+            mysqli_stmt_execute($conflicts);
+            if (mysqli_fetch_assoc(mysqli_stmt_get_result($conflicts))) {
+                $message = 'This wallet has expenses in another category, including any archived records. Choose Other to keep its existing categories, or edit those transactions first.';
+                send_error($message, 422, ['expense_type' => $message]);
+            }
+        }
         if ($wallet['is_default'])
             $name = 'Physical money';
         $walletId = (int) $id;

@@ -52,7 +52,7 @@ beforeEach(() => {
   mocks.api.mockResolvedValue([]);
   mocks.createUser.mockResolvedValue({ id: 1 });
 });
-it("shows complete-ledger income and opens expected-income editing from transaction history", () => {
+it("shows complete-ledger income without transaction-entry buttons in history", () => {
   render(
     <MemoryRouter>
       <Transactions />
@@ -64,18 +64,12 @@ it("shows complete-ledger income and opens expected-income editing from transact
   expect(
     screen.getByText("Expected monthly income: PHP 2500"),
   ).toBeInTheDocument();
-  fireEvent.click(screen.getByRole("button", { name: "Edit expected income" }));
-  expect(screen.getByLabelText("Pay amount (PHP)")).toHaveValue(2500);
-  fireEvent.change(screen.getByLabelText("Pay amount (PHP)"), {
-    target: { value: "99999999" },
-  });
-  fireEvent.change(screen.getByLabelText("Pay Frequency"), {
-    target: { value: "weekly" },
-  });
-  fireEvent.click(screen.getByRole("button", { name: "Save Expected Income" }));
-  expect(screen.getByRole("alert")).toHaveTextContent(
-    "monthly total no greater",
-  );
+  expect(
+    screen.queryByRole("button", { name: "Edit expected income" }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Add Transaction" }),
+  ).not.toBeInTheDocument();
   expect(mocks.saveIncomeEstimate).not.toHaveBeenCalled();
 });
 it("retains main admin account creation controls", async () => {

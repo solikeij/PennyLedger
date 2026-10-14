@@ -52,11 +52,11 @@ export default function ReportSnapshot({ report }) {
           <div className="snapshot-totals">
             <div>
               <span>Income</span>
-              <strong className="snapshot-green">{money(report.income)}</strong>
+              <strong className="snapshot-green">+{money(report.income)}</strong>
             </div>
             <div>
               <span>Expenses</span>
-              <strong>{money(report.expense)}</strong>
+              <strong className="snapshot-red">-{money(report.expense)}</strong>
             </div>
           </div>
           <div className="snapshot-meter">
@@ -139,7 +139,7 @@ export default function ReportSnapshot({ report }) {
                 <strong>{money(allocated)}</strong>
               </div>
               <p>
-                {money(spent)} spent · {money(allocated - spent)} remaining
+                {money(spent)} spent · <span className={allocated < spent ? "snapshot-red" : ""}>{money(allocated - spent)} remaining</span>
               </p>
               {report.budgets.map((b) => (
                 <div className="snapshot-budget" key={b.id}>

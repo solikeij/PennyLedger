@@ -225,6 +225,26 @@ export function AppProvider({ children }) {
     // Archiving changes visibility, not historical financial totals.
   }
 
+  // Apply a bulk change once and refresh all affected views after server confirmation.
+  async function bulkTransactions(ids, action) {
+    const result = await api("/transactions", {
+      method: action === "delete" ? "DELETE" : "PATCH",
+      body: { ids, action },
+    });
+    const changed = new Set(result.ids);
+    setData((old) => ({
+      ...old,
+      transactions: action === "delete"
+        ? old.transactions.filter((tx) => !changed.has(tx.id))
+        : old.transactions.map((tx) => changed.has(tx.id) ? { ...tx, archived: action === "archive" } : tx),
+    }));
+    await refreshActivity();
+    await Promise.allSettled([
+      refreshSection("transactions"),
+      ...(action === "delete" ? [refreshBudgets(), refreshSection("analyticsTransactions")] : []),
+    ]);
+  }
+
   // Reload saved budgets after ledger or budget changes.
   async function refreshBudgets() {
     return refreshSection("budgets");
@@ -302,6 +322,16 @@ export function AppProvider({ children }) {
     }));
     await refreshActivity();
     return saved;
+  }
+
+  // Remove a goal from shared views only after PHP confirms its deletion.
+  async function deleteGoal(id) {
+    await api(`/goals/${id}`, { method: "DELETE" });
+    setData((old) => ({
+      ...old,
+      goals: old.goals.filter((goal) => goal.id !== id),
+    }));
+    await refreshActivity();
   }
 
   // Save a contribution and refresh the affected savings totals.
@@ -391,6 +421,7 @@ export function AppProvider({ children }) {
         updateTransaction,
         deleteTransaction,
         archiveTransaction,
+        bulkTransactions,
         createBudget,
         updateBudget,
         deleteBudget,
@@ -398,6 +429,7 @@ export function AppProvider({ children }) {
         updateWallet,
         deleteWallet,
         saveGoal,
+        deleteGoal,
         addGoalContribution,
         addReport,
         archiveReport,

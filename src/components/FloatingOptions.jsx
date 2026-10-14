@@ -33,6 +33,8 @@ export default function FloatingOptions({
         ),
         width: listWidth,
         maxHeight,
+        overflowY: "auto",
+        overscrollBehaviorY: "contain",
         top: Math.max(
           topEdge + 8,
           Math.min(

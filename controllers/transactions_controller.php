@@ -47,6 +47,39 @@ function transaction_select_sql(): string
             JOIN Payment_Methods pm ON pm.payment_method_id = t.payment_method_id";
 }
 
+// Apply a selected-page action atomically; never partially change unowned or missing IDs.
+if (!$id && !$action && in_array($method, ['PATCH', 'DELETE'], true)) {
+    $input = get_json_input();
+    $ids = $input['ids'] ?? null;
+    if (!is_array($ids) || !array_is_list($ids) || count($ids) < 1 || count($ids) > 100)
+        send_error('Select between 1 and 100 transactions', 422);
+    $ids = array_values(array_unique(array_map(fn($value) => require_positive_id($value, 'ids'), $ids)));
+    $bulkAction = $method === 'DELETE' ? 'delete' : ($input['action'] ?? '');
+    if (!in_array($bulkAction, ['delete', 'archive', 'restore'], true) || ($method === 'PATCH' && $bulkAction === 'delete'))
+        send_error('Choose archive or restore', 422);
+    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+    $types = 'i' . str_repeat('i', count($ids));
+    $params = [$userId, ...$ids];
+    $owned = mysqli_prepare($conn, "SELECT transaction_id FROM Transactions WHERE user_id = ? AND transaction_id IN ($placeholders) FOR UPDATE");
+    mysqli_stmt_bind_param($owned, $types, ...$params);
+    mysqli_stmt_execute($owned);
+    if (mysqli_num_rows(mysqli_stmt_get_result($owned)) !== count($ids))
+        send_error('Some selected transactions are unavailable. Refresh the list and select them again.', 404);
+
+    if ($bulkAction === 'delete') {
+        $sql = "DELETE FROM Transactions WHERE user_id = ? AND transaction_id IN ($placeholders)";
+    } else {
+        $set = $bulkAction === 'archive' ? 'archived = 1, archived_at = COALESCE(archived_at, NOW())' : 'archived = 0, archived_at = NULL';
+        $sql = "UPDATE Transactions SET $set WHERE user_id = ? AND transaction_id IN ($placeholders)";
+    }
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, $types, ...$params);
+    mysqli_stmt_execute($stmt);
+    $GLOBALS['action'] = $bulkAction;
+    $verb = ['delete' => 'deleted', 'archive' => 'archived', 'restore' => 'restored'][$bulkAction];
+    send_success(['ids' => $ids, 'action' => $bulkAction], count($ids) . ' transactions ' . $verb);
+}
+
 // Read transactions with lookup names, scoped to the current user.
 if ($method === 'GET') {
     if ($id) {
@@ -149,15 +182,17 @@ if ($method === 'POST' || $method === 'PUT') {
     $categoryId = isset($input['category_id']) ? require_positive_id($input['category_id'], 'category_id') : 0;
     $typeId = require_positive_id($input['transaction_type_id'], 'transaction_type_id');
     $paymentMethodId = require_positive_id($input['payment_method_id'], 'payment_method_id');
-    $owner = mysqli_prepare($conn, 'SELECT wallet_id FROM Wallets WHERE payment_method_id = ? AND user_id = ? AND deleted_at IS NULL');
+    $owner = mysqli_prepare($conn, 'SELECT wallet_id, expense_type FROM Wallets WHERE payment_method_id = ? AND user_id = ? AND deleted_at IS NULL');
     mysqli_stmt_bind_param($owner, 'ii', $paymentMethodId, $userId);
     mysqli_stmt_execute($owner);
-    if (!mysqli_fetch_assoc(mysqli_stmt_get_result($owner)))
+    $selectedWallet = mysqli_fetch_assoc(mysqli_stmt_get_result($owner));
+    if (!$selectedWallet)
         send_error('Choose an active wallet you own', 422, ['payment_method_id' => 'Choose an active wallet you own']);
-    $typeCheck = mysqli_prepare($conn, "SELECT transaction_type_id FROM TransactionTypes WHERE transaction_type_id = ? AND code IN ('income', 'expense')");
+    $typeCheck = mysqli_prepare($conn, "SELECT transaction_type_id, code FROM TransactionTypes WHERE transaction_type_id = ? AND code IN ('income', 'expense')");
     mysqli_stmt_bind_param($typeCheck, 'i', $typeId);
     mysqli_stmt_execute($typeCheck);
-    if (!mysqli_fetch_assoc(mysqli_stmt_get_result($typeCheck)))
+    $selectedType = mysqli_fetch_assoc(mysqli_stmt_get_result($typeCheck));
+    if (!$selectedType)
         send_error('Choose income or expense', 422, ['transaction_type_id' => 'Choose income or expense']);
     $amount = require_positive_number($input['amount'], 'amount');
     if (!is_finite($amount) || $amount <= 0 || $amount > 99999999.99)
@@ -198,6 +233,18 @@ if ($method === 'POST' || $method === 'PUT') {
     mysqli_stmt_execute($lookup);
     if (!mysqli_fetch_assoc(mysqli_stmt_get_result($lookup))) {
         send_error('Category, type, or payment method is invalid', 422);
+    }
+
+    // Apply the wallet restriction to both category IDs and typed category names.
+    // Other wallets accept any category; income is never restricted by expense type.
+    if ($selectedType['code'] === 'expense' && $selectedWallet['expense_type'] !== 'Other') {
+        $categoryCheck = mysqli_prepare($conn, 'SELECT category_id FROM Categories WHERE category_id = ? AND category_name = ?');
+        mysqli_stmt_bind_param($categoryCheck, 'is', $categoryId, $selectedWallet['expense_type']);
+        mysqli_stmt_execute($categoryCheck);
+        if (!mysqli_fetch_assoc(mysqli_stmt_get_result($categoryCheck))) {
+            $message = 'This wallet only accepts ' . $selectedWallet['expense_type'] . ' expenses. Choose a matching category or a wallet with expense type Other.';
+            send_error($message, 422, ['category_name' => $message, 'category_id' => $message]);
+        }
     }
 
     if ($method === 'POST') {

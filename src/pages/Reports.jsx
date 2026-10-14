@@ -135,10 +135,10 @@ export function ReportPreview({ report }) {
           items={[
             {
               label: "Total Income",
-              value: money(report.income),
+              value: `+${money(report.income)}`,
               tone: "green",
             },
-            { label: "Total Expenses", value: money(report.expense) },
+            { label: "Total Expenses", value: `-${money(report.expense)}`, tone: "red" },
             {
               label: "Net Savings",
               value: money(report.income - report.expense),
@@ -249,7 +249,7 @@ export function ReportPreview({ report }) {
           items={[
             { label: "Total Budgeted", value: money(limit) },
             { label: "Total Spent", value: money(spent) },
-            { label: "Remaining", value: money(limit - spent), tone: "green" },
+            { label: "Remaining", value: money(limit - spent), tone: limit < spent ? "red" : "green" },
           ]}
         />
         <p className="report-caption">
